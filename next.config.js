@@ -1,7 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['taller-fundamental.web.app', 'placehold.co'],
+    domains: ['xzwkrwrhmsiesydasuff.supabase.co'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'xzwkrwrhmsiesydasuff.supabase.co',
+        port: '',
+        pathname: '/storage/v1/object/public/**',
+      },
+    ],
   },
 };
 
