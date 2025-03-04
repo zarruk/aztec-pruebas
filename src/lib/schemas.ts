@@ -6,10 +6,14 @@ export const herramientaSchema = z.object({
   imagen_url: z.string().url('Debe ser una URL válida'),
 });
 
+export const tallerFechaSchema = z.object({
+  fecha: z.string().min(1, 'La fecha es requerida'),
+});
+
 export const tallerSchema = z.object({
   nombre: z.string().min(1, 'El nombre es requerido'),
   descripcion: z.string().min(1, 'La descripción es requerida'),
-  video_url: z.string().url('Debe ser una URL válida'),
+  video_url: z.string().url('Debe ser una URL válida').or(z.string().length(0)),
   tipo: z.enum(['vivo', 'pregrabado'], {
     required_error: 'Debes seleccionar un tipo de taller',
   }),
@@ -17,20 +21,16 @@ export const tallerSchema = z.object({
   fecha_live_build: z.string().optional(),
   herramientas: z.array(z.number()).default([]),
   campos_webhook: z.array(z.string()).default([]),
-  capacidad: z.string().min(1, 'La capacidad es requerida'),
-  precio: z.string().min(1, 'El precio es requerido'),
-}).refine(
-  (data) => {
-    if (data.tipo === 'vivo' && !data.fecha_vivo) {
-      return false;
-    }
-    if (data.tipo === 'pregrabado' && !data.fecha_live_build) {
-      return false;
-    }
-    return true;
-  },
-  {
-    message: 'Debes especificar la fecha correspondiente según el tipo de taller',
-    path: ['fecha_vivo', 'fecha_live_build'],
+  capacidad: z.string().optional(),
+  precio: z.string().optional(),
+  imagen_url: z.string().optional(),
+  fechas: z.array(tallerFechaSchema).optional(),
+}).refine((data) => {
+  if (data.tipo === 'vivo') {
+    return !!data.fecha_vivo;
   }
-); 
+  return true;
+}, {
+  message: "La fecha del taller en vivo es requerida para talleres en vivo",
+  path: ["fecha_vivo"]
+}); 

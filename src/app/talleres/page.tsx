@@ -17,6 +17,8 @@ interface Taller {
   herramientas?: number[];
   capacidad?: number;
   video_url?: string;
+  imagen_url?: string;
+  fecha_live_build?: string;
   [key: string]: any; // Permitir campos adicionales
 }
 
@@ -44,7 +46,7 @@ export default function TalleresPage() {
         const { data, error } = await supabase
           .from('talleres')
           .select('*')
-          .order('fecha_vivo', { ascending: true });
+          .order('id', { ascending: true });
           
         console.log('Respuesta de Supabase:', { 
           data: data ? `${data.length} registros` : 'Sin datos', 
@@ -82,7 +84,8 @@ export default function TalleresPage() {
         fecha_vivo: '2024-02-03T18:00:00+00:00',
         precio: 99000,
         capacidad: 20,
-        video_url: 'https://www.youtube.com/watch?v=ejemplo1'
+        video_url: 'https://www.youtube.com/watch?v=ejemplo1',
+        imagen_url: '/images/taller-tracker.jpg'
       },
       {
         id: 2,
@@ -92,7 +95,8 @@ export default function TalleresPage() {
         fecha_vivo: '2024-02-10T18:00:00+00:00',
         precio: 99000,
         capacidad: 20,
-        video_url: 'https://www.youtube.com/watch?v=ejemplo2'
+        video_url: 'https://www.youtube.com/watch?v=ejemplo2',
+        imagen_url: '/images/taller-leads.jpg'
       },
       {
         id: 3,
@@ -102,7 +106,8 @@ export default function TalleresPage() {
         fecha_vivo: '2024-01-01T00:00:00+00:00',
         precio: 99000,
         capacidad: 50,
-        video_url: 'https://www.youtube.com/watch?v=ejemplo4'
+        video_url: 'https://www.youtube.com/watch?v=ejemplo4',
+        imagen_url: '/images/taller-redes.jpg'
       }
     ]);
   }
@@ -122,21 +127,58 @@ const obtenerTextoTipo = (tipo: string) => {
   return tipo;
 };
 
-// Función para formatear la fecha con mejor manejo de errores
-const formatearFecha = (fechaISO?: string, tipo?: string) => {
+// Función para verificar si una fecha es futura
+const esFechaFutura = (fechaISO?: string) => {
+  if (!fechaISO) return false;
   try {
-    if (!fechaISO) return "Fecha no disponible";
+    const fecha = parseISO(fechaISO);
+    return fecha > new Date();
+  } catch (error) {
+    console.error('Error al verificar si la fecha es futura:', error);
+    return false;
+  }
+};
+
+// Función para verificar si una fecha es pasada
+const esFechaPasada = (fechaISO?: string) => {
+  if (!fechaISO) return false;
+  try {
+    const fecha = parseISO(fechaISO);
+    return fecha < new Date();
+  } catch (error) {
+    console.error('Error al verificar si la fecha es pasada:', error);
+    return false;
+  }
+};
+
+// Función para formatear la fecha con mejor manejo de errores
+const formatearFecha = (fechaISO?: string, tipo?: string, fechaLiveBuild?: string) => {
+  try {
+    // Si es un taller pregrabado con fecha de live build futura, mostrar esa fecha
+    if (tipo === 'pregrabado' && fechaLiveBuild && esFechaFutura(fechaLiveBuild)) {
+      const fecha = parseISO(fechaLiveBuild);
+      return `Live Build: ${format(fecha, "d 'de' MMMM", { locale: es })}`;
+    }
     
-    // Si es un taller pregrabado, mostrar "Taller Pre Grabado" en lugar de la fecha
+    // Si no hay fecha o la fecha es pasada, no mostrar nada para talleres en vivo
+    if (!fechaISO || esFechaPasada(fechaISO)) {
+      if (tipo === 'pregrabado') {
+        return "Taller Pre Grabado";
+      }
+      return ""; // No mostrar fecha para talleres en vivo con fecha pasada
+    }
+    
+    // Si es un taller pregrabado sin fecha de live build o con fecha pasada
     if (tipo === 'pregrabado') {
       return "Taller Pre Grabado";
     }
     
+    // Para talleres en vivo con fecha futura
     const fecha = parseISO(fechaISO);
     return format(fecha, "d 'de' MMMM", { locale: es });
   } catch (error) {
     console.error('Error al formatear fecha:', error);
-    return "Fecha no disponible";
+    return "";
   }
 };
 
@@ -152,8 +194,14 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
   };
 
   // Función para obtener la imagen del taller
-  const obtenerImagenTaller = (nombre: string, tipo: string) => {
+  const obtenerImagenTaller = (nombre: string, tipo: string, imagen_url?: string) => {
     try {
+      // Si hay una imagen_url disponible, usarla primero
+      if (imagen_url) {
+        return imagen_url;
+      }
+      
+      // Lógica de respaldo basada en el nombre del taller
       if (nombre.toLowerCase().includes('gastos') || nombre.toLowerCase().includes('tracker')) {
         return "/images/taller-tracker.jpg";
       } else if (nombre.toLowerCase().includes('leads') || nombre.toLowerCase().includes('respuesta')) {
@@ -229,7 +277,7 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
                 <div key={taller.id} className="bg-white rounded-lg overflow-hidden shadow-md">
                   <div className="relative">
                     <img 
-                      src={obtenerImagenTaller(taller.nombre || '', taller.tipo || '')}
+                      src={obtenerImagenTaller(taller.nombre || '', taller.tipo || '', taller.imagen_url)}
                       alt={taller.nombre || 'Taller'}
                       className="w-full h-48 object-cover"
                     />
@@ -238,13 +286,25 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
                         • Grabación disponible
                       </div>
                     )}
+                    
+                    {/* Indicador de Live Build pendiente - con color más opaco */}
+                    {taller.tipo === 'pregrabado' && taller.fecha_live_build && esFechaFutura(taller.fecha_live_build) && (
+                      <div className="absolute top-3 left-3 flex items-center">
+                        <span className="animate-pulse inline-block w-3 h-3 bg-red-700 rounded-full mr-2"></span>
+                        <span className="bg-red-700 text-white text-xs px-2 py-1 rounded">
+                          Live Build Pendiente
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <div className="p-6">
                     <h3 className="text-xl font-bold mb-2">{taller.nombre || 'Taller sin nombre'}</h3>
                     <p className="text-gray-600 mb-4">{taller.descripcion || 'Sin descripción disponible'}</p>
                     <div className="text-sm text-gray-500 mb-4">
-                      {formatearFecha(taller.fecha_vivo, taller.tipo)} • {obtenerDuracion()}
+                      {formatearFecha(taller.fecha_vivo, taller.tipo, taller.fecha_live_build)}
+                      {formatearFecha(taller.fecha_vivo, taller.tipo, taller.fecha_live_build) && ` • ${obtenerDuracion()}`}
                     </div>
+                    
                     <div className="flex justify-between items-center">
                       <div className="font-medium">
                         {taller.precio 

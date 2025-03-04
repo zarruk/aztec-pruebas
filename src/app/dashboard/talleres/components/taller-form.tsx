@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DatePickerInput } from '@/components/ui/date-picker';
 import { TagInput } from '@/components/ui/tag-input';
 import { ToolSelector } from '@/components/ui/tool-selector';
+import ImageUpload from '@/components/ui/image-upload';
 
 type FormValues = z.infer<typeof tallerSchema>;
 
@@ -47,6 +48,7 @@ export function TallerForm({ taller }: TallerFormProps) {
           fecha_live_build: taller.fecha_live_build,
           herramientas: taller.herramientas,
           campos_webhook: taller.campos_webhook || [],
+          imagen_url: taller.imagen_url || '',
         }
       : {
           nombre: '',
@@ -55,6 +57,7 @@ export function TallerForm({ taller }: TallerFormProps) {
           tipo: 'vivo' as TipoTaller,
           herramientas: [],
           campos_webhook: [],
+          imagen_url: '',
         },
   });
 
@@ -142,6 +145,24 @@ export function TallerForm({ taller }: TallerFormProps) {
         </div>
 
         <div>
+          <FormLabel htmlFor="imagen_url">Imagen del taller</FormLabel>
+          <Controller
+            name="imagen_url"
+            control={control}
+            render={({ field }) => (
+              <ImageUpload
+                onImageUpload={(url) => field.onChange(url)}
+                initialImageUrl={field.value}
+              />
+            )}
+          />
+          <FormError message={errors.imagen_url?.message} />
+          <p className="text-xs text-muted-foreground mt-1">
+            Sube una imagen representativa para el taller. Esta imagen se mostrará en la página de talleres.
+          </p>
+        </div>
+
+        <div>
           <FormLabel htmlFor="tipo" required>Tipo de taller</FormLabel>
           <Controller
             name="tipo"
@@ -189,7 +210,7 @@ export function TallerForm({ taller }: TallerFormProps) {
 
         {tipoTaller === 'pregrabado' && (
           <div>
-            <FormLabel htmlFor="fecha_live_build" required>Fecha del live build</FormLabel>
+            <FormLabel htmlFor="fecha_live_build">Fecha del live build (opcional)</FormLabel>
             <Controller
               name="fecha_live_build"
               control={control}
@@ -203,6 +224,9 @@ export function TallerForm({ taller }: TallerFormProps) {
               )}
             />
             <FormError message={errors.fecha_live_build?.message} />
+            <p className="text-xs text-muted-foreground mt-1">
+              Esta fecha es opcional para talleres pregrabados.
+            </p>
           </div>
         )}
 
