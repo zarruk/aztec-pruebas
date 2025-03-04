@@ -1,0 +1,76 @@
+-- Crear tabla de herramientas
+CREATE TABLE herramientas (
+  id SERIAL PRIMARY KEY,
+  nombre TEXT NOT NULL,
+  descripcion TEXT NOT NULL,
+  imagen_url TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Crear tabla de talleres
+CREATE TABLE talleres (
+  id SERIAL PRIMARY KEY,
+  nombre TEXT NOT NULL,
+  descripcion TEXT NOT NULL,
+  video_url TEXT NOT NULL,
+  tipo TEXT NOT NULL CHECK (tipo IN ('vivo', 'pregrabado')),
+  fecha_vivo TIMESTAMP WITH TIME ZONE,
+  fecha_live_build TIMESTAMP WITH TIME ZONE,
+  herramientas INTEGER[] DEFAULT '{}',
+  campos_webhook TEXT[] DEFAULT '{}',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Crear políticas de seguridad (RLS)
+ALTER TABLE herramientas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE talleres ENABLE ROW LEVEL SECURITY;
+
+-- Permitir acceso anónimo para lectura
+CREATE POLICY "Permitir lectura anónima de herramientas" ON herramientas
+  FOR SELECT USING (true);
+
+CREATE POLICY "Permitir lectura anónima de talleres" ON talleres
+  FOR SELECT USING (true);
+
+-- Permitir acceso de escritura (esto deberías cambiarlo según tus necesidades de autenticación)
+-- Por ahora, permitimos escritura anónima para facilitar el desarrollo
+CREATE POLICY "Permitir escritura anónima de herramientas" ON herramientas
+  FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Permitir actualización anónima de herramientas" ON herramientas
+  FOR UPDATE USING (true);
+
+CREATE POLICY "Permitir eliminación anónima de herramientas" ON herramientas
+  FOR DELETE USING (true);
+
+CREATE POLICY "Permitir escritura anónima de talleres" ON talleres
+  FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Permitir actualización anónima de talleres" ON talleres
+  FOR UPDATE USING (true);
+
+CREATE POLICY "Permitir eliminación anónima de talleres" ON talleres
+  FOR DELETE USING (true);
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_herramientas_nombre ON herramientas (nombre);
+CREATE INDEX idx_talleres_nombre ON talleres (nombre);
+CREATE INDEX idx_talleres_tipo ON talleres (tipo);
+
+-- Comentarios para documentar las tablas
+COMMENT ON TABLE herramientas IS 'Herramientas utilizadas en los talleres';
+COMMENT ON TABLE talleres IS 'Talleres disponibles para los estudiantes';
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN herramientas.nombre IS 'Nombre de la herramienta';
+COMMENT ON COLUMN herramientas.descripcion IS 'Descripción de la herramienta';
+COMMENT ON COLUMN herramientas.imagen_url IS 'URL de la imagen de la herramienta';
+
+COMMENT ON COLUMN talleres.nombre IS 'Nombre del taller';
+COMMENT ON COLUMN talleres.descripcion IS 'Descripción del taller';
+COMMENT ON COLUMN talleres.video_url IS 'URL del video con información del taller';
+COMMENT ON COLUMN talleres.tipo IS 'Tipo de taller: vivo o pregrabado';
+COMMENT ON COLUMN talleres.fecha_vivo IS 'Fecha en la que se realizará el taller en vivo';
+COMMENT ON COLUMN talleres.fecha_live_build IS 'Fecha en la que se realizará el live build para talleres pregrabados';
+COMMENT ON COLUMN talleres.herramientas IS 'IDs de las herramientas utilizadas en el taller';
+COMMENT ON COLUMN talleres.campos_webhook IS 'Campos adicionales para el webhook cuando alguien se registra'; 
