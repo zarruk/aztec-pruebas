@@ -20,7 +20,7 @@ import { toast } from 'react-hot-toast';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { getNextId, generateSafeId } from '@/lib/utils';
 import ImageUpload from '@/components/ui/image-upload';
-import { DateList } from '@/components/ui/date-picker';
+import { DateList } from '@/components/ui/date-list';
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/lib/types';
 
