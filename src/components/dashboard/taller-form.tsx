@@ -18,10 +18,11 @@ import { ToolSelector } from '@/components/ui/tool-selector';
 import { TagInput } from '@/components/ui/tag-input';
 import { toast } from 'react-hot-toast';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { getNextId } from '@/lib/utils';
-import { ImageUpload } from '@/components/ui/image-upload';
-import { DateList } from '@/components/ui/date-list';
+import { getNextId, generateSafeId } from '@/lib/utils';
+import ImageUpload from '@/components/ui/image-upload';
+import { DateList } from '@/components/ui/date-picker';
 import { createClient } from '@supabase/supabase-js';
+import { Database } from '@/lib/types';
 
 type FormValues = z.infer<typeof tallerSchema>;
 
@@ -31,13 +32,19 @@ interface TallerFormProps {
 
 export function TallerForm({ taller }: TallerFormProps) {
   const router = useRouter();
-  const supabase = createClientComponentClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [imageUrl, setImageUrl] = useState<string>(taller?.imagen_url || '');
+  const [imageUrl, setImageUrl] = useState<string>('');
+  const [imageDebug, setImageDebug] = useState<string[]>([]);
   const [fechas, setFechas] = useState<Date[]>(
     taller?.fechas?.map((f: any) => new Date(f.fecha)) || []
+  );
+  
+  // Crear cliente de Supabase directamente
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
   );
 
   const {
@@ -71,132 +78,109 @@ export function TallerForm({ taller }: TallerFormProps) {
           fecha_live_build: '',
           herramientas: [],
           campos_webhook: [],
-          capacidad: '',
-          precio: '',
+          capacidad: '20',
+          precio: '99000',
         },
   });
 
   const tipoTaller = watch('tipo');
 
-  const onSubmit = async (data: FormValues) => {
+  // Función para añadir información de depuración
+  const addImageDebug = (info: string) => {
+    console.log("TallerForm:", info);
+    setImageDebug(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${info}`]);
+  };
+
+  // Función para manejar la carga de imagen
+  const handleImageUpload = (url: string) => {
+    addImageDebug(`URL de imagen recibida: ${url}`);
+    setImageUrl(url);
+  };
+
+  // Función simplificada para crear/actualizar taller
+  const onSubmit = async (data: z.infer<typeof tallerSchema>) => {
     setIsSubmitting(true);
     
     try {
-      let nextId = null;
+      console.log("Datos del formulario:", data);
       
-      // Solo obtener el siguiente ID si estamos creando un nuevo taller
-      if (!taller?.id) {
-        nextId = await getNextId('talleres');
-        
-        if (nextId === null) {
-          toast.error("Error al generar el ID del taller. Por favor, intenta de nuevo.");
-          setIsSubmitting(false);
-          return;
-        }
-      }
+      // Crear cliente de Supabase
+      const supabase = createClientComponentClient<Database>();
       
-      // Preparar los datos del taller
+      // Obtener el siguiente ID disponible
+      const nextId = await getNextId(supabase, 'talleres');
+      console.log("ID asignado para el nuevo taller:", nextId);
+      
+      // Preparar los datos para la inserción
       const tallerData = {
-        ...(nextId !== null && { id: nextId }), // Solo incluir el ID si es un nuevo taller
+        id: nextId,
         nombre: data.nombre,
         descripcion: data.descripcion,
-        video_url: data.video_url,
         tipo: data.tipo,
-        fecha_vivo: data.tipo === 'vivo' ? data.fecha_vivo : null,
-        fecha_live_build: data.tipo === 'pregrabado' ? data.fecha_live_build : null,
-        herramientas: data.herramientas,
-        campos_webhook: data.campos_webhook,
-        capacidad: parseInt(data.capacidad),
-        precio: parseInt(data.precio),
-        imagen_url: imageUrl,
+        fecha_vivo: data.fecha_vivo ? new Date(data.fecha_vivo).toISOString() : null,
+        fecha_live_build: data.fecha_live_build ? new Date(data.fecha_live_build).toISOString() : null,
+        capacidad: data.capacidad,
+        precio: data.precio,
+        video_url: data.video_url || "https://example.com/video-placeholder",
+        imagen_url: imageUrl || "https://placehold.co/600x400?text=Taller",
+        herramientas: data.herramientas || [],
+        campos_webhook: data.campos_webhook || []
       };
       
-      // Si estamos editando un taller existente, no cambiamos el ID
-      if (taller?.id) {
-        delete tallerData.id; // Eliminar el ID para no sobrescribir el existente
-        
-        const { error: updateError } = await supabase
-          .from('talleres')
-          .update(tallerData)
-          .eq('id', taller.id);
-        
-        if (updateError) {
-          console.error("Error al actualizar el taller:", updateError);
-          toast.error("Error al actualizar el taller. Por favor, intenta de nuevo.");
-          setIsSubmitting(false);
-          return;
-        }
-        
-        // Si es un taller en vivo, actualizar las fechas
-        if (data.tipo === 'vivo') {
-          // Primero eliminar todas las fechas existentes
-          await supabase
-            .from('taller_fechas')
-            .delete()
-            .eq('taller_id', taller.id);
-          
-          // Luego insertar las nuevas fechas
-          if (fechas.length > 0) {
-            const fechasData = fechas.map(fecha => ({
-              taller_id: taller.id,
-              fecha: fecha.toISOString(),
-            }));
-            
-            const { error: fechasError } = await supabase
-              .from('taller_fechas')
-              .insert(fechasData);
-            
-            if (fechasError) {
-              console.error("Error al guardar las fechas:", fechasError);
-              toast.error("Error al guardar las fechas. Por favor, verifica manualmente.");
-            }
-          }
-        }
-        
-        toast.success("Taller actualizado correctamente");
-        router.push('/dashboard/talleres');
-      } else {
-        // Crear un nuevo taller con el ID consecutivo
-        const { error: insertError } = await supabase
-          .from('talleres')
-          .insert([tallerData]);
-        
-        if (insertError) {
-          console.error("Error al crear el taller:", insertError);
-          toast.error("Error al crear el taller. Por favor, intenta de nuevo.");
-          setIsSubmitting(false);
-          return;
-        }
-        
-        // Si es un taller en vivo, guardar las fechas
-        if (data.tipo === 'vivo') {
-          const tallerId = tallerData.id;
-          
-          if (fechas.length > 0) {
-            const fechasData = fechas.map(fecha => ({
-              taller_id: tallerId,
-              fecha: fecha.toISOString(),
-            }));
-            
-            const { error: fechasError } = await supabase
-              .from('taller_fechas')
-              .insert(fechasData);
-            
-            if (fechasError) {
-              console.error("Error al guardar las fechas:", fechasError);
-              toast.error("Error al guardar las fechas. Por favor, verifica manualmente.");
-            }
-          }
-        }
-        
-        toast.success("Taller creado correctamente");
-        router.push('/dashboard/talleres');
+      console.log("Datos a insertar:", tallerData);
+      
+      // Insertar el taller en la base de datos
+      const { data: insertedTaller, error } = await supabase
+        .from('talleres')
+        .insert([tallerData])
+        .select();
+      
+      if (error) {
+        console.error("Error al crear el taller:", error);
+        throw error;
       }
-    } catch (error) {
-      console.error("Error inesperado:", error);
-      toast.error("Error inesperado. Por favor, intenta de nuevo.");
+      
+      console.log("Taller creado exitosamente:", insertedTaller);
+      
+      // Redireccionar a la página del taller
+      router.push(`/dashboard/talleres/${nextId}`);
+      
+    } catch (error: any) {
+      console.error("Error en onSubmit:", error);
+      setError("root", { 
+        message: `Error al crear el taller: ${error.message || 'Error desconocido'}` 
+      });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+  
+  // Función auxiliar para manejar las fechas
+  const handleFechas = async (tallerId: number, fechasList: Date[]) => {
+    try {
+      // Primero eliminar fechas existentes
+      await supabase
+        .from('taller_fechas')
+        .delete()
+        .eq('taller_id', tallerId);
+      
+      // Luego insertar las nuevas fechas
+      if (fechasList.length > 0) {
+        const fechasData = fechasList.map(fecha => ({
+          taller_id: tallerId,
+          fecha: fecha.toISOString(),
+        }));
+        
+        const { error: fechasError } = await supabase
+          .from('taller_fechas')
+          .insert(fechasData);
+        
+        if (fechasError) {
+          console.error("Error al guardar fechas:", fechasError);
+        }
+      }
+    } catch (error) {
+      console.error("Error al manejar fechas:", error);
     }
   };
 
@@ -428,12 +412,30 @@ export function TallerForm({ taller }: TallerFormProps) {
           )}
         </div>
 
-        <div>
-          <FormLabel>Imagen del taller</FormLabel>
-          <ImageUpload 
-            onImageUploaded={setImageUrl} 
-            defaultImage={imageUrl}
-          />
+        <div className="space-y-2">
+          <FormLabel htmlFor="imagen">Imagen del taller</FormLabel>
+          <ImageUpload onImageUpload={handleImageUpload} />
+          {imageUrl && (
+            <div className="mt-2">
+              <p className="text-sm text-gray-500">Imagen seleccionada:</p>
+              <img 
+                src={imageUrl} 
+                alt="Vista previa" 
+                className="mt-2 max-h-40 rounded-md" 
+              />
+              <p className="text-xs text-gray-500 break-all mt-1">URL: {imageUrl}</p>
+            </div>
+          )}
+          
+          {/* Sección de depuración */}
+          <details className="mt-4">
+            <summary className="text-xs text-gray-500 cursor-pointer">Información de depuración de imagen</summary>
+            <div className="mt-2 p-2 bg-gray-100 rounded text-xs font-mono whitespace-pre-wrap max-h-40 overflow-y-auto">
+              {imageDebug.map((log, index) => (
+                <div key={index}>{log}</div>
+              ))}
+            </div>
+          </details>
         </div>
       </div>
 
@@ -449,7 +451,11 @@ export function TallerForm({ taller }: TallerFormProps) {
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="w-full md:w-auto"
+          className="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700"
+          onClick={() => {
+            console.log("Botón de envío clickeado");
+            console.log("Errores de formulario:", errors);
+          }}
         >
           {isSubmitting ? 'Guardando...' : taller ? 'Actualizar taller' : 'Crear taller'}
         </Button>
