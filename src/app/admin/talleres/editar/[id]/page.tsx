@@ -4,13 +4,11 @@ import React from 'react';
 import TallerForm from '@/components/TallerForm';
 
 interface EditarTallerPageProps {
-  params: Promise<{ id: string }> | { id: string };
+  params: Promise<any> | { id: string };
 }
 
 export default function EditarTallerPage({ params }: EditarTallerPageProps) {
-  const unwrappedParams = React.useId ? 
-    (params instanceof Promise ? React.use(params) : params) : 
-    params;
+  const unwrappedParams = params instanceof Promise ? React.use(params) : params;
   
   const id = unwrappedParams.id;
   
