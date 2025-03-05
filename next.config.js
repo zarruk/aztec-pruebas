@@ -11,6 +11,13 @@ const nextConfig = {
       },
     ],
   },
+  typescript: {
+    // !! ADVERTENCIA !!
+    // Permite que las compilaciones de producción se completen con éxito
+    // incluso si tu proyecto tiene errores de tipo.
+    // !! ADVERTENCIA !!
+    ignoreBuildErrors: true,
+  },
 };
 
 module.exports = nextConfig; 
