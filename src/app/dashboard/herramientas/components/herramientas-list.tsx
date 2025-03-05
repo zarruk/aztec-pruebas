@@ -22,7 +22,7 @@ export function HerramientasList() {
           .order('nombre');
 
         if (fetchError) throw fetchError;
-        setHerramientas(data || []);
+        setHerramientas((data as unknown as Herramienta[]) || []);
       } catch (err) {
         console.error('Error al cargar herramientas:', err);
         setError('Error al cargar las herramientas. Por favor, intenta de nuevo.');
