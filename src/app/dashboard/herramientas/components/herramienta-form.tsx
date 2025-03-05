@@ -95,7 +95,7 @@ export function HerramientaForm({ herramienta }: HerramientaFormProps) {
             className={errors.nombre ? 'border-destructive' : ''}
             disabled={isSubmitting}
           />
-          <FormError message={errors.nombre?.message} />
+          <FormError>{errors.nombre?.message}</FormError>
         </div>
 
         <div>
@@ -107,7 +107,7 @@ export function HerramientaForm({ herramienta }: HerramientaFormProps) {
             className={errors.descripcion ? 'border-destructive' : ''}
             disabled={isSubmitting}
           />
-          <FormError message={errors.descripcion?.message} />
+          <FormError>{errors.descripcion?.message}</FormError>
         </div>
 
         <div>
@@ -119,7 +119,7 @@ export function HerramientaForm({ herramienta }: HerramientaFormProps) {
             className={errors.imagen_url ? 'border-destructive' : ''}
             disabled={isSubmitting}
           />
-          <FormError message={errors.imagen_url?.message} />
+          <FormError>{errors.imagen_url?.message}</FormError>
           <p className="text-xs text-muted-foreground mt-1">
             Ingresa la URL de una imagen para representar esta herramienta.
           </p>
