@@ -153,10 +153,9 @@ function VideoEmbed({ url }: { url: string }) {
   }
 }
 
-export default function TallerPage({ params }: { params: { id: string } }) {
+export default function TallerPage({ params }: { params: Promise<{ id: string }> }) {
   // Usar React.use() para desenvolver params (recomendado por Next.js)
-  // Nota: Esto es necesario porque en futuras versiones de Next.js, params será una Promesa
-  const unwrappedParams = React.use(params as any) as { id: string };
+  const unwrappedParams = React.use(params) as { id: string };
   const pageIdRaw = unwrappedParams.id;
   
   // Convertir a un entero seguro
