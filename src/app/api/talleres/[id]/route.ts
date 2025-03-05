@@ -3,9 +3,11 @@ import { createClient } from '@supabase/supabase-js';
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Extraer y resolver los parámetros
+    const params = await context.params;
     console.log('API: Iniciando actualización de taller');
     console.log('API: ID del taller:', params.id);
     
