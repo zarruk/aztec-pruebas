@@ -50,6 +50,54 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Verificar si las tablas existen
+    try {
+      // Intentar obtener la estructura de la tabla usuarios
+      const { error: errorTablaUsuarios } = await supabase
+        .from('usuarios')
+        .select('id')
+        .limit(1);
+      
+      if (errorTablaUsuarios) {
+        console.error('Error al acceder a la tabla usuarios:', errorTablaUsuarios);
+        return NextResponse.json(
+          { 
+            error: 'Error de configuración de la base de datos', 
+            details: 'La tabla usuarios no existe o no es accesible',
+            technical: errorTablaUsuarios.message
+          },
+          { status: 500 }
+        );
+      }
+
+      // Intentar obtener la estructura de la tabla registros_talleres
+      const { error: errorTablaRegistros } = await supabase
+        .from('registros_talleres')
+        .select('id')
+        .limit(1);
+      
+      if (errorTablaRegistros) {
+        console.error('Error al acceder a la tabla registros_talleres:', errorTablaRegistros);
+        return NextResponse.json(
+          { 
+            error: 'Error de configuración de la base de datos', 
+            details: 'La tabla registros_talleres no existe o no es accesible',
+            technical: errorTablaRegistros.message
+          },
+          { status: 500 }
+        );
+      }
+    } catch (error: any) {
+      console.error('Error al verificar tablas:', error);
+      return NextResponse.json(
+        { 
+          error: 'Error al verificar la estructura de la base de datos',
+          details: error.message
+        },
+        { status: 500 }
+      );
+    }
+
     // 1. Crear o actualizar usuario usando el teléfono como ID
     try {
       console.log('Buscando usuario existente con teléfono:', telefonoLimpio);
@@ -63,13 +111,20 @@ export async function POST(request: NextRequest) {
 
       if (errorBusqueda) {
         console.error('Error al buscar usuario:', errorBusqueda);
+        return NextResponse.json(
+          { 
+            error: 'Error al buscar usuario', 
+            details: errorBusqueda.message 
+          },
+          { status: 500 }
+        );
       }
 
       if (usuarioExistente) {
         // Actualizar usuario existente
         console.log('Usuario existente encontrado, actualizando:', telefonoLimpio);
         
-        await supabase
+        const { error: errorActualizacion } = await supabase
           .from('usuarios')
           .update({ 
             nombre: name, 
@@ -77,6 +132,17 @@ export async function POST(request: NextRequest) {
             telefono: phone // Guardamos el teléfono original con formato
           })
           .eq('id', telefonoLimpio);
+        
+        if (errorActualizacion) {
+          console.error('Error al actualizar usuario:', errorActualizacion);
+          return NextResponse.json(
+            { 
+              error: 'Error al actualizar usuario', 
+              details: errorActualizacion.message 
+            },
+            { status: 500 }
+          );
+        }
         
         console.log('Usuario actualizado:', telefonoLimpio);
       } else {
@@ -93,15 +159,25 @@ export async function POST(request: NextRequest) {
           }]);
 
         if (errorCreacion) {
-          throw new Error(`Error al crear usuario: ${errorCreacion.message}`);
+          console.error('Error al crear usuario:', errorCreacion);
+          return NextResponse.json(
+            { 
+              error: 'Error al crear usuario', 
+              details: errorCreacion.message 
+            },
+            { status: 500 }
+          );
         }
 
         console.log('Nuevo usuario creado con ID:', telefonoLimpio);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error en gestión de usuario:', error);
       return NextResponse.json(
-        { error: 'Error al procesar el usuario' },
+        { 
+          error: 'Error al procesar el usuario',
+          details: error.message
+        },
         { status: 500 }
       );
     }
@@ -112,25 +188,47 @@ export async function POST(request: NextRequest) {
       console.log('Verificando registro existente para usuario', telefonoLimpio, 'en taller', tallerId);
       
       // Verificar si ya existe el registro
-      const { data: registroExistente } = await supabase
+      const { data: registroExistente, error: errorBusquedaRegistro } = await supabase
         .from('registros_talleres')
         .select('id')
         .eq('usuario_id', telefonoLimpio)
         .eq('taller_id', tallerId)
         .maybeSingle();
 
+      if (errorBusquedaRegistro) {
+        console.error('Error al buscar registro existente:', errorBusquedaRegistro);
+        return NextResponse.json(
+          { 
+            error: 'Error al buscar registro existente', 
+            details: errorBusquedaRegistro.message 
+          },
+          { status: 500 }
+        );
+      }
+
       if (registroExistente) {
         registroId = registroExistente.id;
         console.log('Registro existente encontrado:', registroId);
         
         // Actualizar el registro existente a estado pendiente
-        await supabase
+        const { error: errorActualizacionRegistro } = await supabase
           .from('registros_talleres')
           .update({
             estado: 'pendiente',
             updated_at: new Date().toISOString()
           })
           .eq('id', registroId);
+          
+        if (errorActualizacionRegistro) {
+          console.error('Error al actualizar registro:', errorActualizacionRegistro);
+          return NextResponse.json(
+            { 
+              error: 'Error al actualizar registro', 
+              details: errorActualizacionRegistro.message 
+            },
+            { status: 500 }
+          );
+        }
           
         console.log('Registro actualizado a pendiente:', registroId);
       } else {
@@ -141,7 +239,7 @@ export async function POST(request: NextRequest) {
           .from('registros_talleres')
           .insert([{
             usuario_id: telefonoLimpio,
-            taller_id: tallerId,
+            taller_id: parseInt(tallerId.toString()), // Asegurar que tallerId sea un número
             estado: 'pendiente',
             datos_adicionales: { 
               origen: 'web',
@@ -151,39 +249,70 @@ export async function POST(request: NextRequest) {
           .select('id')
           .single();
 
-        if (errorRegistro || !nuevoRegistro) {
-          throw new Error(`Error al crear registro: ${errorRegistro?.message || 'Desconocido'}`);
+        if (errorRegistro) {
+          console.error('Error al crear registro:', errorRegistro);
+          return NextResponse.json(
+            { 
+              error: 'Error al crear registro', 
+              details: errorRegistro.message 
+            },
+            { status: 500 }
+          );
+        }
+
+        if (!nuevoRegistro) {
+          console.error('No se pudo crear el registro (sin error pero sin datos)');
+          return NextResponse.json(
+            { 
+              error: 'No se pudo crear el registro', 
+              details: 'La operación no devolvió errores pero no se creó el registro' 
+            },
+            { status: 500 }
+          );
         }
 
         registroId = nuevoRegistro.id;
         console.log('Nuevo registro creado:', registroId);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error en registro de taller:', error);
       return NextResponse.json(
-        { error: 'Error al registrar en el taller' },
+        { 
+          error: 'Error al registrar en el taller',
+          details: error.message
+        },
         { status: 500 }
       );
     }
 
-    // 3. Enviar webhook
+    // 3. Enviar webhook (opcional, no fallamos si esto falla)
     try {
       // Obtener datos para el webhook
       console.log('Obteniendo datos para el webhook...');
       
-      const { data: datosUsuario } = await supabase
+      const { data: datosUsuario, error: errorUsuarioWebhook } = await supabase
         .from('usuarios')
         .select('*')
         .eq('id', telefonoLimpio)
         .single();
 
+      if (errorUsuarioWebhook) {
+        console.error('Error al obtener datos de usuario para webhook:', errorUsuarioWebhook);
+        throw new Error(`Error al obtener datos de usuario: ${errorUsuarioWebhook.message}`);
+      }
+
       console.log('Datos de usuario obtenidos:', datosUsuario);
 
-      const { data: datosTaller } = await supabase
+      const { data: datosTaller, error: errorTallerWebhook } = await supabase
         .from('talleres')
         .select('*')
         .eq('id', tallerId)
         .single();
+
+      if (errorTallerWebhook) {
+        console.error('Error al obtener datos de taller para webhook:', errorTallerWebhook);
+        throw new Error(`Error al obtener datos de taller: ${errorTallerWebhook.message}`);
+      }
 
       console.log('Datos de taller obtenidos:', datosTaller);
 
@@ -263,10 +392,13 @@ export async function POST(request: NextRequest) {
         registro_id: registroId
       }
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error general en el proceso:', error);
     return NextResponse.json(
-      { error: 'Error interno del servidor' },
+      { 
+        error: 'Error interno del servidor',
+        details: error.message || 'Error desconocido'
+      },
       { status: 500 }
     );
   }

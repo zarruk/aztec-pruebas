@@ -12,6 +12,7 @@ export default function RegistrationForm({ tallerId }: { tallerId: number }) {
   const [submitStatus, setSubmitStatus] = useState<{
     success: boolean;
     message: string;
+    details?: string;
   } | null>(null);
   
   const validatePhone = (phone: string) => {
@@ -59,16 +60,19 @@ export default function RegistrationForm({ tallerId }: { tallerId: number }) {
         setEmail('');
         setPhone('57');
       } else {
+        console.error('Error en la respuesta del servidor:', data);
         setSubmitStatus({
           success: false,
-          message: data.error || 'Error al registrarse. Por favor, intente nuevamente.'
+          message: data.error || 'Error al registrarse. Por favor, intente nuevamente.',
+          details: data.details || 'No hay detalles adicionales disponibles.'
         });
       }
     } catch (error) {
       console.error('Error al enviar el formulario:', error);
       setSubmitStatus({
         success: false,
-        message: 'Error de conexión. Por favor, verifica tu conexión a internet e intenta nuevamente.'
+        message: 'Error de conexión. Por favor, verifica tu conexión a internet e intenta nuevamente.',
+        details: error instanceof Error ? error.message : 'Error desconocido'
       });
     } finally {
       setIsSubmitting(false);
@@ -91,6 +95,11 @@ export default function RegistrationForm({ tallerId }: { tallerId: number }) {
             )}
             {submitStatus.message}
           </p>
+          {submitStatus.details && !submitStatus.success && (
+            <p className="mt-2 text-sm text-red-700 pl-7">
+              Detalles: {submitStatus.details}
+            </p>
+          )}
         </div>
       )}
       
