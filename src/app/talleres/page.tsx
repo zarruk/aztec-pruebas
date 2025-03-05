@@ -57,7 +57,7 @@ export default function TalleresPage() {
           console.error('Error cargando talleres:', error);
         } else if (data && data.length > 0) {
           console.log('Primer taller:', data[0]);
-          setTalleres(data);
+          setTalleres(data as unknown as Taller[]);
         } else {
           console.log('No se encontraron talleres');
           setTalleres([]);

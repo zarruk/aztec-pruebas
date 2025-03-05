@@ -34,7 +34,7 @@ export default function EditarTallerPage() {
         if (fetchError) throw fetchError;
         if (!data) throw new Error('Taller no encontrado');
         
-        setTaller(data);
+        setTaller(data as unknown as Taller);
       } catch (err) {
         console.error('Error al cargar el taller:', err);
         setError('Error al cargar el taller. Por favor, intenta de nuevo.');

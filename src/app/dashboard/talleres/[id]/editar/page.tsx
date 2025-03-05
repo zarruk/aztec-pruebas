@@ -33,7 +33,7 @@ export default function EditarTallerPage() {
           throw error;
         }
         
-        setTaller(data);
+        setTaller(data as unknown);
       } catch (error: any) {
         console.error('Error al cargar el taller:', error);
         setError('No se pudo cargar la información del taller. Por favor, inténtalo de nuevo.');

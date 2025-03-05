@@ -34,7 +34,7 @@ export default function EditarHerramientaPage() {
         if (fetchError) throw fetchError;
         if (!data) throw new Error('Herramienta no encontrada');
         
-        setHerramienta(data);
+        setHerramienta(data as unknown as Herramienta);
       } catch (err) {
         console.error('Error al cargar la herramienta:', err);
         setError('Error al cargar la herramienta. Por favor, intenta de nuevo.');
