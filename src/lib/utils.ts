@@ -51,4 +51,43 @@ export function generateSafeId(): number {
   // Usar los últimos 7 dígitos para estar seguro (máximo 9999999)
   // Esto es seguro para PostgreSQL integer (máximo ~2.147 millones)
   return timestamp % 10000000;
+}
+
+/**
+ * Convierte un valor a un entero seguro para PostgreSQL
+ * PostgreSQL integer tiene un rango de -2,147,483,648 a 2,147,483,647
+ * @param value El valor a convertir
+ * @param defaultValue Valor por defecto si la conversión falla
+ * @returns Un entero seguro para PostgreSQL o el valor por defecto
+ */
+export function safeInteger(value: any, defaultValue: number = 1): number {
+  try {
+    // Si es undefined o null, devolver el valor por defecto
+    if (value === undefined || value === null) {
+      return defaultValue;
+    }
+    
+    // Intentar convertir a número
+    const num = Number(value);
+    
+    // Verificar si es un número válido
+    if (isNaN(num)) {
+      return defaultValue;
+    }
+    
+    // Verificar si está dentro del rango de un entero de PostgreSQL
+    const MAX_PG_INT = 2147483647;
+    const MIN_PG_INT = -2147483648;
+    
+    if (num > MAX_PG_INT || num < MIN_PG_INT) {
+      console.warn(`Valor ${num} fuera del rango de un entero de PostgreSQL, usando valor por defecto`);
+      return defaultValue;
+    }
+    
+    // Devolver el entero
+    return Math.floor(num);
+  } catch (error) {
+    console.error('Error al convertir a entero seguro:', error);
+    return defaultValue;
+  }
 } 

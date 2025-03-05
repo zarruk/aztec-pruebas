@@ -21,7 +21,7 @@ export const tallerSchema = z.object({
   fecha_vivo: z.string().optional(),
   fecha_live_build: z.string().optional(),
   herramientas: z.array(z.number()).default([]),
-  campos_webhook: z.record(z.string()).optional().default({}),
+  campos_webhook: z.array(z.string()).default([]),
   capacidad: z.string().optional(),
   precio: z.string().optional(),
   imagen_url: z.string().optional(),

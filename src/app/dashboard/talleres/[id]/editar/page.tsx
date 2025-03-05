@@ -15,6 +15,9 @@ export default function EditarTallerPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
+  console.log("EditarTallerPage - ID del taller recibido:", params.id);
+  console.log("EditarTallerPage - Tipo de ID:", typeof params.id);
+  
   useEffect(() => {
     const fetchTaller = async () => {
       try {

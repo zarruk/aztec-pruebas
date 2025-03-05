@@ -13,6 +13,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { FormLabel } from '@/components/ui/form-label';
 import { FormError } from '@/components/ui/form-error';
+import ImageUpload from '@/components/ui/image-upload';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 type FormValues = z.infer<typeof herramientaSchema>;
 
@@ -24,11 +26,17 @@ export function HerramientaForm({ herramienta }: HerramientaFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [imageUrl, setImageUrl] = useState<string>(herramienta?.imagen_url || '');
+  const [imageDebug, setImageDebug] = useState<string[]>([]);
+  
+  // Crear cliente de Supabase una sola vez
+  const supabaseClient = createClientComponentClient();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<FormValues>({
     resolver: zodResolver(herramientaSchema),
     defaultValues: herramienta
@@ -44,24 +52,43 @@ export function HerramientaForm({ herramienta }: HerramientaFormProps) {
         },
   });
 
+  // Función para añadir información de depuración
+  const addImageDebug = (info: string) => {
+    console.log("HerramientaForm:", info);
+    setImageDebug(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${info}`]);
+  };
+
+  // Función para manejar la carga de imagen
+  const handleImageUpload = (url: string) => {
+    addImageDebug(`URL de imagen recibida: ${url}`);
+    setImageUrl(url);
+    setValue('imagen_url', url);
+  };
+
   const onSubmit = async (data: FormValues) => {
     try {
       setIsSubmitting(true);
       setError(null);
 
+      // Asegurarse de que la URL de la imagen esté actualizada
+      const formData = {
+        ...data,
+        imagen_url: imageUrl || data.imagen_url
+      };
+
       if (herramienta) {
         // Actualizar herramienta existente
-        const { error: updateError } = await supabase
+        const { error: updateError } = await supabaseClient
           .from('herramientas')
-          .update(data)
+          .update(formData)
           .eq('id', herramienta.id);
 
         if (updateError) throw updateError;
       } else {
         // Crear nueva herramienta
-        const { error: insertError } = await supabase
+        const { error: insertError } = await supabaseClient
           .from('herramientas')
-          .insert(data);
+          .insert(formData);
 
         if (insertError) throw insertError;
       }
@@ -113,19 +140,50 @@ export function HerramientaForm({ herramienta }: HerramientaFormProps) {
           )}
         </div>
 
+        <div className="space-y-2">
+          <FormLabel htmlFor="imagen">Imagen de la herramienta</FormLabel>
+          <ImageUpload onImageUpload={handleImageUpload} />
+          {imageUrl && (
+            <div className="mt-2">
+              <p className="text-sm text-gray-500">Imagen seleccionada:</p>
+              <img 
+                src={imageUrl} 
+                alt="Vista previa" 
+                className="mt-2 max-h-40 rounded-md" 
+              />
+              <p className="text-xs text-gray-500 break-all mt-1">URL: {imageUrl}</p>
+            </div>
+          )}
+          
+          {/* Sección de depuración */}
+          <details className="mt-4">
+            <summary className="text-xs text-gray-500 cursor-pointer">Información de depuración de imagen</summary>
+            <div className="mt-2 p-2 bg-gray-100 rounded text-xs font-mono whitespace-pre-wrap max-h-40 overflow-y-auto">
+              {imageDebug.map((log, index) => (
+                <div key={index}>{log}</div>
+              ))}
+            </div>
+          </details>
+        </div>
+
         <div>
-          <FormLabel htmlFor="imagen_url">URL de la imagen</FormLabel>
+          <FormLabel htmlFor="imagen_url">URL de la imagen (opcional)</FormLabel>
           <Input
             id="imagen_url"
             placeholder="https://ejemplo.com/imagen.jpg"
             {...register('imagen_url')}
             className={errors.imagen_url ? 'border-red-500' : ''}
+            value={imageUrl}
+            onChange={(e) => {
+              setImageUrl(e.target.value);
+              setValue('imagen_url', e.target.value);
+            }}
           />
           {errors.imagen_url && (
             <FormError>{errors.imagen_url.message}</FormError>
           )}
           <p className="text-xs text-slate-500 mt-1">
-            URL de una imagen para representar esta herramienta (opcional)
+            Puedes subir una imagen usando el control de arriba o ingresar directamente una URL
           </p>
         </div>
       </div>

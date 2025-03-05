@@ -20,14 +20,28 @@ import { toast } from 'react-hot-toast';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { getNextId, generateSafeId } from '@/lib/utils';
 import ImageUpload from '@/components/ui/image-upload';
-import { DateList } from '@/components/ui/date-list';
+import { DatePickerInput, MultiDatePickerInput } from '@/components/ui/date-picker';
 import { createClient } from '@supabase/supabase-js';
-import { Database } from '@/lib/types';
+import { KeyValueInput } from '@/components/ui/key-value-input';
 
 type FormValues = z.infer<typeof tallerSchema>;
 
 interface TallerFormProps {
   taller?: Taller;
+}
+
+interface TallerFormData {
+  nombre: string;
+  descripcion: string;
+  video_url: string;
+  tipo: string;
+  fecha_vivo: string;
+  fecha_live_build: string;
+  herramientas: number[];
+  campos_webhook: string[];
+  capacidad: string;
+  precio: string;
+  tags: string[];
 }
 
 export function TallerForm({ taller }: TallerFormProps) {
@@ -41,11 +55,8 @@ export function TallerForm({ taller }: TallerFormProps) {
     taller?.fechas?.map((f: any) => new Date(f.fecha)) || []
   );
   
-  // Crear cliente de Supabase directamente
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-  );
+  // Crear cliente de Supabase una sola vez
+  const supabaseClient = createClientComponentClient();
 
   const {
     register,
@@ -65,7 +76,7 @@ export function TallerForm({ taller }: TallerFormProps) {
           fecha_vivo: taller.fecha_vivo ? new Date(taller.fecha_vivo).toISOString().split('T')[0] : '',
           fecha_live_build: taller.fecha_live_build ? new Date(taller.fecha_live_build).toISOString().split('T')[0] : '',
           herramientas: taller.herramientas || [],
-          campos_webhook: taller.campos_webhook || [],
+          campos_webhook: Array.isArray(taller.campos_webhook) ? taller.campos_webhook : [],
           capacidad: taller.capacidad?.toString() || '20',
           precio: taller.precio?.toString() || '99000',
         }
@@ -97,6 +108,31 @@ export function TallerForm({ taller }: TallerFormProps) {
     setImageUrl(url);
   };
 
+  // Función para limitar el tamaño de un número para que no exceda el rango de INTEGER en PostgreSQL
+  const safeInteger = (value: any, defaultValue: number = 0): number => {
+    // Convertir a número
+    let num = Number(value);
+    
+    // Verificar si es un número válido
+    if (isNaN(num)) {
+      return defaultValue;
+    }
+    
+    // Limitar al rango seguro de INTEGER en PostgreSQL (-2147483648 a 2147483647)
+    const MAX_INT = 2147483647;
+    const MIN_INT = -2147483648;
+    
+    if (num > MAX_INT) {
+      return MAX_INT;
+    }
+    
+    if (num < MIN_INT) {
+      return MIN_INT;
+    }
+    
+    return num;
+  };
+
   // Función simplificada para crear/actualizar taller
   const onSubmit = async (data: z.infer<typeof tallerSchema>) => {
     setIsSubmitting(true);
@@ -104,52 +140,87 @@ export function TallerForm({ taller }: TallerFormProps) {
     try {
       console.log("Datos del formulario:", data);
       
-      // Crear cliente de Supabase
-      const supabase = createClientComponentClient<Database>();
-      
-      // Obtener el siguiente ID disponible
-      const nextId = await getNextId(supabase, 'talleres');
-      console.log("ID asignado para el nuevo taller:", nextId);
-      
-      // Preparar los datos para la inserción
+      // Preparar los datos comunes para inserción o actualización
       const tallerData = {
-        id: nextId,
         nombre: data.nombre,
         descripcion: data.descripcion,
         tipo: data.tipo,
         fecha_vivo: data.fecha_vivo ? new Date(data.fecha_vivo).toISOString() : null,
         fecha_live_build: data.fecha_live_build ? new Date(data.fecha_live_build).toISOString() : null,
-        capacidad: data.capacidad,
-        precio: data.precio,
+        capacidad: safeInteger(data.capacidad, 20), // Convertir a número seguro
+        precio: safeInteger(data.precio, 99000), // Convertir a número seguro
         video_url: data.video_url || "https://example.com/video-placeholder",
-        imagen_url: imageUrl || "https://placehold.co/600x400?text=Taller",
+        imagen_url: imageUrl || (taller?.imagen_url || "https://placehold.co/600x400?text=Taller"),
         herramientas: data.herramientas || [],
-        campos_webhook: data.campos_webhook || []
+        campos_webhook: convertToObject(data.campos_webhook || [])
       };
       
-      console.log("Datos a insertar:", tallerData);
-      
-      // Insertar el taller en la base de datos
-      const { data: insertedTaller, error } = await supabase
-        .from('talleres')
-        .insert([tallerData])
-        .select();
-      
-      if (error) {
-        console.error("Error al crear el taller:", error);
-        throw error;
+      // MODO EDICIÓN: Actualizar taller existente
+      if (taller?.id) {
+        console.log("MODO EDICIÓN - Actualizando taller existente con ID:", taller.id);
+        console.log("Datos a actualizar:", tallerData);
+        
+        const { data: updatedTaller, error } = await supabaseClient
+          .from('talleres')
+          .update(tallerData)
+          .eq('id', taller.id)
+          .select();
+        
+        if (error) {
+          console.error("Error al actualizar el taller:", error);
+          throw error;
+        }
+        
+        console.log("Taller actualizado exitosamente:", updatedTaller);
+        
+        // Si hay fechas, actualizarlas
+        if (fechas.length > 0 && taller.id) {
+          await handleFechas(taller.id, fechas);
+        }
+        
+        // Redireccionar a la página del taller
+        router.push(`/dashboard/talleres/${taller.id}`);
+      } 
+      // MODO CREACIÓN: Crear nuevo taller
+      else {
+        // Obtener el siguiente ID disponible
+        const nextId = await getNextId(supabaseClient, 'talleres');
+        console.log("ID asignado para el nuevo taller:", nextId);
+        
+        // Añadir el ID a los datos
+        const newTallerData = {
+          id: nextId,
+          ...tallerData
+        };
+        
+        console.log("MODO CREACIÓN - Creando nuevo taller");
+        console.log("Datos a insertar:", newTallerData);
+        
+        // Insertar el taller en la base de datos
+        const { data: insertedTaller, error } = await supabaseClient
+          .from('talleres')
+          .insert([newTallerData])
+          .select();
+        
+        if (error) {
+          console.error("Error al crear el taller:", error);
+          throw error;
+        }
+        
+        console.log("Taller creado exitosamente:", insertedTaller);
+        
+        // Si hay fechas, guardarlas
+        if (fechas.length > 0) {
+          await handleFechas(nextId, fechas);
+        }
+        
+        // Redireccionar a la página del taller
+        router.push(`/dashboard/talleres/${nextId}`);
       }
-      
-      console.log("Taller creado exitosamente:", insertedTaller);
-      
-      // Redireccionar a la página del taller
-      router.push(`/dashboard/talleres/${nextId}`);
       
     } catch (error: any) {
       console.error("Error en onSubmit:", error);
-      setError("root", { 
-        message: `Error al crear el taller: ${error.message || 'Error desconocido'}` 
-      });
+      setError(`Error al ${taller ? 'actualizar' : 'crear'} el taller: ${error.message || 'Error desconocido'}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -159,7 +230,7 @@ export function TallerForm({ taller }: TallerFormProps) {
   const handleFechas = async (tallerId: number, fechasList: Date[]) => {
     try {
       // Primero eliminar fechas existentes
-      await supabase
+      await supabaseClient
         .from('taller_fechas')
         .delete()
         .eq('taller_id', tallerId);
@@ -171,7 +242,7 @@ export function TallerForm({ taller }: TallerFormProps) {
           fecha: fecha.toISOString(),
         }));
         
-        const { error: fechasError } = await supabase
+        const { error: fechasError } = await supabaseClient
           .from('taller_fechas')
           .insert(fechasData);
         
@@ -195,7 +266,7 @@ export function TallerForm({ taller }: TallerFormProps) {
 
   // Manejar cambios en tags
   const handleTagsChange = (tags: string[]) => {
-    setValue('campos_webhook', tags);
+    setValue('campos_webhook', tags as any);
   };
 
   useEffect(() => {
@@ -216,7 +287,7 @@ export function TallerForm({ taller }: TallerFormProps) {
   useEffect(() => {
     if (taller?.id && taller.tipo === 'vivo') {
       const loadFechas = async () => {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
           .from('taller_fechas')
           .select('*')
           .eq('taller_id', taller.id);
@@ -233,7 +304,113 @@ export function TallerForm({ taller }: TallerFormProps) {
       
       loadFechas();
     }
-  }, [taller]);
+  }, [taller, supabaseClient]);
+
+  useEffect(() => {
+    if (taller) {
+      // Inicializar campos_webhook
+      const webhookFields = convertToKeyValuePairs(taller.campos_webhook);
+      setWebhookFields(webhookFields);
+      
+      // Actualizar el valor en el formulario
+      setValue('campos_webhook', Array.isArray(taller.campos_webhook) ? taller.campos_webhook : []);
+    }
+  }, [taller, setValue]);
+
+  // Función para convertir campos_webhook a array
+  const convertToObject = (data: any): string[] => {
+    // Si es undefined o null, devolver array vacío
+    if (!data) return [];
+    
+    // Si ya es un array, asegurarse de que todos los elementos sean strings
+    if (Array.isArray(data)) {
+      return data.map(item => String(item));
+    } 
+    
+    // Si es un objeto, convertirlo a array de strings en formato "clave:valor"
+    if (typeof data === 'object') {
+      return Object.entries(data).map(([key, value]) => `${key}:${value}`);
+    }
+    
+    // Si es un string, devolverlo en un array
+    if (typeof data === 'string') {
+      return [data];
+    }
+    
+    // Por defecto, devolver array vacío
+    return [];
+  };
+
+  // Función para convertir campos_webhook de array a formato para el componente
+  const convertToKeyValuePairs = (data: any): { key: string; value: string }[] => {
+    // Si es undefined o null, devolver array vacío
+    if (!data) return [];
+    
+    // Si es un array, procesar cada elemento
+    if (Array.isArray(data)) {
+      return data.map(item => {
+        // Si el elemento es un string, intentar dividirlo por ":"
+        if (typeof item === 'string') {
+          const parts = item.split(':');
+          if (parts.length >= 2) {
+            const [key, ...valueParts] = parts;
+            return { 
+              key: key.trim(), 
+              value: valueParts.join(':').trim() 
+            };
+          }
+          // Si no tiene ":", usar el string como clave y valor vacío
+          return { key: item.trim(), value: '' };
+        }
+        
+        // Si el elemento es un objeto, intentar extraer key y value
+        if (typeof item === 'object' && item !== null) {
+          if ('key' in item && 'value' in item) {
+            return { 
+              key: String(item.key).trim(), 
+              value: String(item.value).trim() 
+            };
+          }
+        }
+        
+        // Por defecto, convertir a string y usar como clave
+        return { key: String(item).trim(), value: '' };
+      }).filter(item => item.key !== ''); // Filtrar elementos sin clave
+    } 
+    
+    // Si es un objeto, convertirlo a array de {key, value}
+    if (typeof data === 'object' && data !== null) {
+      return Object.entries(data).map(([key, value]) => ({
+        key: key.trim(),
+        value: String(value).trim()
+      })).filter(item => item.key !== ''); // Filtrar elementos sin clave
+    }
+    
+    // Si es un string, intentar usarlo como clave
+    if (typeof data === 'string' && data.trim() !== '') {
+      return [{ key: data.trim(), value: '' }];
+    }
+    
+    // Por defecto, devolver array vacío
+    return [];
+  };
+
+  // Estado para manejar los campos webhook en formato key-value
+  const [webhookFields, setWebhookFields] = useState<{ key: string; value: string }[]>(
+    convertToKeyValuePairs(taller?.campos_webhook)
+  );
+
+  // Función para actualizar campos_webhook en el formulario
+  const handleWebhookFieldsChange = (fields: { key: string; value: string }[]) => {
+    setWebhookFields(fields);
+    
+    // Convertir a array de strings para el formulario
+    const webhookArray = fields
+      .filter(({ key }) => key.trim() !== '') // Filtrar elementos sin clave
+      .map(({ key, value }) => `${key.trim()}:${value.trim()}`);
+    
+    setValue('campos_webhook', webhookArray);
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
@@ -290,7 +467,7 @@ export function TallerForm({ taller }: TallerFormProps) {
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <FormLabel htmlFor="capacidad" required>Capacidad</FormLabel>
             <Input
@@ -299,9 +476,17 @@ export function TallerForm({ taller }: TallerFormProps) {
               placeholder="Número de participantes"
               {...register('capacidad')}
               className={`bg-white text-slate-900 ${errors.capacidad ? 'border-red-500' : 'border-slate-300'}`}
+              onChange={(e) => {
+                // Limitar a 9 dígitos para evitar desbordamiento de INTEGER
+                if (e.target.value.length > 9) {
+                  e.target.value = e.target.value.slice(0, 9);
+                }
+                // Actualizar el valor en el formulario
+                setValue('capacidad', e.target.value);
+              }}
             />
             {errors.capacidad && (
-              <FormError>{errors.capacidad.message}</FormError>
+              <FormError>{typeof errors.capacidad.message === 'string' ? errors.capacidad.message : 'Error en capacidad'}</FormError>
             )}
           </div>
 
@@ -314,9 +499,17 @@ export function TallerForm({ taller }: TallerFormProps) {
               placeholder="Precio en USD"
               {...register('precio')}
               className={`bg-white text-slate-900 ${errors.precio ? 'border-red-500' : 'border-slate-300'}`}
+              onChange={(e) => {
+                // Limitar a 9 dígitos para evitar desbordamiento de INTEGER
+                if (e.target.value.length > 9) {
+                  e.target.value = e.target.value.slice(0, 9);
+                }
+                // Actualizar el valor en el formulario
+                setValue('precio', e.target.value);
+              }}
             />
             {errors.precio && (
-              <FormError>{errors.precio.message}</FormError>
+              <FormError>{typeof errors.precio.message === 'string' ? errors.precio.message : 'Error en precio'}</FormError>
             )}
           </div>
         </div>
@@ -354,7 +547,8 @@ export function TallerForm({ taller }: TallerFormProps) {
 
         {tipoTaller === 'vivo' ? (
           <div>
-            <DateList 
+            <FormLabel>Fechas del taller en vivo</FormLabel>
+            <MultiDatePickerInput 
               dates={fechas} 
               onChange={setFechas} 
             />
@@ -389,26 +583,20 @@ export function TallerForm({ taller }: TallerFormProps) {
             )}
           />
           {errors.herramientas && (
-            <FormError>{errors.herramientas.message}</FormError>
+            <FormError>{typeof errors.herramientas.message === 'string' ? errors.herramientas.message : 'Error en herramientas'}</FormError>
           )}
         </div>
 
         <div>
           <FormLabel>Campos para webhook</FormLabel>
-          <Controller
-            name="campos_webhook"
-            control={control}
-            render={({ field }) => (
-              <TagInput
-                value={field.value}
-                onChange={field.onChange}
-                placeholder="Añadir campo y presionar Enter"
-                className={errors.campos_webhook ? 'border-red-500' : 'border-slate-300'}
-              />
-            )}
+          <KeyValueInput
+            value={webhookFields}
+            onChange={handleWebhookFieldsChange}
+            placeholder="Añadir campo y valor"
+            className={errors.campos_webhook ? 'border-red-500' : 'border-slate-300'}
           />
           {errors.campos_webhook && (
-            <FormError>{errors.campos_webhook.message}</FormError>
+            <FormError>{typeof errors.campos_webhook.message === 'string' ? errors.campos_webhook.message : 'Error en campos webhook'}</FormError>
           )}
         </div>
 

@@ -46,6 +46,11 @@ export default function EditarHerramientaPage() {
     fetchHerramienta();
   }, [id]);
 
+  useEffect(() => {
+    console.log('TallerForm recibió tallerId:', id);
+    console.log('Tipo de tallerId:', typeof id);
+  }, [id]);
+
   if (loading) {
     return (
       <div className="flex justify-center items-center py-20">

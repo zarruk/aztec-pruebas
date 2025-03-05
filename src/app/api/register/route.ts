@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { safeInteger } from '@/lib/utils';
 
 // Inicializar cliente de Supabase
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -41,7 +42,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Limpiar el número de teléfono para usarlo como ID
+    // Convertir tallerId a un entero seguro
+    const tallerIdSafe = safeInteger(tallerId);
+    if (tallerIdSafe !== parseInt(String(tallerId))) {
+      console.log('ID de taller inválido:', tallerId);
+      return NextResponse.json(
+        { error: 'ID de taller inválido', details: 'El ID del taller debe ser un número entero válido' },
+        { status: 400 }
+      );
+    }
+
+    // Limpiar el número de teléfono
     const telefonoLimpio = limpiarTelefono(phone);
     if (!telefonoLimpio) {
       return NextResponse.json(
@@ -98,15 +109,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 1. Crear o actualizar usuario usando el teléfono como ID
+    // 1. Crear o actualizar usuario buscando por teléfono
+    let usuario_id;
     try {
       console.log('Buscando usuario existente con teléfono:', telefonoLimpio);
       
-      // Buscar usuario existente por ID (teléfono)
+      // Buscar usuario existente por teléfono
       const { data: usuarioExistente, error: errorBusqueda } = await supabase
         .from('usuarios')
-        .select('*')
-        .eq('id', telefonoLimpio)
+        .select('id, telefono')
+        .eq('telefono', telefonoLimpio)
         .maybeSingle();
 
       if (errorBusqueda) {
@@ -122,16 +134,17 @@ export async function POST(request: NextRequest) {
 
       if (usuarioExistente) {
         // Actualizar usuario existente
-        console.log('Usuario existente encontrado, actualizando:', telefonoLimpio);
+        usuario_id = usuarioExistente.id;
+        console.log('Usuario existente encontrado, actualizando ID:', usuario_id);
         
         const { error: errorActualizacion } = await supabase
           .from('usuarios')
           .update({ 
             nombre: name, 
             email: email,
-            telefono: phone // Guardamos el teléfono original con formato
+            telefono: telefonoLimpio // Guardamos el teléfono limpio
           })
-          .eq('id', telefonoLimpio);
+          .eq('id', usuario_id);
         
         if (errorActualizacion) {
           console.error('Error al actualizar usuario:', errorActualizacion);
@@ -144,19 +157,20 @@ export async function POST(request: NextRequest) {
           );
         }
         
-        console.log('Usuario actualizado:', telefonoLimpio);
+        console.log('Usuario actualizado:', usuario_id);
       } else {
         // Crear nuevo usuario
-        console.log('Usuario no encontrado, creando nuevo usuario con ID:', telefonoLimpio);
+        console.log('Usuario no encontrado, creando nuevo usuario');
         
-        const { error: errorCreacion } = await supabase
+        const { data: nuevoUsuario, error: errorCreacion } = await supabase
           .from('usuarios')
           .insert([{ 
-            id: telefonoLimpio, 
             nombre: name, 
             email: email, 
-            telefono: phone // Guardamos el teléfono original con formato
-          }]);
+            telefono: telefonoLimpio // Guardamos el teléfono limpio
+          }])
+          .select('id')
+          .single();
 
         if (errorCreacion) {
           console.error('Error al crear usuario:', errorCreacion);
@@ -169,7 +183,19 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        console.log('Nuevo usuario creado con ID:', telefonoLimpio);
+        if (!nuevoUsuario) {
+          console.error('No se pudo crear el usuario (sin error pero sin datos)');
+          return NextResponse.json(
+            { 
+              error: 'No se pudo crear el usuario', 
+              details: 'La operación no devolvió errores pero no se creó el usuario' 
+            },
+            { status: 500 }
+          );
+        }
+
+        usuario_id = nuevoUsuario.id;
+        console.log('Nuevo usuario creado con ID:', usuario_id);
       }
     } catch (error: any) {
       console.error('Error en gestión de usuario:', error);
@@ -185,14 +211,14 @@ export async function POST(request: NextRequest) {
     // 2. Registrar en taller
     let registroId;
     try {
-      console.log('Verificando registro existente para usuario', telefonoLimpio, 'en taller', tallerId);
+      console.log('Verificando registro existente para usuario', usuario_id, 'en taller', tallerIdSafe);
       
       // Verificar si ya existe el registro
       const { data: registroExistente, error: errorBusquedaRegistro } = await supabase
         .from('registros_talleres')
         .select('id')
-        .eq('usuario_id', telefonoLimpio)
-        .eq('taller_id', tallerId)
+        .eq('usuario_id', usuario_id)
+        .eq('taller_id', tallerIdSafe)
         .maybeSingle();
 
       if (errorBusquedaRegistro) {
@@ -233,13 +259,13 @@ export async function POST(request: NextRequest) {
         console.log('Registro actualizado a pendiente:', registroId);
       } else {
         // Crear nuevo registro
-        console.log('Creando nuevo registro para usuario', telefonoLimpio, 'en taller', tallerId);
+        console.log('Creando nuevo registro para usuario', usuario_id, 'en taller', tallerIdSafe);
         
         const { data: nuevoRegistro, error: errorRegistro } = await supabase
           .from('registros_talleres')
           .insert([{
-            usuario_id: telefonoLimpio,
-            taller_id: parseInt(tallerId.toString()), // Asegurar que tallerId sea un número
+            usuario_id: usuario_id,
+            taller_id: tallerIdSafe, // Usar el ID seguro
             estado: 'pendiente',
             datos_adicionales: { 
               origen: 'web',
@@ -293,7 +319,7 @@ export async function POST(request: NextRequest) {
       const { data: datosUsuario, error: errorUsuarioWebhook } = await supabase
         .from('usuarios')
         .select('*')
-        .eq('id', telefonoLimpio)
+        .eq('id', usuario_id)
         .single();
 
       if (errorUsuarioWebhook) {
@@ -306,7 +332,7 @@ export async function POST(request: NextRequest) {
       const { data: datosTaller, error: errorTallerWebhook } = await supabase
         .from('talleres')
         .select('*')
-        .eq('id', tallerId)
+        .eq('id', tallerIdSafe) // Usar el ID seguro
         .single();
 
       if (errorTallerWebhook) {
@@ -388,7 +414,7 @@ export async function POST(request: NextRequest) {
       success: true,
       message: 'Registro completado con éxito',
       data: {
-        usuario_id: telefonoLimpio,
+        usuario_id: usuario_id,
         registro_id: registroId
       }
     });

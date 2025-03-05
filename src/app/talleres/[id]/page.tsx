@@ -7,6 +7,8 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import RegistrationForm from '@/components/registration-form';
 import { useEffect, useState } from 'react';
+import React from 'react';
+import { safeInteger } from '@/lib/utils';
 
 // Función para obtener un taller por ID
 async function fetchTaller(id: number) {
@@ -152,6 +154,23 @@ function VideoEmbed({ url }: { url: string }) {
 }
 
 export default function TallerPage({ params }: { params: { id: string } }) {
+  // Usar React.use() para desenvolver params (recomendado por Next.js)
+  // Nota: Esto es necesario porque en futuras versiones de Next.js, params será una Promesa
+  const unwrappedParams = React.use(params as any) as { id: string };
+  const pageIdRaw = unwrappedParams.id;
+  
+  // Convertir a un entero seguro
+  const pageId = safeInteger(pageIdRaw, 0);
+  
+  // Si el ID no es válido, redirigir a la página principal
+  if (pageId === 0) {
+    // Usar useEffect para redirigir, ya que redirect() no se puede usar directamente en el cuerpo del componente
+    useEffect(() => {
+      redirect('/talleres');
+    }, []);
+    return null;
+  }
+  
   const [taller, setTaller] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -159,15 +178,7 @@ export default function TallerPage({ params }: { params: { id: string } }) {
   useEffect(() => {
     async function loadTaller() {
       try {
-        // Validar que el ID sea un número
-        const id = parseInt(params.id);
-        if (isNaN(id)) {
-          console.log('ID no válido, redirigiendo a la página principal');
-          redirect('/');
-          return;
-        }
-        
-        console.log('Fetching taller with ID:', id);
+        console.log('Fetching taller with ID:', pageId);
         const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
         const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
         
@@ -181,7 +192,7 @@ export default function TallerPage({ params }: { params: { id: string } }) {
         const { data, error: tallerError } = await supabase
           .from('talleres')
           .select('*')
-          .eq('id', id)
+          .eq('id', pageId)
           .single();
         
         if (tallerError) {
@@ -217,7 +228,7 @@ export default function TallerPage({ params }: { params: { id: string } }) {
     }
     
     loadTaller();
-  }, [params.id]);
+  }, [pageId]); // Usar pageId en lugar de params.id
 
   if (loading) {
     return (
@@ -307,11 +318,12 @@ export default function TallerPage({ params }: { params: { id: string } }) {
               </h3>
               <div className="bg-slate-50 p-5 rounded-lg border border-slate-200">
                 <p className="text-slate-600 mb-4">Para este taller necesitarás las siguientes herramientas:</p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                <div className="flex flex-row overflow-x-auto gap-4 pb-2">
                   {taller.herramientasDetalle.map((herramienta: any) => (
                     <div 
                       key={herramienta.id}
-                      className="bg-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col"
+                      className="bg-white border border-slate-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col flex-shrink-0"
+                      style={{ width: '180px' }}
                     >
                       {herramienta.imagen_url ? (
                         <div className="w-full aspect-[4/3] overflow-hidden">
@@ -349,7 +361,7 @@ export default function TallerPage({ params }: { params: { id: string } }) {
               </p>
               
               {/* Usa el componente cliente aquí */}
-              <RegistrationForm tallerId={parseInt(params.id)} />
+              <RegistrationForm tallerId={pageId} />
             </div>
           </section>
         </div>

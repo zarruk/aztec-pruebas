@@ -3,10 +3,10 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Edit, Trash2, Plus, Search, Hammer } from 'lucide-react';
-import { supabase } from '@/lib/supabase-browser';
 import { Herramienta } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export function HerramientasList() {
   const [herramientas, setHerramientas] = useState<Herramienta[]>([]);
@@ -14,12 +14,15 @@ export function HerramientasList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Crear cliente de Supabase una sola vez
+  const supabaseClient = createClientComponentClient();
 
   useEffect(() => {
     const fetchHerramientas = async () => {
       try {
         setLoading(true);
-        const { data, error: fetchError } = await supabase
+        const { data, error: fetchError } = await supabaseClient
           .from('herramientas')
           .select('*')
           .order('nombre');
@@ -36,7 +39,7 @@ export function HerramientasList() {
     };
 
     fetchHerramientas();
-  }, []);
+  }, [supabaseClient]);
 
   useEffect(() => {
     if (searchTerm.trim() === '') {
@@ -56,7 +59,7 @@ export function HerramientasList() {
     }
 
     try {
-      const { error: deleteError } = await supabase
+      const { error: deleteError } = await supabaseClient
         .from('herramientas')
         .delete()
         .eq('id', id);
@@ -166,18 +169,22 @@ export function HerramientasList() {
                 
                 <div className="flex justify-end gap-2 mt-4">
                   <Link href={`/dashboard/herramientas/${herramienta.id}`}>
-                    <Button variant="outline" size="sm" className="border-slate-300 text-slate-700">
-                      <Edit className="h-3.5 w-3.5 mr-1" />
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="border-primary-300 text-primary-600 hover:bg-primary-50 hover:text-primary-700 hover:border-primary-400 font-medium shadow-sm"
+                    >
+                      <Edit className="h-3.5 w-3.5 mr-1.5" />
                       Editar
                     </Button>
                   </Link>
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className="border-red-300 text-red-600 hover:bg-red-50"
+                    className="border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-400 font-medium shadow-sm"
                     onClick={() => handleDelete(herramienta.id)}
                   >
-                    <Trash2 className="h-3.5 w-3.5 mr-1" />
+                    <Trash2 className="h-3.5 w-3.5 mr-1.5" />
                     Eliminar
                   </Button>
                 </div>

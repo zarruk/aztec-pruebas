@@ -59,6 +59,11 @@ export default function DashboardLayout({
                 </a>
               </li>
               <li>
+                <a href="/dashboard/herramientas" style={{color: '#1f2937', textDecoration: 'none'}}>
+                  Herramientas
+                </a>
+              </li>
+              <li>
                 <a href="/dashboard/usuarios" style={{color: '#1f2937', textDecoration: 'none'}}>
                   Usuarios
                 </a>
