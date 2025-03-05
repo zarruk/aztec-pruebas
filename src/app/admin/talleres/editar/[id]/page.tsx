@@ -1,13 +1,18 @@
+"use client";
+
+import React from 'react';
 import TallerForm from '@/components/TallerForm';
 
 interface EditarTallerPageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }> | { id: string };
 }
 
 export default function EditarTallerPage({ params }: EditarTallerPageProps) {
-  const { id } = params;
+  const unwrappedParams = React.useId ? 
+    (params instanceof Promise ? React.use(params) : params) : 
+    params;
+  
+  const id = unwrappedParams.id;
   
   return (
     <div className="container mx-auto p-4">
