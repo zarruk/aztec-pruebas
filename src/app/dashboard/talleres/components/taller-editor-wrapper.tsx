@@ -39,7 +39,7 @@ export function TallerEditorWrapper({ id }: TallerEditorWrapperProps) {
         }
         
         console.log("Taller obtenido:", data);
-        setTaller(data);
+        setTaller(data as unknown as Taller);
       } catch (err: any) {
         console.error('Error al cargar el taller:', err);
         setError(err.message || 'Error al cargar el taller');
