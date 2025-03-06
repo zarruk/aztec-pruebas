@@ -18,7 +18,7 @@ interface KeyValueEditorProps {
 
 export function KeyValueEditor({ value, onChange, error }: KeyValueEditorProps) {
   // Convertir el valor a un formato utilizable
-  const [pairs, setPairs] = useState<KeyValuePair[]>([{ key: '', value: '' }]);
+  const [pairs, setPairs] = useState<KeyValuePair[]>([]);
 
   // Procesar el valor inicial
   useEffect(() => {
@@ -33,13 +33,13 @@ export function KeyValueEditor({ value, onChange, error }: KeyValueEditorProps) 
         }));
       }
       
-      // Si no hay pares o no es un objeto válido, iniciar con uno vacío
-      if (initialPairs.length === 0) {
-        initialPairs = [{ key: '', value: '' }];
+      // Si no hay pares, dejar el array vacío para permitir enviar un objeto vacío
+      if (initialPairs.length === 0 && Object.keys(value || {}).length === 0) {
+        initialPairs = [];
       }
     } catch (e) {
       console.error("Error al procesar valor inicial:", e);
-      initialPairs = [{ key: '', value: '' }];
+      initialPairs = [];
     }
     
     setPairs(initialPairs);
