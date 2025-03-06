@@ -10,6 +10,12 @@ export const tallerFechaSchema = z.object({
   fecha: z.string().min(1, 'La fecha es requerida'),
 });
 
+// Esquema para campos_webhook que acepta tanto objetos como arrays y los convierte a objetos
+const camposWebhookSchema = z.union([
+  z.record(z.string()),
+  z.array(z.any()).transform(() => ({}))
+]).default({});
+
 export const tallerSchema = z.object({
   id: z.number().optional(),
   nombre: z.string().min(1, 'El nombre es requerido'),
@@ -21,7 +27,7 @@ export const tallerSchema = z.object({
   fecha_vivo: z.string().optional(),
   fecha_live_build: z.string().optional(),
   herramientas: z.array(z.number()).default([]),
-  campos_webhook: z.record(z.string()).default({}),
+  campos_webhook: camposWebhookSchema,
   capacidad: z.string().optional(),
   precio: z.string().optional(),
   imagen_url: z.string().optional(),
