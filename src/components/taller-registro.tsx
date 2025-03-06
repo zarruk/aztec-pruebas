@@ -4,8 +4,6 @@ import { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Taller } from '@/lib/types';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -56,18 +54,27 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
     });
   }
 
-  // Usar el formulario adecuado según el tipo de taller
-  const vivoForm = useForm<FormDataVivo>({
+  // Formulario para talleres en vivo
+  const {
+    register: registerVivo,
+    handleSubmit: handleSubmitVivo,
+    formState: { errors: errorsVivo },
+  } = useForm<FormDataVivo>({
     resolver: zodResolver(tallerVivoSchema),
     defaultValues: {
       nombre: '',
       email: '',
       telefono: '',
-      fecha_seleccionada: '',
+      fecha_seleccionada: fechasDisponibles.length > 0 ? fechasDisponibles[0].id : '',
     }
   });
 
-  const pregrabadoForm = useForm<FormDataBase>({
+  // Formulario para talleres pregrabados
+  const {
+    register: registerPregrabado,
+    handleSubmit: handleSubmitPregrabado,
+    formState: { errors: errorsPregrabado },
+  } = useForm<FormDataBase>({
     resolver: zodResolver(baseSchema),
     defaultValues: {
       nombre: '',
@@ -77,9 +84,9 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
   });
 
   // Seleccionar el formulario correcto
-  const { register, handleSubmit, formState: { errors } } = esVivoOLiveBuild 
-    ? vivoForm 
-    : pregrabadoForm;
+  const register = esVivoOLiveBuild ? registerVivo : registerPregrabado;
+  const errors = esVivoOLiveBuild ? errorsVivo : errorsPregrabado;
+  const handleSubmit = esVivoOLiveBuild ? handleSubmitVivo : handleSubmitPregrabado;
 
   const onSubmit = async (data: FormDataBase | FormDataVivo) => {
     setIsSubmitting(true);
@@ -135,7 +142,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Precio del taller */}
-          <div className="bg-gray-50 p-4 rounded-md mb-4">
+          <div className="bg-[#f8f5f0] p-4 rounded-md mb-4">
             <p className="text-center font-medium">
               {taller.precio && taller.precio > 0 
                 ? `Precio: COP $${taller.precio.toLocaleString('es-CO')} / USD $${precioUSD}` 
@@ -150,7 +157,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
                 Selecciona una fecha
               </label>
               <select
-                {...vivoForm.register('fecha_seleccionada')}
+                {...registerVivo('fecha_seleccionada')}
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
               >
                 <option value="">Selecciona una fecha</option>
@@ -160,9 +167,9 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
                   </option>
                 ))}
               </select>
-              {vivoForm.formState.errors.fecha_seleccionada && (
+              {errorsVivo.fecha_seleccionada && (
                 <p className="mt-1 text-sm text-red-600">
-                  {vivoForm.formState.errors.fecha_seleccionada.message}
+                  {errorsVivo.fecha_seleccionada.message}
                 </p>
               )}
             </div>
@@ -216,7 +223,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
 
           {/* Campos adicionales para talleres pregrabados */}
           {taller.tipo === 'pregrabado' && (
-            <div className="bg-gray-50 p-4 rounded-md">
+            <div className="bg-[#f8f5f0] p-4 rounded-md">
               <p className="text-sm text-gray-600 mb-2">
                 Al registrarte recibirás:
               </p>
@@ -230,7 +237,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
 
           {/* Campos adicionales para talleres en vivo */}
           {esVivoOLiveBuild && (
-            <div className="bg-gray-50 p-4 rounded-md">
+            <div className="bg-[#f8f5f0] p-4 rounded-md">
               <p className="text-sm text-gray-600 mb-2">
                 Al registrarte recibirás:
               </p>

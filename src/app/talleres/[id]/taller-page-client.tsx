@@ -18,7 +18,7 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
   const precioUSD = taller.precio ? Math.round((taller.precio / 4000) * 10) / 10 : 0;
 
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div className="bg-[#f8f5f0] min-h-screen">
       {/* Barra superior con logo y botón de volver */}
       <div className="bg-white py-4 px-6 shadow-sm">
         <div className="container mx-auto flex justify-between items-center">
@@ -76,21 +76,26 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
             {taller.herramientas && taller.herramientas.length > 0 && (
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-xl font-semibold mb-4">Herramientas que utilizaremos</h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {taller.herramientas.map((herramientaId: number, index: number) => (
-                    <div key={index} className="bg-gray-50 p-4 rounded-lg text-center">
-                      <div className="flex justify-center items-center h-12 mb-2">
-                        <Image 
-                          src={`/icons/tool-${index + 1}.svg`} 
-                          alt={`Herramienta ${index + 1}`}
-                          width={32}
-                          height={32}
-                          className="opacity-80"
-                        />
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {taller.herramientas.map((herramientaId: number, index: number) => {
+                    // Determinar la imagen de la herramienta basada en el ID
+                    const herramientaImg = `/herr-${herramientaId}.png`;
+                    
+                    return (
+                      <div key={index} className="bg-[#f8f5f0] p-4 rounded-lg text-center">
+                        <div className="flex justify-center items-center h-16 mb-2">
+                          <Image 
+                            src={herramientaImg}
+                            alt={`Herramienta ${index + 1}`}
+                            width={48}
+                            height={48}
+                            className="object-contain"
+                          />
+                        </div>
+                        <p className="text-sm font-medium">Herramienta {herramientaId}</p>
                       </div>
-                      <p className="text-sm font-medium">Herramienta {index + 1}</p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
