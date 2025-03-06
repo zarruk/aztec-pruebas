@@ -1,10 +1,20 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export function Navbar() {
   return (
     <header className="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-2">
       <div className="flex items-center">
-        {/* Logo eliminado de aquí */}
+        <Link href="/" className="flex items-center">
+          <Image 
+            src="/aztec-logo.svg" 
+            alt="Aztec Logo" 
+            width={120} 
+            height={40}
+            priority
+            unoptimized
+          />
+        </Link>
       </div>
       
       <nav className="flex items-center space-x-4">

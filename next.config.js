@@ -18,6 +18,13 @@ const nextConfig = {
     // !! ADVERTENCIA !!
     ignoreBuildErrors: true,
   },
+  webpack: (config, { isServer }) => {
+    config.resolve.alias['@supabase/realtime-js/dist/module/lib/version'] = 
+      path.resolve(__dirname, './src/lib/supabase-fix.js');
+    config.resolve.alias['@edge-runtime/cookies'] = false;
+    return config;
+  },
+  transpilePackages: ['@supabase/realtime-js', 'date-fns'],
 };
 
 module.exports = nextConfig; 

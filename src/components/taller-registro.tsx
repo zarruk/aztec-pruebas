@@ -4,12 +4,12 @@ import { useState } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Taller } from '@/lib/types';
+import { Taller, TallerConHerramientas } from '@/lib/types';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 interface TallerRegistroProps {
-  taller: Taller;
+  taller: Taller | TallerConHerramientas;
   referidoPor?: string;
 }
 
@@ -17,7 +17,36 @@ interface TallerRegistroProps {
 const baseSchema = z.object({
   nombre: z.string().min(3, 'El nombre es requerido'),
   email: z.string().email('Email inválido'),
-  telefono: z.string().min(10, 'Teléfono inválido'),
+  telefono: z.string()
+    .min(5, 'Teléfono inválido')
+    .refine(
+      (value) => {
+        console.log('Validando teléfono:', value);
+        
+        // Verificar si tiene código de país
+        const hasCountryCode = value.match(/^\+\d+/);
+        console.log('¿Tiene código de país?', !!hasCountryCode);
+        
+        // Contar dígitos en el número
+        const digitCount = value.replace(/\D/g, '').length;
+        console.log('Cantidad de dígitos:', digitCount);
+        
+        // Si tiene código de país, debe tener al menos 9 caracteres en total (código + número)
+        if (hasCountryCode) {
+          const isValid = digitCount >= 9; // Código de país (2 dígitos) + número (7 dígitos)
+          console.log('Longitud con código:', value.length, 'Dígitos:', digitCount, 'Válido:', isValid);
+          return isValid;
+        }
+        
+        // Si no tiene código de país, debe tener al menos 7 dígitos
+        const isValid = digitCount >= 7;
+        console.log('Cantidad de dígitos sin código:', digitCount, 'Válido:', isValid);
+        return isValid;
+      },
+      {
+        message: 'El número debe tener al menos 7 dígitos'
+      }
+    ),
 });
 
 // Esquema para talleres en vivo
@@ -80,26 +109,64 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
     setSubmitError(null);
 
     try {
-      const response = await fetch('/api/register', {
+      console.log('Datos a enviar:', data);
+      
+      // Validar el formato del teléfono
+      let telefono = data.telefono;
+      console.log('Teléfono antes de enviar:', telefono);
+      
+      // Verificar si tiene código de país
+      if (!telefono.match(/^\+\d+/)) {
+        console.log('Teléfono sin código de país, agregando +57');
+        telefono = '+57 ' + telefono;
+      }
+      
+      // Limpiar el teléfono (eliminar espacios, guiones, etc.)
+      telefono = telefono.trim();
+      
+      const payload = {
+        name: data.nombre,
+        email: data.email,
+        phone: telefono,
+        tallerId: taller.id,
+        referidoPor: referidoPor,
+      };
+      console.log('Payload completo:', payload);
+      
+      const apiUrl = '/api/register';
+      console.log('URL de la API:', apiUrl);
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...data,
-          taller_id: taller.id,
-          referido_por: referidoPor,
-        }),
+        body: JSON.stringify(payload),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al registrarse');
+      console.log('Respuesta del servidor - Status:', response.status);
+      
+      const contentType = response.headers.get('content-type');
+      console.log('Tipo de contenido:', contentType);
+      
+      if (!contentType || !contentType.includes('application/json')) {
+        const textResponse = await response.text();
+        console.error('Respuesta no JSON recibida:', textResponse.substring(0, 200) + '...');
+        throw new Error('El servidor no devolvió JSON válido. Posible error en el servidor.');
       }
 
+      const responseData = await response.json();
+      
+      if (!response.ok) {
+        console.error('Error del servidor:', responseData);
+        throw new Error(responseData.error || 'Error al registrarse');
+      }
+
+      console.log('Registro exitoso:', responseData);
       setSubmitSuccess(true);
-    } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : 'Error al registrarse');
+    } catch (error: any) {
+      console.error('Error en el proceso de registro:', error);
+      setSubmitError(error.message || 'Error al registrarse. Intenta de nuevo más tarde.');
     } finally {
       setIsSubmitting(false);
     }
@@ -116,7 +183,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
 
       {submitSuccess ? (
         <div className="text-center py-4">
-          <div className="bg-green-100 text-green-800 p-4 rounded-md mb-4">
+          <div className="bg-[#e6f0ed] text-[#1b5e4f] p-4 rounded-md mb-4">
             <p>Tu registro ha sido completado con éxito.</p>
             <p className="mt-2">Te hemos enviado un correo con los detalles.</p>
           </div>
@@ -147,7 +214,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
                   </label>
                   <select
                     {...vivoForm.register('fecha_seleccionada')}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#1b5e4f] focus:border-[#1b5e4f]"
                   >
                     <option value="">Selecciona una fecha</option>
                     {fechasDisponibles.map((fechaObj) => (
@@ -172,7 +239,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
                 <input
                   type="text"
                   {...vivoForm.register('nombre')}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#1b5e4f] focus:border-[#1b5e4f]"
                   placeholder="Tu nombre completo"
                 />
                 {vivoForm.formState.errors.nombre && (
@@ -187,7 +254,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
                 <input
                   type="email"
                   {...vivoForm.register('email')}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#1b5e4f] focus:border-[#1b5e4f]"
                   placeholder="tu@email.com"
                 />
                 {vivoForm.formState.errors.email && (
@@ -199,12 +266,62 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Teléfono
                 </label>
-                <input
-                  type="tel"
-                  {...vivoForm.register('telefono')}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
-                  placeholder="+57 300 123 4567"
-                />
+                <div className="flex">
+                  <div className="flex-shrink-0 w-24">
+                    <select
+                      className="w-full p-2 border border-gray-300 rounded-l-md focus:ring-[#1b5e4f] focus:border-[#1b5e4f] bg-gray-50"
+                      defaultValue="+57"
+                      onChange={(e) => {
+                        console.log('Código de país cambiado a:', e.target.value);
+                        const value = vivoForm.getValues('telefono') || '';
+                        console.log('Valor actual del teléfono:', value);
+                        
+                        // Eliminar cualquier código de país existente
+                        const phoneWithoutCode = value.replace(/^\+\d+\s*/, '');
+                        console.log('Teléfono sin código:', phoneWithoutCode);
+                        
+                        // Agregar el nuevo código de país
+                        const newValue = `${e.target.value} ${phoneWithoutCode}`;
+                        console.log('Nuevo valor del teléfono:', newValue);
+                        
+                        vivoForm.setValue('telefono', newValue);
+                      }}
+                    >
+                      <option value="+57">🇨🇴 +57</option>
+                      <option value="+1">🇺🇸 +1</option>
+                      <option value="+52">🇲🇽 +52</option>
+                      <option value="+34">🇪🇸 +34</option>
+                      <option value="+51">🇵🇪 +51</option>
+                      <option value="+56">🇨🇱 +56</option>
+                      <option value="+54">🇦🇷 +54</option>
+                    </select>
+                  </div>
+                  <input
+                    type="tel"
+                    {...vivoForm.register('telefono')}
+                    className="flex-grow p-2 border border-gray-300 rounded-r-md focus:ring-[#1b5e4f] focus:border-[#1b5e4f]"
+                    placeholder="300 123 4567"
+                    defaultValue="+57 "
+                    onChange={(e) => {
+                      // Obtener el valor actual
+                      let value = e.target.value;
+                      console.log('Valor del input:', value);
+                      
+                      // Si el valor no comienza con un código de país, agregarlo
+                      if (!value.match(/^\+\d+/)) {
+                        // Obtener el código de país del select
+                        const selectElement = e.target.parentNode?.querySelector('select') as HTMLSelectElement;
+                        const code = selectElement ? selectElement.value : '+57';
+                        console.log('Código de país seleccionado:', code);
+                        value = `${code} ${value.replace(/^\+\d+\s*/, '')}`;
+                        console.log('Valor con código de país:', value);
+                      }
+                      
+                      // Actualizar el valor
+                      vivoForm.setValue('telefono', value);
+                    }}
+                  />
+                </div>
                 {vivoForm.formState.errors.telefono && (
                   <p className="mt-1 text-sm text-red-600">{vivoForm.formState.errors.telefono.message}</p>
                 )}
@@ -225,14 +342,18 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
 
               {submitError && (
                 <div className="bg-red-50 text-red-800 p-3 rounded-md">
+                  <p className="font-medium">Error al registrarse:</p>
                   <p>{submitError}</p>
+                  <p className="text-sm mt-2">
+                    Si el problema persiste, por favor contacta a soporte en <a href="mailto:soporte@azteclab.co" className="underline">soporte@azteclab.co</a>
+                  </p>
                 </div>
               )}
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out disabled:opacity-50"
+                className="w-full bg-[#1b5e4f] hover:bg-[#0d4a3d] text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out disabled:opacity-50"
               >
                 {isSubmitting ? 'Procesando...' : 'Registrarme ahora'}
               </button>
@@ -262,7 +383,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
                 <input
                   type="text"
                   {...pregrabadoForm.register('nombre')}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#1b5e4f] focus:border-[#1b5e4f]"
                   placeholder="Tu nombre completo"
                 />
                 {pregrabadoForm.formState.errors.nombre && (
@@ -277,7 +398,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
                 <input
                   type="email"
                   {...pregrabadoForm.register('email')}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#1b5e4f] focus:border-[#1b5e4f]"
                   placeholder="tu@email.com"
                 />
                 {pregrabadoForm.formState.errors.email && (
@@ -289,12 +410,62 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Teléfono
                 </label>
-                <input
-                  type="tel"
-                  {...pregrabadoForm.register('telefono')}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
-                  placeholder="+57 300 123 4567"
-                />
+                <div className="flex">
+                  <div className="flex-shrink-0 w-24">
+                    <select
+                      className="w-full p-2 border border-gray-300 rounded-l-md focus:ring-[#1b5e4f] focus:border-[#1b5e4f] bg-gray-50"
+                      defaultValue="+57"
+                      onChange={(e) => {
+                        console.log('Código de país cambiado a (pregrabado):', e.target.value);
+                        const value = pregrabadoForm.getValues('telefono') || '';
+                        console.log('Valor actual del teléfono (pregrabado):', value);
+                        
+                        // Eliminar cualquier código de país existente
+                        const phoneWithoutCode = value.replace(/^\+\d+\s*/, '');
+                        console.log('Teléfono sin código (pregrabado):', phoneWithoutCode);
+                        
+                        // Agregar el nuevo código de país
+                        const newValue = `${e.target.value} ${phoneWithoutCode}`;
+                        console.log('Nuevo valor del teléfono (pregrabado):', newValue);
+                        
+                        pregrabadoForm.setValue('telefono', newValue);
+                      }}
+                    >
+                      <option value="+57">🇨🇴 +57</option>
+                      <option value="+1">🇺🇸 +1</option>
+                      <option value="+52">🇲🇽 +52</option>
+                      <option value="+34">🇪🇸 +34</option>
+                      <option value="+51">🇵🇪 +51</option>
+                      <option value="+56">🇨🇱 +56</option>
+                      <option value="+54">🇦🇷 +54</option>
+                    </select>
+                  </div>
+                  <input
+                    type="tel"
+                    {...pregrabadoForm.register('telefono')}
+                    className="flex-grow p-2 border border-gray-300 rounded-r-md focus:ring-[#1b5e4f] focus:border-[#1b5e4f]"
+                    placeholder="300 123 4567"
+                    defaultValue="+57 "
+                    onChange={(e) => {
+                      // Obtener el valor actual
+                      let value = e.target.value;
+                      console.log('Valor del input (pregrabado):', value);
+                      
+                      // Si el valor no comienza con un código de país, agregarlo
+                      if (!value.match(/^\+\d+/)) {
+                        // Obtener el código de país del select
+                        const selectElement = e.target.parentNode?.querySelector('select') as HTMLSelectElement;
+                        const code = selectElement ? selectElement.value : '+57';
+                        console.log('Código de país seleccionado (pregrabado):', code);
+                        value = `${code} ${value.replace(/^\+\d+\s*/, '')}`;
+                        console.log('Valor con código de país (pregrabado):', value);
+                      }
+                      
+                      // Actualizar el valor
+                      pregrabadoForm.setValue('telefono', value);
+                    }}
+                  />
+                </div>
                 {pregrabadoForm.formState.errors.telefono && (
                   <p className="mt-1 text-sm text-red-600">{pregrabadoForm.formState.errors.telefono.message}</p>
                 )}
@@ -314,14 +485,18 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
 
               {submitError && (
                 <div className="bg-red-50 text-red-800 p-3 rounded-md">
+                  <p className="font-medium">Error al registrarse:</p>
                   <p>{submitError}</p>
+                  <p className="text-sm mt-2">
+                    Si el problema persiste, por favor contacta a soporte en <a href="mailto:soporte@azteclab.co" className="underline">soporte@azteclab.co</a>
+                  </p>
                 </div>
               )}
 
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out disabled:opacity-50"
+                className="w-full bg-[#1b5e4f] hover:bg-[#0d4a3d] text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out disabled:opacity-50"
               >
                 {isSubmitting ? 'Procesando...' : 'Registrarme ahora'}
               </button>
