@@ -112,6 +112,26 @@ export function TallerForm({ taller, onError }: TallerFormProps) {
       if (onError) onError(null);
 
       console.log("SUBMIT: Iniciando envío del formulario", data);
+      console.log("SUBMIT: Tipo de taller seleccionado:", data.tipo);
+      console.log("SUBMIT: Fecha vivo:", data.fecha_vivo);
+      console.log("SUBMIT: Fecha live build:", data.fecha_live_build);
+
+      // Validación adicional para asegurar que las fechas estén presentes cuando son requeridas
+      if (data.tipo === 'vivo' && !data.fecha_vivo) {
+        console.error("SUBMIT: Error - Falta fecha_vivo para taller en vivo");
+        setError("La fecha del taller en vivo es requerida para talleres en vivo");
+        if (onError) onError("La fecha del taller en vivo es requerida para talleres en vivo");
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (data.tipo === 'live_build' && !data.fecha_live_build) {
+        console.error("SUBMIT: Error - Falta fecha_live_build para taller live_build");
+        setError("La fecha del Live Build es requerida para talleres de tipo Live Build");
+        if (onError) onError("La fecha del Live Build es requerida para talleres de tipo Live Build");
+        setIsSubmitting(false);
+        return;
+      }
 
       // Asegurarnos de que campos_webhook sea un objeto válido
       const webhookFields = typeof data.campos_webhook === 'object' && data.campos_webhook !== null
