@@ -10,232 +10,260 @@ import { Taller } from '@/lib/types';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
-// Esquema de validación para el formulario de registro
-const registroSchema = z.object({
-  nombre: z.string().min(3, 'El nombre es requerido (mínimo 3 caracteres)'),
-  email: z.string().email('Correo electrónico inválido'),
-  telefono: z.string().min(8, 'Teléfono inválido (mínimo 8 caracteres)'),
-  fecha_seleccionada: z.string().optional(),
-});
-
-type RegistroFormValues = z.infer<typeof registroSchema>;
-
 interface TallerRegistroProps {
   taller: Taller;
   referidoPor?: string;
 }
+
+// Esquema para talleres pregrabados
+const baseSchema = z.object({
+  nombre: z.string().min(3, 'El nombre es requerido'),
+  email: z.string().email('Email inválido'),
+  telefono: z.string().min(10, 'Teléfono inválido'),
+});
+
+// Esquema para talleres en vivo
+const tallerVivoSchema = baseSchema.extend({
+  fecha_seleccionada: z.string().min(1, 'Selecciona una fecha'),
+});
+
+// Tipos inferidos de los esquemas
+type FormDataBase = z.infer<typeof baseSchema>;
+type FormDataVivo = z.infer<typeof tallerVivoSchema>;
 
 export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Determinar si el taller tiene fechas disponibles
-  const tieneFechasDisponibles = (taller.tipo === 'vivo' || taller.tipo === 'live_build') && (taller.fecha_vivo || taller.fecha_live_build);
-  
-  // Crear un array de fechas disponibles
+  // Determinar si es un taller en vivo
+  const esVivoOLiveBuild = taller.tipo === 'vivo' || taller.tipo === 'live_build';
+
+  // Determinar fechas disponibles
   const fechasDisponibles = [];
   if (taller.fecha_vivo) {
     fechasDisponibles.push({
       id: 'fecha_vivo',
       fecha: new Date(taller.fecha_vivo),
-      label: `Taller en vivo: ${format(new Date(taller.fecha_vivo), 'PPP', { locale: es })}`
+      tipo: 'Taller en vivo',
     });
   }
   if (taller.fecha_live_build) {
     fechasDisponibles.push({
       id: 'fecha_live_build',
       fecha: new Date(taller.fecha_live_build),
-      label: `Live build: ${format(new Date(taller.fecha_live_build), 'PPP', { locale: es })}`
+      tipo: 'Live build',
     });
   }
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm<RegistroFormValues>({
-    resolver: zodResolver(registroSchema),
+  // Usar el formulario adecuado según el tipo de taller
+  const vivoForm = useForm<FormDataVivo>({
+    resolver: zodResolver(tallerVivoSchema),
     defaultValues: {
       nombre: '',
       email: '',
       telefono: '',
-      fecha_seleccionada: fechasDisponibles.length > 0 ? fechasDisponibles[0].id : undefined,
-    },
+      fecha_seleccionada: '',
+    }
   });
 
-  const fechaSeleccionada = watch('fecha_seleccionada');
+  const pregrabadoForm = useForm<FormDataBase>({
+    resolver: zodResolver(baseSchema),
+    defaultValues: {
+      nombre: '',
+      email: '',
+      telefono: '',
+    }
+  });
 
-  // Función para enviar los datos a la API de registro
-  const enviarRegistro = async (data: RegistroFormValues) => {
+  // Seleccionar el formulario correcto
+  const { register, handleSubmit, formState: { errors } } = esVivoOLiveBuild 
+    ? vivoForm 
+    : pregrabadoForm;
+
+  const onSubmit = async (data: FormDataBase | FormDataVivo) => {
+    setIsSubmitting(true);
+    setSubmitError(null);
+
     try {
-      setIsSubmitting(true);
-      setSubmitError(null);
-
-      // Preparar los datos para la API
-      const registroData = {
-        name: data.nombre,
-        email: data.email,
-        phone: data.telefono,
-        tallerId: taller.id,
-        fecha_seleccionada: data.fecha_seleccionada,
-        referidoPor: referidoPor
-      };
-
-      console.log('Enviando datos a la API de registro:', registroData);
-
-      // Enviar los datos a la API de registro
       const response = await fetch('/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(registroData),
+        body: JSON.stringify({
+          ...data,
+          taller_id: taller.id,
+          referido_por: referidoPor,
+        }),
       });
 
-      const responseData = await response.json();
-
       if (!response.ok) {
-        throw new Error(`Error al registrar: ${responseData.error || response.statusText}`);
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al registrarse');
       }
 
-      console.log('Registro completado correctamente:', responseData);
       setSubmitSuccess(true);
     } catch (error) {
-      console.error('Error al registrar:', error);
-      setSubmitError(error instanceof Error ? error.message : 'Error al procesar el registro');
+      setSubmitError(error instanceof Error ? error.message : 'Error al registrarse');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Si el registro fue exitoso, mostrar mensaje de éxito
-  if (submitSuccess) {
-    return (
-      <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-6 text-center">
-        <h3 className="text-xl font-semibold text-emerald-700 mb-2">¡Registro exitoso!</h3>
-        <p className="text-emerald-600 mb-4">
-          Gracias por registrarte en nuestro taller. Te hemos enviado un correo con los detalles.
-        </p>
-        <Button 
-          onClick={() => setSubmitSuccess(false)}
-          variant="outline"
-        >
-          Registrar otra persona
-        </Button>
-      </div>
-    );
-  }
+  // Calcular precio en USD (1 USD = 4000 COP)
+  const precioUSD = taller.precio ? Math.round((taller.precio / 4000) * 10) / 10 : 0;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6">
+    <div className="bg-white rounded-lg shadow-md p-6">
       <h3 className="text-xl font-semibold mb-4">
-        {(taller.tipo === 'vivo' || taller.tipo === 'live_build')
-          ? 'Reserva tu lugar en este taller' 
-          : 'Compra este taller pregrabado'}
+        {submitSuccess ? '¡Registro exitoso!' : 'Regístrate ahora'}
       </h3>
-      
-      <form onSubmit={handleSubmit(enviarRegistro)} className="space-y-4">
-        {/* Selector de fechas para talleres live */}
-        {tieneFechasDisponibles && fechasDisponibles.length > 0 && (
-          <div className="space-y-2">
-            <label htmlFor="fecha_seleccionada" className="block text-sm font-medium">
-              Selecciona una fecha
+
+      {submitSuccess ? (
+        <div className="text-center py-4">
+          <div className="bg-green-100 text-green-800 p-4 rounded-md mb-4">
+            <p>Tu registro ha sido completado con éxito.</p>
+            <p className="mt-2">Te hemos enviado un correo con los detalles.</p>
+          </div>
+          <p className="text-gray-600 mt-4">
+            {taller.tipo === 'pregrabado' 
+              ? 'Recibirás acceso al taller pregrabado en tu correo electrónico.' 
+              : 'Te enviaremos un recordatorio antes del taller.'}
+          </p>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Precio del taller */}
+          <div className="bg-gray-50 p-4 rounded-md mb-4">
+            <p className="text-center font-medium">
+              {taller.precio && taller.precio > 0 
+                ? `Precio: COP $${taller.precio.toLocaleString('es-CO')} / USD $${precioUSD}` 
+                : 'Taller gratuito'}
+            </p>
+          </div>
+
+          {/* Selección de fecha para talleres en vivo */}
+          {esVivoOLiveBuild && fechasDisponibles.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Selecciona una fecha
+              </label>
+              <select
+                {...vivoForm.register('fecha_seleccionada')}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+              >
+                <option value="">Selecciona una fecha</option>
+                {fechasDisponibles.map((fechaObj) => (
+                  <option key={fechaObj.id} value={fechaObj.id}>
+                    {fechaObj.tipo} - {format(fechaObj.fecha, 'EEEE d MMMM, h:mm a', { locale: es })}
+                  </option>
+                ))}
+              </select>
+              {vivoForm.formState.errors.fecha_seleccionada && (
+                <p className="mt-1 text-sm text-red-600">
+                  {vivoForm.formState.errors.fecha_seleccionada.message}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Campos comunes para todos los tipos de taller */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Nombre completo
             </label>
-            <select
-              id="fecha_seleccionada"
-              value={fechaSeleccionada}
-              onChange={(e) => setValue('fecha_seleccionada', e.target.value)}
-              className="block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-            >
-              {fechasDisponibles.map((fecha) => (
-                <option key={fecha.id} value={fecha.id}>
-                  {fecha.label}
-                </option>
-              ))}
-            </select>
+            <input
+              type="text"
+              {...register('nombre')}
+              className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+              placeholder="Tu nombre completo"
+            />
+            {errors.nombre && (
+              <p className="mt-1 text-sm text-red-600">{errors.nombre.message}</p>
+            )}
           </div>
-        )}
-        
-        {/* Campos de registro */}
-        <div className="space-y-2">
-          <label htmlFor="nombre" className="block text-sm font-medium">
-            Nombre completo
-          </label>
-          <Input
-            id="nombre"
-            {...register('nombre')}
-            placeholder="Tu nombre completo"
-            className={errors.nombre ? 'border-red-500' : ''}
-          />
-          {errors.nombre && (
-            <p className="text-red-500 text-sm">{errors.nombre.message}</p>
-          )}
-        </div>
-        
-        <div className="space-y-2">
-          <label htmlFor="email" className="block text-sm font-medium">
-            Correo electrónico
-          </label>
-          <Input
-            id="email"
-            type="email"
-            {...register('email')}
-            placeholder="tu@email.com"
-            className={errors.email ? 'border-red-500' : ''}
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm">{errors.email.message}</p>
-          )}
-        </div>
-        
-        <div className="space-y-2">
-          <label htmlFor="telefono" className="block text-sm font-medium">
-            Teléfono
-          </label>
-          <Input
-            id="telefono"
-            {...register('telefono')}
-            placeholder="Tu número de teléfono"
-            className={errors.telefono ? 'border-red-500' : ''}
-          />
-          {errors.telefono && (
-            <p className="text-red-500 text-sm">{errors.telefono.message}</p>
-          )}
-        </div>
-        
-        {/* Mensaje de error */}
-        {submitError && (
-          <div className="bg-red-50 border border-red-200 rounded p-3 text-red-600">
-            {submitError}
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Correo electrónico
+            </label>
+            <input
+              type="email"
+              {...register('email')}
+              className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+              placeholder="tu@email.com"
+            />
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+            )}
           </div>
-        )}
-        
-        {/* Botón de envío */}
-        <Button 
-          type="submit" 
-          className="w-full" 
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <>
-              <span className="mr-2 inline-block animate-spin">⟳</span>
-              Procesando...
-            </>
-          ) : (
-            (taller.tipo === 'vivo' || taller.tipo === 'live_build') ? 'Reservar mi lugar' : 'Comprar taller'
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Teléfono
+            </label>
+            <input
+              type="tel"
+              {...register('telefono')}
+              className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+              placeholder="+57 300 123 4567"
+            />
+            {errors.telefono && (
+              <p className="mt-1 text-sm text-red-600">{errors.telefono.message}</p>
+            )}
+          </div>
+
+          {/* Campos adicionales para talleres pregrabados */}
+          {taller.tipo === 'pregrabado' && (
+            <div className="bg-gray-50 p-4 rounded-md">
+              <p className="text-sm text-gray-600 mb-2">
+                Al registrarte recibirás:
+              </p>
+              <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
+                <li>Acceso inmediato al taller pregrabado</li>
+                <li>Material complementario</li>
+                <li>Soporte por correo electrónico</li>
+              </ul>
+            </div>
           )}
-        </Button>
-        
-        {/* Información de precio */}
-        <p className="text-sm text-gray-500 text-center">
-          {taller.precio && taller.precio > 0 
-            ? `Precio: $${taller.precio} MXN` 
-            : 'Este taller es gratuito'}
-        </p>
-      </form>
+
+          {/* Campos adicionales para talleres en vivo */}
+          {esVivoOLiveBuild && (
+            <div className="bg-gray-50 p-4 rounded-md">
+              <p className="text-sm text-gray-600 mb-2">
+                Al registrarte recibirás:
+              </p>
+              <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
+                <li>Enlace para unirte al taller en vivo</li>
+                <li>Recordatorio 24 horas antes</li>
+                <li>Grabación del taller después del evento</li>
+                <li>Certificado de participación</li>
+              </ul>
+            </div>
+          )}
+
+          {submitError && (
+            <div className="bg-red-50 text-red-800 p-3 rounded-md">
+              <p>{submitError}</p>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out disabled:opacity-50"
+          >
+            {isSubmitting ? 'Procesando...' : 'Registrarme ahora'}
+          </button>
+
+          {referidoPor && (
+            <p className="text-xs text-gray-500 text-center mt-2">
+              Referido por: {referidoPor}
+            </p>
+          )}
+        </form>
+      )}
     </div>
   );
 } 
