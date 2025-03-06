@@ -82,6 +82,7 @@ export function TallerForm({ taller, onError }: TallerFormProps) {
 
   // Función para manejar cambios en los campos del webhook
   const handleWebhookFieldsChange = (fields: Record<string, string>) => {
+    console.log("Campos webhook actualizados:", fields);
     setValue('campos_webhook', fields);
   };
 
@@ -101,6 +102,7 @@ export function TallerForm({ taller, onError }: TallerFormProps) {
       
       console.log("SUBMIT: Campos webhook a guardar:", webhookFields);
       console.log("SUBMIT: Tipo de campos_webhook:", typeof data.campos_webhook);
+      console.log("SUBMIT: ¿Está vacío?", Object.keys(webhookFields).length === 0);
 
       if (taller?.id) {
         console.log("SUBMIT: Actualizando taller existente con ID:", taller.id);
@@ -395,7 +397,7 @@ export function TallerForm({ taller, onError }: TallerFormProps) {
       </div>
 
       <div>
-        <FormLabel>Campos para webhook</FormLabel>
+        <FormLabel>Campos para webhook (opcional)</FormLabel>
         <div className="mt-2">
           <Controller
             name="campos_webhook"
@@ -413,7 +415,7 @@ export function TallerForm({ taller, onError }: TallerFormProps) {
           )}
           <p className="text-xs text-gray-500 mt-1">
             Define campos adicionales que se enviarán en el webhook cuando alguien se inscriba.
-            Ejemplo: "curso_id" = "123", "plataforma" = "zoom"
+            Ejemplo: "curso_id" = "123", "plataforma" = "zoom". Este campo es opcional.
           </p>
         </div>
       </div>
