@@ -43,7 +43,7 @@ export function KeyValueEditor({ value, onChange, error }: KeyValueEditorProps) 
     }
     
     setPairs(initialPairs);
-  }, []);  // Solo ejecutar al montar el componente
+  }, [value]);  // Actualizar cuando cambie el valor
 
   // Actualizar el componente padre cuando cambian los pares
   const updateParent = (newPairs: KeyValuePair[]) => {
