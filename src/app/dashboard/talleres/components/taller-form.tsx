@@ -82,8 +82,26 @@ export function TallerForm({ taller, onError }: TallerFormProps) {
 
   // Función para manejar cambios en los campos del webhook
   const handleWebhookFieldsChange = (fields: Record<string, string>) => {
-    console.log("Campos webhook actualizados:", fields);
-    setValue('campos_webhook', fields);
+    console.log("Campos webhook actualizados (original):", fields);
+    console.log("Tipo de campos webhook recibidos:", typeof fields);
+    console.log("¿Es array?", Array.isArray(fields));
+    
+    // Asegurarnos de que siempre sea un objeto, nunca un array
+    let safeFields = {};
+    
+    if (fields && typeof fields === 'object') {
+      if (Array.isArray(fields)) {
+        // Si es un array, convertirlo a objeto
+        console.log("Convirtiendo array a objeto");
+        safeFields = {};
+      } else {
+        // Es un objeto, usarlo directamente
+        safeFields = fields;
+      }
+    }
+    
+    console.log("Campos webhook procesados:", safeFields);
+    setValue('campos_webhook', safeFields);
   };
 
   // Función simplificada para crear/actualizar taller

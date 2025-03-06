@@ -22,19 +22,30 @@ export function KeyValueEditor({ value, onChange, error }: KeyValueEditorProps) 
 
   // Procesar el valor inicial
   useEffect(() => {
+    console.log("KeyValueEditor - valor inicial:", value);
+    console.log("KeyValueEditor - tipo de valor:", typeof value);
+    console.log("KeyValueEditor - ¿es array?", Array.isArray(value));
+    
     let initialPairs: KeyValuePair[] = [];
     
     try {
       // Si es objeto, convertir directamente
-      if (value && typeof value === 'object' && !Array.isArray(value)) {
-        initialPairs = Object.entries(value).map(([key, val]) => ({ 
-          key, 
-          value: String(val) 
-        }));
+      if (value && typeof value === 'object') {
+        if (Array.isArray(value)) {
+          console.log("KeyValueEditor - valor es array, convirtiendo a objeto vacío");
+          initialPairs = [];
+        } else {
+          console.log("KeyValueEditor - valor es objeto, extrayendo pares");
+          initialPairs = Object.entries(value).map(([key, val]) => ({ 
+            key, 
+            value: String(val) 
+          }));
+        }
       }
       
       // Si no hay pares, dejar el array vacío para permitir enviar un objeto vacío
-      if (initialPairs.length === 0 && Object.keys(value || {}).length === 0) {
+      if (initialPairs.length === 0) {
+        console.log("KeyValueEditor - no hay pares, dejando array vacío");
         initialPairs = [];
       }
     } catch (e) {
@@ -42,11 +53,14 @@ export function KeyValueEditor({ value, onChange, error }: KeyValueEditorProps) 
       initialPairs = [];
     }
     
+    console.log("KeyValueEditor - pares iniciales:", initialPairs);
     setPairs(initialPairs);
   }, [value]);  // Actualizar cuando cambie el valor
 
   // Actualizar el componente padre cuando cambian los pares
   const updateParent = (newPairs: KeyValuePair[]) => {
+    console.log("KeyValueEditor - actualizando pares:", newPairs);
+    
     const newValue = newPairs.reduce((acc, { key, value }) => {
       if (key.trim()) {
         acc[key.trim()] = value;
@@ -54,6 +68,7 @@ export function KeyValueEditor({ value, onChange, error }: KeyValueEditorProps) 
       return acc;
     }, {} as Record<string, string>);
     
+    console.log("KeyValueEditor - nuevo valor a enviar:", newValue);
     onChange(newValue);
   };
 
