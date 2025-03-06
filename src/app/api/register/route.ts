@@ -52,17 +52,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Convertir referidoPor a un entero seguro si existe
-    let referidoPorSafe = undefined;
-    if (referidoPor !== undefined) {
-      referidoPorSafe = safeInteger(referidoPor);
-      if (referidoPorSafe !== parseInt(String(referidoPor))) {
-        console.log('ID de referido inválido:', referidoPor);
-        return NextResponse.json(
-          { error: 'ID de referido inválido', details: 'El ID del referido debe ser un número entero válido' },
-          { status: 400 }
-        );
+    // Procesar referidoPor
+    let referidoPorSafe = null;
+    if (referidoPor !== undefined && referidoPor !== null) {
+      // Convertir a número explícitamente
+      const referidoPorNum = Number(referidoPor);
+      
+      // Verificar si es un número válido
+      if (!isNaN(referidoPorNum)) {
+        referidoPorSafe = Math.floor(referidoPorNum);
+        console.log('ID de referido procesado:', referidoPorSafe);
+      } else {
+        console.log('ID de referido inválido (no es un número):', referidoPor);
       }
+    } else {
+      console.log('No se proporcionó ID de referido');
     }
 
     // Limpiar el número de teléfono
@@ -272,15 +276,15 @@ export async function POST(request: NextRequest) {
         console.log('Registro actualizado a pendiente:', registroId);
       } else {
         // Crear nuevo registro
-        console.log('Creando nuevo registro para usuario', usuario_id, 'en taller', tallerIdSafe);
+        console.log('Creando nuevo registro para usuario', usuario_id, 'en taller', tallerIdSafe, 'referido por', referidoPorSafe);
         
         const { data: nuevoRegistro, error: errorRegistro } = await supabase
           .from('registros_talleres')
           .insert([{
             usuario_id: usuario_id,
-            taller_id: tallerIdSafe, // Usar el ID seguro
+            taller_id: tallerIdSafe,
             estado: 'pendiente',
-            referido_por: referidoPorSafe, // Añadir el ID del referido si existe
+            referido_por: referidoPorSafe,
             datos_adicionales: { 
               origen: 'web',
               fecha_registro: new Date().toISOString()
