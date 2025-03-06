@@ -92,12 +92,15 @@ export function TallerForm({ taller, onError }: TallerFormProps) {
       setError(null);
       if (onError) onError(null);
 
+      console.log("SUBMIT: Iniciando envío del formulario", data);
+
       // Asegurarnos de que campos_webhook sea un objeto válido
       const webhookFields = typeof data.campos_webhook === 'object' && data.campos_webhook !== null
         ? data.campos_webhook
         : {};
       
       console.log("SUBMIT: Campos webhook a guardar:", webhookFields);
+      console.log("SUBMIT: Tipo de campos_webhook:", typeof data.campos_webhook);
 
       if (taller?.id) {
         console.log("SUBMIT: Actualizando taller existente con ID:", taller.id);
@@ -110,8 +113,8 @@ export function TallerForm({ taller, onError }: TallerFormProps) {
             descripcion: data.descripcion,
             video_url: data.video_url || '',
             tipo: data.tipo || 'pregrabado',
-            fecha_vivo: data.fecha_vivo ? new Date(data.fecha_vivo).toISOString() : null,
-            fecha_live_build: data.fecha_live_build ? new Date(data.fecha_live_build).toISOString() : null,
+            fecha_vivo: data.fecha_vivo ? data.fecha_vivo : null,
+            fecha_live_build: data.fecha_live_build ? data.fecha_live_build : null,
             precio: parseInt(data.precio as string) || 0,
             capacidad: parseInt(data.capacidad as string) || 0,
             imagen_url: imageUrl || taller.imagen_url || '',
@@ -135,29 +138,43 @@ export function TallerForm({ taller, onError }: TallerFormProps) {
         }, 1000);
       } else {
         console.log("SUBMIT: Creando nuevo taller");
+        console.log("SUBMIT: Datos a insertar:", {
+          nombre: data.nombre,
+          descripcion: data.descripcion,
+          video_url: data.video_url || '',
+          tipo: data.tipo || 'pregrabado',
+          fecha_vivo: data.fecha_vivo ? data.fecha_vivo : null,
+          fecha_live_build: data.fecha_live_build ? data.fecha_live_build : null,
+          precio: parseInt(data.precio as string) || 0,
+          capacidad: parseInt(data.capacidad as string) || 0,
+          imagen_url: imageUrl || '',
+          herramientas: data.herramientas || [],
+          campos_webhook: webhookFields
+        });
         
-        const { error } = await supabase
+        const { data: insertedData, error } = await supabase
           .from('talleres')
           .insert({
             nombre: data.nombre,
             descripcion: data.descripcion,
             video_url: data.video_url || '',
             tipo: data.tipo || 'pregrabado',
-            fecha_vivo: data.fecha_vivo ? new Date(data.fecha_vivo).toISOString() : null,
-            fecha_live_build: data.fecha_live_build ? new Date(data.fecha_live_build).toISOString() : null,
+            fecha_vivo: data.fecha_vivo ? data.fecha_vivo : null,
+            fecha_live_build: data.fecha_live_build ? data.fecha_live_build : null,
             precio: parseInt(data.precio as string) || 0,
             capacidad: parseInt(data.capacidad as string) || 0,
             imagen_url: imageUrl || '',
             herramientas: data.herramientas || [],
-            campos_webhook: data.campos_webhook || {}
-          });
+            campos_webhook: webhookFields
+          })
+          .select();
 
         if (error) {
           console.error("SUBMIT: Error al crear taller:", error);
           throw new Error(`Error al crear: ${error.message}`);
         }
         
-        console.log("SUBMIT: Taller creado correctamente");
+        console.log("SUBMIT: Taller creado correctamente", insertedData);
         toast.success("Taller creado correctamente");
         
         // Redirigir después de un breve retraso
