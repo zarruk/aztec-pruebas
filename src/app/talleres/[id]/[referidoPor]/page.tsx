@@ -1,7 +1,7 @@
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import TallerDetalle from "../components/taller-detalle";
+import { TallerPageClient } from "../taller-page-client";
 import type { Taller } from "@/lib/types";
 
 export default async function TallerDetalleConReferido({
@@ -22,6 +22,6 @@ export default async function TallerDetalleConReferido({
     redirect("/talleres");
   }
 
-  // En lugar de intentar establecer cookies directamente, pasamos el referidoPor como prop
-  return <TallerDetalle taller={taller as unknown as Taller} referidoPor={params.referidoPor} />;
+  // Pasamos el referidoPor como prop al componente cliente
+  return <TallerPageClient taller={taller as unknown as Taller} referidoPor={params.referidoPor} />;
 }

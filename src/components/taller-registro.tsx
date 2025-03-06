@@ -22,9 +22,10 @@ type RegistroFormValues = z.infer<typeof registroSchema>;
 
 interface TallerRegistroProps {
   taller: Taller;
+  referidoPor?: string;
 }
 
-export function TallerRegistro({ taller }: TallerRegistroProps) {
+export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -79,7 +80,8 @@ export function TallerRegistro({ taller }: TallerRegistroProps) {
         email: data.email,
         phone: data.telefono,
         tallerId: taller.id,
-        fecha_seleccionada: data.fecha_seleccionada
+        fecha_seleccionada: data.fecha_seleccionada,
+        referidoPor: referidoPor
       };
 
       console.log('Enviando datos a la API de registro:', registroData);

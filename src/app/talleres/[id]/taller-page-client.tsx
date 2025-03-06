@@ -9,9 +9,10 @@ import Image from 'next/image';
 
 interface TallerPageClientProps {
   taller: Taller;
+  referidoPor?: string;
 }
 
-export function TallerPageClient({ taller }: TallerPageClientProps) {
+export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps) {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -56,7 +57,7 @@ export function TallerPageClient({ taller }: TallerPageClientProps) {
             <div className="space-y-4">
               <h2 className="text-xl font-semibold">Herramientas que utilizaremos</h2>
               <ul className="list-disc pl-5 space-y-1">
-                {taller.herramientas.map((herramienta: string, index: number) => (
+                {taller.herramientas.map((herramienta: number, index: number) => (
                   <li key={index}>{herramienta}</li>
                 ))}
               </ul>
@@ -64,7 +65,7 @@ export function TallerPageClient({ taller }: TallerPageClientProps) {
           )}
           
           {/* Fechas para talleres live */}
-          {taller.tipo === 'live' && (taller.fecha_vivo || taller.fecha_live_build) && (
+          {(taller.tipo === 'vivo' || taller.tipo === 'live_build') && (taller.fecha_vivo || taller.fecha_live_build) && (
             <div className="space-y-4">
               <h2 className="text-xl font-semibold">Fechas programadas</h2>
               <div className="space-y-2">
@@ -96,7 +97,7 @@ export function TallerPageClient({ taller }: TallerPageClientProps) {
         {/* Sidebar - 1/3 del ancho en desktop */}
         <div className="space-y-6">
           {/* Componente de registro */}
-          <TallerRegistro taller={taller} />
+          <TallerRegistro taller={taller} referidoPor={referidoPor} />
           
           {/* Información adicional */}
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-6">
@@ -105,18 +106,18 @@ export function TallerPageClient({ taller }: TallerPageClientProps) {
               <div>
                 <p className="text-sm text-gray-500">Tipo de taller</p>
                 <p className="font-medium">
-                  {taller.tipo === 'live' ? 'Taller en vivo' : 'Taller pregrabado'}
+                  {(taller.tipo === 'vivo' || taller.tipo === 'live_build') ? 'Taller en vivo' : 'Taller pregrabado'}
                 </p>
               </div>
               
               <div>
                 <p className="text-sm text-gray-500">Precio</p>
                 <p className="font-medium">
-                  {taller.precio > 0 ? `$${taller.precio} MXN` : 'Gratuito'}
+                  {taller.precio && taller.precio > 0 ? `$${taller.precio} MXN` : 'Gratuito'}
                 </p>
               </div>
               
-              {taller.capacidad > 0 && (
+              {taller.capacidad && taller.capacidad > 0 && (
                 <div>
                   <p className="text-sm text-gray-500">Capacidad</p>
                   <p className="font-medium">{taller.capacidad} personas</p>
