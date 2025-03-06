@@ -55,11 +55,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
   }
 
   // Formulario para talleres en vivo
-  const {
-    register: registerVivo,
-    handleSubmit: handleSubmitVivo,
-    formState: { errors: errorsVivo },
-  } = useForm<FormDataVivo>({
+  const vivoForm = useForm<FormDataVivo>({
     resolver: zodResolver(tallerVivoSchema),
     defaultValues: {
       nombre: '',
@@ -70,11 +66,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
   });
 
   // Formulario para talleres pregrabados
-  const {
-    register: registerPregrabado,
-    handleSubmit: handleSubmitPregrabado,
-    formState: { errors: errorsPregrabado },
-  } = useForm<FormDataBase>({
+  const pregrabadoForm = useForm<FormDataBase>({
     resolver: zodResolver(baseSchema),
     defaultValues: {
       nombre: '',
@@ -82,11 +74,6 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
       telefono: '',
     }
   });
-
-  // Seleccionar el formulario correcto
-  const register = esVivoOLiveBuild ? registerVivo : registerPregrabado;
-  const errors = esVivoOLiveBuild ? errorsVivo : errorsPregrabado;
-  const handleSubmit = esVivoOLiveBuild ? handleSubmitVivo : handleSubmitPregrabado;
 
   const onSubmit = async (data: FormDataBase | FormDataVivo) => {
     setIsSubmitting(true);
@@ -140,136 +127,213 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
           </p>
         </div>
       ) : (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Precio del taller */}
-          <div className="bg-[#f8f5f0] p-4 rounded-md mb-4">
-            <p className="text-center font-medium">
-              {taller.precio && taller.precio > 0 
-                ? `Precio: COP $${taller.precio.toLocaleString('es-CO')} / USD $${precioUSD}` 
-                : 'Taller gratuito'}
-            </p>
-          </div>
+        <>
+          {esVivoOLiveBuild ? (
+            <form onSubmit={vivoForm.handleSubmit(onSubmit)} className="space-y-4">
+              {/* Precio del taller */}
+              <div className="bg-[#f8f5f0] p-4 rounded-md mb-4">
+                <p className="text-center font-medium">
+                  {taller.precio && taller.precio > 0 
+                    ? `Precio: COP $${taller.precio.toLocaleString('es-CO')} / USD $${precioUSD}` 
+                    : 'Taller gratuito'}
+                </p>
+              </div>
 
-          {/* Selección de fecha para talleres en vivo */}
-          {esVivoOLiveBuild && fechasDisponibles.length > 0 && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Selecciona una fecha
-              </label>
-              <select
-                {...registerVivo('fecha_seleccionada')}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+              {/* Selección de fecha para talleres en vivo */}
+              {fechasDisponibles.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Selecciona una fecha
+                  </label>
+                  <select
+                    {...vivoForm.register('fecha_seleccionada')}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+                  >
+                    <option value="">Selecciona una fecha</option>
+                    {fechasDisponibles.map((fechaObj) => (
+                      <option key={fechaObj.id} value={fechaObj.id}>
+                        {fechaObj.tipo} - {format(fechaObj.fecha, 'EEEE d MMMM, h:mm a', { locale: es })}
+                      </option>
+                    ))}
+                  </select>
+                  {vivoForm.formState.errors.fecha_seleccionada && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {vivoForm.formState.errors.fecha_seleccionada.message}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Campos comunes */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nombre completo
+                </label>
+                <input
+                  type="text"
+                  {...vivoForm.register('nombre')}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+                  placeholder="Tu nombre completo"
+                />
+                {vivoForm.formState.errors.nombre && (
+                  <p className="mt-1 text-sm text-red-600">{vivoForm.formState.errors.nombre.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Correo electrónico
+                </label>
+                <input
+                  type="email"
+                  {...vivoForm.register('email')}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+                  placeholder="tu@email.com"
+                />
+                {vivoForm.formState.errors.email && (
+                  <p className="mt-1 text-sm text-red-600">{vivoForm.formState.errors.email.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Teléfono
+                </label>
+                <input
+                  type="tel"
+                  {...vivoForm.register('telefono')}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+                  placeholder="+57 300 123 4567"
+                />
+                {vivoForm.formState.errors.telefono && (
+                  <p className="mt-1 text-sm text-red-600">{vivoForm.formState.errors.telefono.message}</p>
+                )}
+              </div>
+
+              {/* Información adicional para talleres en vivo */}
+              <div className="bg-[#f8f5f0] p-4 rounded-md">
+                <p className="text-sm text-gray-600 mb-2">
+                  Al registrarte recibirás:
+                </p>
+                <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
+                  <li>Enlace para unirte al taller en vivo</li>
+                  <li>Recordatorio 24 horas antes</li>
+                  <li>Grabación del taller después del evento</li>
+                  <li>Certificado de participación</li>
+                </ul>
+              </div>
+
+              {submitError && (
+                <div className="bg-red-50 text-red-800 p-3 rounded-md">
+                  <p>{submitError}</p>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out disabled:opacity-50"
               >
-                <option value="">Selecciona una fecha</option>
-                {fechasDisponibles.map((fechaObj) => (
-                  <option key={fechaObj.id} value={fechaObj.id}>
-                    {fechaObj.tipo} - {format(fechaObj.fecha, 'EEEE d MMMM, h:mm a', { locale: es })}
-                  </option>
-                ))}
-              </select>
-              {errorsVivo.fecha_seleccionada && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errorsVivo.fecha_seleccionada.message}
+                {isSubmitting ? 'Procesando...' : 'Registrarme ahora'}
+              </button>
+
+              {referidoPor && (
+                <p className="text-xs text-gray-500 text-center mt-2">
+                  Referido por: {referidoPor}
                 </p>
               )}
-            </div>
+            </form>
+          ) : (
+            <form onSubmit={pregrabadoForm.handleSubmit(onSubmit)} className="space-y-4">
+              {/* Precio del taller */}
+              <div className="bg-[#f8f5f0] p-4 rounded-md mb-4">
+                <p className="text-center font-medium">
+                  {taller.precio && taller.precio > 0 
+                    ? `Precio: COP $${taller.precio.toLocaleString('es-CO')} / USD $${precioUSD}` 
+                    : 'Taller gratuito'}
+                </p>
+              </div>
+
+              {/* Campos comunes */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nombre completo
+                </label>
+                <input
+                  type="text"
+                  {...pregrabadoForm.register('nombre')}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+                  placeholder="Tu nombre completo"
+                />
+                {pregrabadoForm.formState.errors.nombre && (
+                  <p className="mt-1 text-sm text-red-600">{pregrabadoForm.formState.errors.nombre.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Correo electrónico
+                </label>
+                <input
+                  type="email"
+                  {...pregrabadoForm.register('email')}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+                  placeholder="tu@email.com"
+                />
+                {pregrabadoForm.formState.errors.email && (
+                  <p className="mt-1 text-sm text-red-600">{pregrabadoForm.formState.errors.email.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Teléfono
+                </label>
+                <input
+                  type="tel"
+                  {...pregrabadoForm.register('telefono')}
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+                  placeholder="+57 300 123 4567"
+                />
+                {pregrabadoForm.formState.errors.telefono && (
+                  <p className="mt-1 text-sm text-red-600">{pregrabadoForm.formState.errors.telefono.message}</p>
+                )}
+              </div>
+
+              {/* Información adicional para talleres pregrabados */}
+              <div className="bg-[#f8f5f0] p-4 rounded-md">
+                <p className="text-sm text-gray-600 mb-2">
+                  Al registrarte recibirás:
+                </p>
+                <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
+                  <li>Acceso inmediato al taller pregrabado</li>
+                  <li>Material complementario</li>
+                  <li>Soporte por correo electrónico</li>
+                </ul>
+              </div>
+
+              {submitError && (
+                <div className="bg-red-50 text-red-800 p-3 rounded-md">
+                  <p>{submitError}</p>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out disabled:opacity-50"
+              >
+                {isSubmitting ? 'Procesando...' : 'Registrarme ahora'}
+              </button>
+
+              {referidoPor && (
+                <p className="text-xs text-gray-500 text-center mt-2">
+                  Referido por: {referidoPor}
+                </p>
+              )}
+            </form>
           )}
-
-          {/* Campos comunes para todos los tipos de taller */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Nombre completo
-            </label>
-            <input
-              type="text"
-              {...register('nombre')}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
-              placeholder="Tu nombre completo"
-            />
-            {errors.nombre && (
-              <p className="mt-1 text-sm text-red-600">{errors.nombre.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Correo electrónico
-            </label>
-            <input
-              type="email"
-              {...register('email')}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
-              placeholder="tu@email.com"
-            />
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Teléfono
-            </label>
-            <input
-              type="tel"
-              {...register('telefono')}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
-              placeholder="+57 300 123 4567"
-            />
-            {errors.telefono && (
-              <p className="mt-1 text-sm text-red-600">{errors.telefono.message}</p>
-            )}
-          </div>
-
-          {/* Campos adicionales para talleres pregrabados */}
-          {taller.tipo === 'pregrabado' && (
-            <div className="bg-[#f8f5f0] p-4 rounded-md">
-              <p className="text-sm text-gray-600 mb-2">
-                Al registrarte recibirás:
-              </p>
-              <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
-                <li>Acceso inmediato al taller pregrabado</li>
-                <li>Material complementario</li>
-                <li>Soporte por correo electrónico</li>
-              </ul>
-            </div>
-          )}
-
-          {/* Campos adicionales para talleres en vivo */}
-          {esVivoOLiveBuild && (
-            <div className="bg-[#f8f5f0] p-4 rounded-md">
-              <p className="text-sm text-gray-600 mb-2">
-                Al registrarte recibirás:
-              </p>
-              <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
-                <li>Enlace para unirte al taller en vivo</li>
-                <li>Recordatorio 24 horas antes</li>
-                <li>Grabación del taller después del evento</li>
-                <li>Certificado de participación</li>
-              </ul>
-            </div>
-          )}
-
-          {submitError && (
-            <div className="bg-red-50 text-red-800 p-3 rounded-md">
-              <p>{submitError}</p>
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out disabled:opacity-50"
-          >
-            {isSubmitting ? 'Procesando...' : 'Registrarme ahora'}
-          </button>
-
-          {referidoPor && (
-            <p className="text-xs text-gray-500 text-center mt-2">
-              Referido por: {referidoPor}
-            </p>
-          )}
-        </form>
+        </>
       )}
     </div>
   );

@@ -28,6 +28,7 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
               alt="Aztec" 
               width={120} 
               height={40}
+              priority
             />
           </div>
           <Link href="/talleres" className="text-emerald-700 hover:text-emerald-800 border border-emerald-700 rounded-md px-4 py-2 text-sm font-medium">
@@ -78,21 +79,19 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
                 <h2 className="text-xl font-semibold mb-4">Herramientas que utilizaremos</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {taller.herramientas.map((herramientaId: number, index: number) => {
-                    // Determinar la imagen de la herramienta basada en el ID
-                    const herramientaImg = `/herr-${herramientaId}.png`;
-                    
+                    // Usar el ID de la herramienta para la imagen
                     return (
                       <div key={index} className="bg-[#f8f5f0] p-4 rounded-lg text-center">
                         <div className="flex justify-center items-center h-16 mb-2">
                           <Image 
-                            src={herramientaImg}
+                            src={`/herr-${herramientaId}.png`}
                             alt={`Herramienta ${index + 1}`}
                             width={48}
                             height={48}
                             className="object-contain"
                           />
                         </div>
-                        <p className="text-sm font-medium">Herramienta {herramientaId}</p>
+                        <p className="text-sm font-medium">Herramienta {index + 1}</p>
                       </div>
                     );
                   })}
