@@ -29,9 +29,9 @@ export async function POST(request: NextRequest) {
     
     // Obtener datos del cuerpo de la solicitud
     const body = await request.json().catch(() => ({}));
-    const { name, email, phone, tallerId } = body;
+    const { name, email, phone, tallerId, referidoPor } = body;
 
-    console.log('Datos recibidos:', { name, email, phone, tallerId });
+    console.log('Datos recibidos:', { name, email, phone, tallerId, referidoPor });
 
     // Validar datos
     if (!name || !email || !phone || !tallerId) {
@@ -50,6 +50,19 @@ export async function POST(request: NextRequest) {
         { error: 'ID de taller inválido', details: 'El ID del taller debe ser un número entero válido' },
         { status: 400 }
       );
+    }
+
+    // Convertir referidoPor a un entero seguro si existe
+    let referidoPorSafe = undefined;
+    if (referidoPor !== undefined) {
+      referidoPorSafe = safeInteger(referidoPor);
+      if (referidoPorSafe !== parseInt(String(referidoPor))) {
+        console.log('ID de referido inválido:', referidoPor);
+        return NextResponse.json(
+          { error: 'ID de referido inválido', details: 'El ID del referido debe ser un número entero válido' },
+          { status: 400 }
+        );
+      }
     }
 
     // Limpiar el número de teléfono
@@ -267,6 +280,7 @@ export async function POST(request: NextRequest) {
             usuario_id: usuario_id,
             taller_id: tallerIdSafe, // Usar el ID seguro
             estado: 'pendiente',
+            referido_por: referidoPorSafe, // Añadir el ID del referido si existe
             datos_adicionales: { 
               origen: 'web',
               fecha_registro: new Date().toISOString()

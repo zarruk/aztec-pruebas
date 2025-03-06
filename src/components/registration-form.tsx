@@ -5,7 +5,7 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import { safeInteger } from '@/lib/utils';
 
-export default function RegistrationForm({ tallerId }: { tallerId: number }) {
+export default function RegistrationForm({ tallerId, referidoPor }: { tallerId: number; referidoPor?: string }) {
   // Validar el ID del taller
   const tallerIdSafe = safeInteger(tallerId);
   
@@ -41,7 +41,7 @@ export default function RegistrationForm({ tallerId }: { tallerId: number }) {
     setSubmitStatus(null);
     
     // Lógica para manejar el envío del formulario
-    console.log('Datos de registro:', { name, email, phone, tallerId: tallerIdSafe });
+    console.log('Datos de registro:', { name, email, phone, tallerId: tallerIdSafe, referidoPor });
     
     // Enviar los datos al servidor
     try {
@@ -50,7 +50,13 @@ export default function RegistrationForm({ tallerId }: { tallerId: number }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email, phone, tallerId: tallerIdSafe }),
+        body: JSON.stringify({ 
+          name, 
+          email, 
+          phone, 
+          tallerId: tallerIdSafe,
+          referidoPor: referidoPor ? parseInt(referidoPor) : undefined
+        }),
       });
       
       const data = await response.json();
