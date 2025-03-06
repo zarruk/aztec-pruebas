@@ -2,7 +2,7 @@ import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import TallerDetalle from "../components/taller-detalle";
-import type { Taller } from "@/types/types";
+import type { Taller } from "@/lib/types";
 
 export default async function TallerDetalleConReferido({
   params,
@@ -22,13 +22,6 @@ export default async function TallerDetalleConReferido({
     redirect("/talleres");
   }
 
-  // Guardar la información del referido en la sesión o cookies para usarla durante el registro
-  if (params.referidoPor) {
-    cookies().set("referidoPor", params.referidoPor, {
-      path: "/",
-      maxAge: 60 * 60 * 24, // 1 día
-    });
-  }
-
+  // En lugar de intentar establecer cookies directamente, pasamos el referidoPor como prop
   return <TallerDetalle taller={taller as unknown as Taller} referidoPor={params.referidoPor} />;
 }
