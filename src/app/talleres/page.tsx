@@ -13,14 +13,17 @@ const LiveBuildAlert = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setVisible(prev => !prev);
-    }, 800);
+    }, 600); // Más rápido para llamar más la atención
     
     return () => clearInterval(interval);
   }, []);
   
   return (
-    <div className={`bg-red-600 text-white font-bold py-1 px-3 rounded-md text-sm absolute top-2 left-2 ${visible ? 'opacity-100' : 'opacity-50'} transition-opacity duration-300`}>
-      LIVE BUILD PRONTO
+    <div className={`absolute top-2 left-2 flex items-center ${visible ? 'opacity-100' : 'opacity-70'} transition-opacity duration-300`}>
+      <div className="bg-red-600 text-white font-bold py-1 px-3 rounded-md text-sm flex items-center shadow-lg shadow-red-500/50 border border-red-400">
+        <span className="inline-block w-3 h-3 rounded-full bg-white mr-2 animate-pulse"></span>
+        LIVE BUILD PRONTO
+      </div>
     </div>
   );
 };
@@ -317,7 +320,7 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
                           PRÓXIMAMENTE
                         </div>
                       )}
-                      {taller.tipo === 'live_build' && esFechaFutura(taller.fecha) && (
+                      {taller.tipo === 'pregrabado' && esFechaFutura(taller.fecha) && (
                         <LiveBuildAlert />
                       )}
                     </div>
