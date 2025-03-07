@@ -21,11 +21,15 @@ export default function LoginPage() {
     setError('');
 
     try {
+      // Usar la URL base de las variables de entorno o window.location.origin como respaldo
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || window.location.origin;
+      console.log('Usando URL base para redirección:', baseUrl);
+      
       // Enviar enlace mágico al correo
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${baseUrl}/auth/callback`,
         },
       });
 
