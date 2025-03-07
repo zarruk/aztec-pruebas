@@ -19,10 +19,10 @@ const LiveBuildAlert = () => {
   }, []);
   
   return (
-    <div className={`absolute top-2 left-2 flex items-center ${visible ? 'opacity-100' : 'opacity-70'} transition-opacity duration-300`}>
-      <div className="bg-red-600 text-white font-bold py-1 px-3 rounded-md text-sm flex items-center shadow-lg shadow-red-500/50 border border-red-400">
-        <span className="inline-block w-3 h-3 rounded-full bg-white mr-2 animate-pulse"></span>
-        LIVE BUILD PRONTO
+    <div className={`absolute bottom-2 left-2 flex items-center ${visible ? 'opacity-100' : 'opacity-60'} transition-opacity duration-300 z-10`}>
+      <div className="bg-red-600 text-white font-bold py-2 px-4 rounded-md text-sm flex items-center shadow-lg shadow-red-500/50 border border-red-400">
+        <span className="inline-block w-3 h-3 rounded-full bg-white mr-2 animate-ping"></span>
+        <span className="uppercase tracking-wider">Live Build Pronto</span>
       </div>
     </div>
   );
