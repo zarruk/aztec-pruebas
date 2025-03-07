@@ -21,15 +21,15 @@ export default function LoginPage() {
     setError('');
 
     try {
-      // Usar la URL base de las variables de entorno o una URL de producción por defecto
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://aztec-nuevo-ii.vercel.app';
-      console.log('Usando URL base para redirección:', baseUrl);
+      // URL HARDCODEADA para redirección
+      const SITE_URL = 'https://aztec-nuevo-ii.onrender.com';
+      console.log('Usando URL hardcodeada para redirección:', SITE_URL);
       
       // Enviar enlace mágico al correo
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${baseUrl}/auth/callback`,
+          emailRedirectTo: `${SITE_URL}/auth/callback`,
         },
       });
 

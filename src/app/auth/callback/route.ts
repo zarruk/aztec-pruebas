@@ -7,9 +7,9 @@ export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
   
-  // Obtener la URL base para redirecciones
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://aztec-nuevo-ii.vercel.app';
-  console.log('URL base para redirección en callback:', baseUrl);
+  // URL HARDCODEADA para redirección
+  const SITE_URL = 'https://aztec-nuevo-ii.onrender.com';
+  console.log('URL hardcodeada para redirección en callback:', SITE_URL);
 
   if (code) {
     const cookieStore = cookies();
@@ -20,5 +20,5 @@ export async function GET(request: NextRequest) {
   }
 
   // Redirigir al dashboard después de la autenticación
-  return NextResponse.redirect(new URL('/dashboard', baseUrl));
+  return NextResponse.redirect(`${SITE_URL}/dashboard`);
 } 
