@@ -18,9 +18,9 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
   const precioUSD = taller.precio ? Math.round((taller.precio / 4000) * 10) / 10 : 0;
 
   return (
-    <div className="bg-[#f8f5f0] min-h-screen">
+    <div className="bg-[#fffdf9] min-h-screen">
       {/* Navbar - FIJO */}
-      <header className="bg-[#f2efe7] py-1 px-3 md:px-4 fixed top-0 left-0 right-0 z-50 shadow-sm">
+      <header className="bg-[#fffdf9] py-1 px-3 md:px-4 fixed top-0 left-0 right-0 z-50 shadow-sm">
         <div className="container mx-auto w-[65%] flex justify-start items-center">
           <Link href="/" className="flex items-center">
             <img 
@@ -38,7 +38,7 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
       {/* Contenido principal */}
       <div className="container mx-auto px-4 py-8 w-[65%]">
         {/* Encabezado del taller */}
-        <div className="bg-emerald-800 text-white py-10 px-6 rounded-lg mb-8 text-center">
+        <div className="bg-[#2a7c60] text-white py-10 px-6 rounded-lg mb-8 text-center">
           <h1 className="text-3xl font-bold mb-4">{taller.nombre}</h1>
           <p className="text-lg mb-6">
             {taller.tipo === 'pregrabado' 
@@ -79,7 +79,7 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
                   {taller.herramientas.map((herramienta: Herramienta, index: number) => (
                     <div 
                       key={herramienta.id} 
-                      className="bg-[#f8f5f0] p-3 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col items-center flex-shrink-0"
+                      className="bg-[#fffdf9] p-3 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col items-center flex-shrink-0"
                       style={{ width: '187px', height: '272px' }}
                     >
                       <div className="flex justify-center items-center mb-4 bg-white p-3 rounded-lg w-30 h-30 border border-gray-200">
@@ -90,12 +90,12 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
                             className="w-28 h-28 object-contain"
                           />
                         ) : (
-                          <div className="w-16 h-16 bg-emerald-200 rounded-full flex items-center justify-center text-emerald-800 font-bold text-xl">
+                          <div className="w-16 h-16 bg-[#2a7c60] rounded-full flex items-center justify-center text-white font-bold text-xl">
                             {index + 1}
                           </div>
                         )}
                       </div>
-                      <h3 className="text-base font-semibold mb-2 text-[#1b5e4f] text-center">{herramienta.nombre}</h3>
+                      <h3 className="text-base font-semibold mb-2 text-[#2a7c60] text-center">{herramienta.nombre}</h3>
                       <p className="text-xs text-gray-600 text-center">{herramienta.descripcion}</p>
                     </div>
                   ))}
@@ -122,7 +122,7 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
                           <p className="text-sm text-gray-500">{format(new Date(taller.fecha), 'd \'de\' MMMM', { locale: es })}</p>
                           <p className="text-sm text-gray-500">{format(new Date(taller.fecha), 'h:mm a', { locale: es })}</p>
                         </div>
-                        <div className="bg-emerald-100 text-emerald-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                        <div className="bg-[#2a7c60] text-white text-xs font-medium px-2.5 py-0.5 rounded">
                           {taller.capacidad && taller.capacidad > 0 ? `${taller.capacidad} cupos disponibles` : 'Cupos limitados'}
                         </div>
                       </div>

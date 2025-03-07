@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -66,22 +66,32 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
   // Determinar si es un taller en vivo
   const esVivoOLiveBuild = taller.tipo === 'vivo' || taller.tipo === 'live_build';
 
-  // Determinar fechas disponibles
-  const fechasDisponibles = [];
-  if (taller.fecha_vivo) {
-    fechasDisponibles.push({
-      id: 'fecha_vivo',
-      fecha: new Date(taller.fecha_vivo),
-      tipo: 'Taller en vivo',
-    });
-  }
-  if (taller.fecha_live_build) {
-    fechasDisponibles.push({
-      id: 'fecha_live_build',
-      fecha: new Date(taller.fecha_live_build),
-      tipo: 'Live build',
-    });
-  }
+  // Corregir la parte que genera fechasDisponibles
+  const fechasDisponibles = useMemo(() => {
+    const fechas = [];
+    
+    // Usar la fecha general del taller
+    if (taller.fecha) {
+      fechas.push({
+        id: taller.fecha,
+        tipo: taller.tipo === 'vivo' ? 'En vivo' : 'Live Build',
+        fecha: new Date(taller.fecha)
+      });
+    }
+    
+    // Si hay fechas adicionales en el array de fechas
+    if (taller.fechas && Array.isArray(taller.fechas)) {
+      taller.fechas.forEach(fechaObj => {
+        const fecha = typeof fechaObj === 'string' 
+          ? { id: fechaObj, tipo: 'Sesión adicional', fecha: new Date(fechaObj) }
+          : { id: fechaObj.fecha, tipo: 'Sesión adicional', fecha: new Date(fechaObj.fecha) };
+        
+        fechas.push(fecha);
+      });
+    }
+    
+    return fechas;
+  }, [taller]);
 
   // Formulario para talleres en vivo
   const vivoForm = useForm<FormDataVivo>({
@@ -183,9 +193,9 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
 
       {submitSuccess ? (
         <div className="text-center py-4">
-          <div className="bg-[#e6f0ed] text-[#1b5e4f] p-4 rounded-md mb-4">
-            <p>Tu registro ha sido completado con éxito.</p>
-            <p className="mt-2">Te hemos enviado un correo con los detalles.</p>
+          <div className="bg-[#2a7c60] bg-opacity-10 text-[#2a7c60] p-4 rounded-md mb-4">
+            <p className="font-medium">¡Registro exitoso!</p>
+            <p className="text-sm mt-1">Gracias por registrarte. Te contactaremos pronto con más detalles.</p>
           </div>
           <p className="text-gray-600 mt-4">
             {taller.tipo === 'pregrabado' 
@@ -198,7 +208,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
           {esVivoOLiveBuild ? (
             <form onSubmit={vivoForm.handleSubmit(onSubmit)} className="space-y-4">
               {/* Precio del taller */}
-              <div className="bg-[#f8f5f0] p-4 rounded-md mb-4">
+              <div className="bg-[#fffdf9] p-4 rounded-md mb-4">
                 <p className="text-center font-medium">
                   {taller.precio && taller.precio > 0 
                     ? `Precio: COP $${taller.precio.toLocaleString('es-CO')} / USD $${precioUSD}` 
@@ -208,25 +218,25 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
 
               {/* Selección de fecha para talleres en vivo */}
               {fechasDisponibles.length > 0 && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Selecciona una fecha
-                  </label>
-                  <select
-                    {...vivoForm.register('fecha_seleccionada')}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#1b5e4f] focus:border-[#1b5e4f]"
-                  >
-                    <option value="">Selecciona una fecha</option>
-                    {fechasDisponibles.map((fechaObj) => (
-                      <option key={fechaObj.id} value={fechaObj.id}>
-                        {fechaObj.tipo} - {format(fechaObj.fecha, 'EEEE d MMMM, h:mm a', { locale: es })}
-                      </option>
-                    ))}
-                  </select>
+                <div className="bg-[#fffdf9] p-4 rounded-md">
+                  <h4 className="font-medium text-gray-700 mb-3">Selecciona una fecha</h4>
+                  
+                  {fechasDisponibles.map((fechaObj) => (
+                    <div key={fechaObj.id} className="mb-2 last:mb-0">
+                      <label className="flex items-start">
+                        <input
+                          type="radio"
+                          value={fechaObj.id}
+                          {...vivoForm.register('fecha_seleccionada')}
+                          className="mt-1 mr-2"
+                        />
+                        <span>{fechaObj.tipo} - {format(fechaObj.fecha, 'EEEE d MMMM, h:mm a', { locale: es })}</span>
+                      </label>
+                    </div>
+                  ))}
+                  
                   {vivoForm.formState.errors.fecha_seleccionada && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {vivoForm.formState.errors.fecha_seleccionada.message}
-                    </p>
+                    <p className="mt-1 text-xs text-red-500">{vivoForm.formState.errors.fecha_seleccionada.message}</p>
                   )}
                 </div>
               )}
@@ -328,7 +338,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
               </div>
 
               {/* Información adicional para talleres en vivo */}
-              <div className="bg-[#f8f5f0] p-4 rounded-md">
+              <div className="bg-[#fffdf9] p-4 rounded-md">
                 <p className="text-sm text-gray-600 mb-2">
                   Al registrarte recibirás:
                 </p>
@@ -353,7 +363,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-[#1b5e4f] hover:bg-[#0d4a3d] text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out disabled:opacity-50"
+                className="w-full bg-[#2a7c60] hover:bg-[#1e5a46] text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out disabled:opacity-50"
               >
                 {isSubmitting ? 'Procesando...' : 'Registrarme ahora'}
               </button>
@@ -367,7 +377,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
           ) : (
             <form onSubmit={pregrabadoForm.handleSubmit(onSubmit)} className="space-y-4">
               {/* Precio del taller */}
-              <div className="bg-[#f8f5f0] p-4 rounded-md mb-4">
+              <div className="bg-[#fffdf9] p-4 rounded-md mb-4">
                 <p className="text-center font-medium">
                   {taller.precio && taller.precio > 0 
                     ? `Precio: COP $${taller.precio.toLocaleString('es-CO')} / USD $${precioUSD}` 
@@ -472,7 +482,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
               </div>
 
               {/* Información adicional para talleres pregrabados */}
-              <div className="bg-[#f8f5f0] p-4 rounded-md">
+              <div className="bg-[#fffdf9] p-4 rounded-md">
                 <p className="text-sm text-gray-600 mb-2">
                   Al registrarte recibirás:
                 </p>
@@ -496,7 +506,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-[#1b5e4f] hover:bg-[#0d4a3d] text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out disabled:opacity-50"
+                className="w-full bg-[#2a7c60] hover:bg-[#1e5a46] text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out disabled:opacity-50"
               >
                 {isSubmitting ? 'Procesando...' : 'Registrarme ahora'}
               </button>
