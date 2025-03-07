@@ -23,7 +23,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: false, // Desactivamos esto para manejar manualmente el callback
+    detectSessionInUrl: true,
     flowType: 'pkce'
   }
 });
@@ -31,16 +31,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 // Configurar la URL de redirección para la autenticación
 const redirectUrl = `${getSiteUrl()}/auth/callback`;
 console.log('Supabase configurado con URL de redirección:', redirectUrl);
-
-// Función para iniciar sesión con enlace mágico
-export async function signInWithMagicLink(email: string) {
-  return supabase.auth.signInWithOtp({
-    email,
-    options: {
-      emailRedirectTo: redirectUrl
-    }
-  });
-}
 
 // Inicializar el cliente de Supabase y configurar el listener de eventos de autenticación
 supabase.auth.onAuthStateChange((event, session) => {
@@ -76,6 +66,30 @@ checkInitialSession();
 
 export function createSupabaseClient() {
   return supabase;
+}
+
+// Función para iniciar sesión con correo y contraseña
+export async function signInWithPassword(email: string, password: string) {
+  return supabase.auth.signInWithPassword({
+    email,
+    password
+  });
+}
+
+// Función para registrar un nuevo usuario
+export async function signUp(email: string, password: string) {
+  return supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo: redirectUrl
+    }
+  });
+}
+
+// Función para cerrar sesión
+export async function signOut() {
+  return supabase.auth.signOut();
 }
 
 // Función de ayuda para depurar

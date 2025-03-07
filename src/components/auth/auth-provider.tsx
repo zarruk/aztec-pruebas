@@ -6,11 +6,16 @@ import { supabase } from '@/lib/supabase-browser';
 import { Session, User } from '@supabase/supabase-js';
 import { SITE_URL } from '@/lib/auth-config';
 
+// Lista de correos autorizados
+const ALLOWED_EMAILS = ['martin@azteclab.co', 'salomon@azteclab.co'];
+
 type AuthContextType = {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
   signOut: () => Promise<void>;
+  signInWithPassword: (email: string, password: string) => Promise<{ error: any | null }>;
+  signUp: (email: string, password: string) => Promise<{ error: any | null }>;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -18,6 +23,8 @@ const AuthContext = createContext<AuthContextType>({
   session: null,
   isLoading: true,
   signOut: async () => {},
+  signInWithPassword: async () => ({ error: null }),
+  signUp: async () => ({ error: null }),
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -58,8 +65,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push('/login');
   };
 
+  const signInWithPassword = async (email: string, password: string) => {
+    // Verificar si el correo está autorizado
+    if (!ALLOWED_EMAILS.includes(email)) {
+      return { error: new Error('Correo electrónico no autorizado. Solo usuarios específicos pueden acceder al sistema.') };
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (!error) {
+      router.push('/dashboard');
+    }
+
+    return { error };
+  };
+
+  const signUp = async (email: string, password: string) => {
+    // Verificar si el correo está autorizado
+    if (!ALLOWED_EMAILS.includes(email)) {
+      return { error: new Error('Correo electrónico no autorizado. Solo usuarios específicos pueden crear cuentas.') };
+    }
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    return { error };
+  };
+
   return (
-    <AuthContext.Provider value={{ user, session, isLoading, signOut }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      session, 
+      isLoading, 
+      signOut,
+      signInWithPassword,
+      signUp
+    }}>
       {children}
     </AuthContext.Provider>
   );
