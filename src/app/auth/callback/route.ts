@@ -3,6 +3,9 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+// Lista de correos autorizados
+const ALLOWED_EMAILS = ['martin@azteclab.co', 'salomon@azteclab.co'];
+
 // Forzar que esta ruta sea dinámica para evitar problemas de caché
 export const dynamic = 'force-dynamic';
 
@@ -14,7 +17,15 @@ export async function GET(request: NextRequest) {
   
   // URL HARDCODEADA para redirección
   const SITE_URL = 'https://aztec-nuevo.onrender.com';
-  console.log('URL hardcodeada para redirección en callback:', SITE_URL);
+  // URL para desarrollo local
+  const LOCAL_URL = 'http://localhost:3000';
+  
+  // Determinar la URL base según el entorno
+  const baseUrl = request.headers.get('host')?.includes('localhost') 
+    ? LOCAL_URL 
+    : SITE_URL;
+  
+  console.log('URL base para redirección:', baseUrl);
   console.log('URL completa del callback:', request.url);
   console.log('Código de autenticación recibido:', code ? 'Sí' : 'No');
   
@@ -22,7 +33,7 @@ export async function GET(request: NextRequest) {
   if (error || error_description) {
     console.error('Error en la URL del callback:', error, error_description);
     return NextResponse.redirect(
-      `${SITE_URL}/login?error=${encodeURIComponent(error_description || error || 'Error desconocido')}`
+      `${baseUrl}/login?error=${encodeURIComponent(error_description || error || 'Error desconocido')}`
     );
   }
 
@@ -30,7 +41,7 @@ export async function GET(request: NextRequest) {
   if (!code) {
     console.error('No se recibió código de autenticación en el callback');
     return NextResponse.redirect(
-      `${SITE_URL}/login?error=${encodeURIComponent('No se recibió código de autenticación')}`
+      `${baseUrl}/login?error=${encodeURIComponent('No se recibió código de autenticación')}`
     );
   }
 
@@ -49,23 +60,43 @@ export async function GET(request: NextRequest) {
       console.error('Detalles del error:', JSON.stringify(error));
       // Redirigir a la página de login con un mensaje de error
       return NextResponse.redirect(
-        `${SITE_URL}/login?error=${encodeURIComponent('Error de autenticación: ' + error.message)}`
+        `${baseUrl}/login?error=${encodeURIComponent('Error de autenticación: ' + error.message)}`
       );
     }
     
-    console.log('Sesión establecida correctamente:', data.session ? 'Sí' : 'No');
-    if (data.session) {
-      console.log('ID de usuario:', data.session.user.id);
-      console.log('Email de usuario:', data.session.user.email);
+    // Verificar si el usuario tiene una sesión
+    if (!data.session) {
+      console.error('No se pudo establecer la sesión');
+      return NextResponse.redirect(
+        `${baseUrl}/login?error=${encodeURIComponent('No se pudo establecer la sesión')}`
+      );
     }
     
+    // Verificar si el correo del usuario está en la lista de permitidos
+    const userEmail = data.session.user.email;
+    console.log('Email del usuario:', userEmail);
+    
+    if (!userEmail || !ALLOWED_EMAILS.includes(userEmail)) {
+      console.error('Acceso denegado: correo no autorizado');
+      
+      // Cerrar la sesión del usuario no autorizado
+      await supabase.auth.signOut();
+      
+      return NextResponse.redirect(
+        `${baseUrl}/login?error=${encodeURIComponent('Acceso denegado: solo los usuarios autorizados pueden acceder al sistema')}`
+      );
+    }
+    
+    console.log('Sesión establecida correctamente para usuario autorizado:', userEmail);
+    console.log('ID de usuario:', data.session.user.id);
+    
     // Redirigir al dashboard después de la autenticación exitosa
-    return NextResponse.redirect(`${SITE_URL}/dashboard`);
+    return NextResponse.redirect(`${baseUrl}/dashboard`);
   } catch (err: any) {
     console.error('Excepción en el callback de autenticación:', err);
     console.error('Mensaje de error:', err.message);
     return NextResponse.redirect(
-      `${SITE_URL}/login?error=${encodeURIComponent('Error inesperado: ' + err.message)}`
+      `${baseUrl}/login?error=${encodeURIComponent('Error inesperado: ' + err.message)}`
     );
   }
 } 

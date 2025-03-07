@@ -8,22 +8,13 @@ import { Button } from '@/components/ui/button';
 import { FormError } from '@/components/ui/form-error';
 import { toast } from 'react-hot-toast';
 
-// Lista de correos autorizados para crear cuentas
+// Lista de correos autorizados
 const ALLOWED_EMAILS = ['martin@azteclab.co', 'salomon@azteclab.co'];
-
-// Usuario hardcodeado para desarrollo local
-const DEV_USER = {
-  email: 'salomon@azteclab.co',
-  password: 'azteclab123'
-};
 
 // Componente interno que usa useSearchParams
 function LoginForm() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [isSignUp, setIsSignUp] = useState(false);
   const [isLocalDev, setIsLocalDev] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -36,9 +27,6 @@ function LoginForm() {
     
     if (isLocal) {
       console.log('Modo de desarrollo local detectado');
-      // Pre-llenar con el usuario de desarrollo
-      setEmail(DEV_USER.email);
-      setPassword(DEV_USER.password);
     }
   }, []);
 
@@ -62,120 +50,47 @@ function LoginForm() {
     checkSession();
   }, [searchParams, router]);
 
-  // Función para traducir mensajes de error de Supabase
-  const translateError = (errorMessage: string) => {
-    const errorMap: Record<string, string> = {
-      'Invalid login credentials': 'Credenciales de inicio de sesión inválidas. Verifica tu correo y contraseña.',
-      'Email not confirmed': 'El correo electrónico no ha sido confirmado. Por favor, verifica tu bandeja de entrada.',
-      'User not found': 'Usuario no encontrado. ¿Estás seguro de que tienes una cuenta?',
-      'Email already in use': 'Este correo ya está registrado. Intenta iniciar sesión.',
-      'Password should be at least 6 characters': 'La contraseña debe tener al menos 6 caracteres.',
-    };
-
-    return errorMap[errorMessage] || errorMessage;
-  };
-
   // Función para iniciar sesión en modo de desarrollo local
   const handleLocalDevLogin = () => {
     console.log('Iniciando sesión en modo desarrollo local');
     // Simular inicio de sesión exitoso
-    toast.success(`Inicio de sesión de desarrollo como ${email}`);
+    toast.success(`Inicio de sesión de desarrollo como salomon@azteclab.co`);
     // Redirigir al dashboard
     router.push('/dashboard');
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Función para iniciar sesión con Google
+  const handleGoogleLogin = async () => {
     setLoading(true);
     setError('');
 
     try {
-      console.log('Iniciando proceso de autenticación para:', email);
-      
       // Si estamos en desarrollo local, usar el inicio de sesión simplificado
       if (isLocalDev) {
         handleLocalDevLogin();
         return;
       }
-      
-      let response;
-      
-      if (isSignUp) {
-        // Verificar si el correo está autorizado para crear cuenta
-        if (!ALLOWED_EMAILS.includes(email)) {
-          throw new Error('No estás autorizado para crear una cuenta. Solo los administradores pueden registrarse.');
-        }
 
-        // Registrar nuevo usuario
-        response = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            // Crear usuario sin necesidad de confirmación por correo
-            data: {
-              role: 'admin'
-            }
+      // Iniciar sesión con Google
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin + '/auth/callback',
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
           }
-        });
-
-        // Verificar si hay errores específicos
-        if (response.error) {
-          throw new Error(translateError(response.error.message));
         }
+      });
 
-        // Si el registro fue exitoso pero no hay sesión, intentar iniciar sesión automáticamente
-        if (!response.data.session) {
-          console.log('Cuenta creada, intentando iniciar sesión automáticamente...');
-          
-          // Iniciar sesión automáticamente después de crear la cuenta
-          const loginResponse = await supabase.auth.signInWithPassword({
-            email,
-            password
-          });
-          
-          if (loginResponse.error) {
-            console.log('Error al iniciar sesión automáticamente:', loginResponse.error.message);
-            toast.success('Cuenta creada correctamente. Ahora puedes iniciar sesión manualmente.');
-            setIsSignUp(false);
-            setPassword('');
-            setLoading(false);
-            return;
-          }
-          
-          response = loginResponse;
-        }
-      } else {
-        // Iniciar sesión con usuario existente
-        response = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-      }
-
-      const { error, data } = response;
+      if (error) throw error;
       
-      if (error) {
-        throw new Error(translateError(error.message));
-      }
-      
-      if (data.session) {
-        toast.success(`Inicio de sesión exitoso como ${data.session.user.email}`);
-        console.log('Detalles de la sesión:', {
-          userId: data.session.user.id,
-          email: data.session.user.email,
-          lastSignIn: new Date(data.session.user.last_sign_in_at || '').toLocaleString()
-        });
-        router.push('/dashboard');
-      } else {
-        // Este caso no debería ocurrir normalmente
-        throw new Error('No se pudo establecer la sesión. Intenta nuevamente.');
-      }
+      // La redirección a Google ocurrirá automáticamente
+      console.log('Redirigiendo a Google para autenticación...');
     } catch (err: any) {
-      const errorMessage = translateError(err.message);
-      setError(errorMessage);
-      toast.error(errorMessage);
+      setError(err.message || 'Error al iniciar sesión con Google');
+      toast.error('Error al iniciar sesión con Google');
       console.error('Error detallado:', err);
-    } finally {
       setLoading(false);
     }
   };
@@ -185,90 +100,51 @@ function LoginForm() {
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900">
-            {isSignUp ? 'Crear cuenta' : 'Acceso al Dashboard'}
+            Acceso al Dashboard
           </h1>
           <p className="mt-2 text-gray-600">
-            {isSignUp 
-              ? 'Ingresa tus datos para crear una cuenta' 
-              : 'Ingresa tus credenciales para acceder'}
+            Inicia sesión con tu cuenta de Google
           </p>
           {isLocalDev && (
             <p className="mt-2 text-xs bg-blue-100 p-2 rounded">
-              Modo de desarrollo local activo. Las credenciales están pre-llenadas.
+              Modo de desarrollo local activo. El inicio de sesión será simulado.
             </p>
           )}
-          {isSignUp && (
-            <p className="mt-2 text-xs text-gray-500">
-              Nota: Solo los correos autorizados pueden crear cuentas.
-              <br />
-              Las credenciales se almacenan de forma segura en Supabase.
-            </p>
-          )}
+          <p className="mt-2 text-xs text-gray-500">
+            Nota: Solo los correos autorizados pueden acceder al sistema.
+          </p>
         </div>
 
-        <form onSubmit={handleLogin} className="mt-8 space-y-6">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Correo electrónico
-            </label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="mt-1"
-              placeholder="tu@email.com"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Contraseña
-            </label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="mt-1"
-              placeholder="********"
-              minLength={6}
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              {isSignUp ? 'La contraseña debe tener al menos 6 caracteres' : ''}
-            </p>
-          </div>
-
+        <div className="mt-8 space-y-6">
           {error && <FormError>{error}</FormError>}
 
           <Button
-            type="submit"
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+            type="button"
+            onClick={handleGoogleLogin}
+            className="w-full bg-white hover:bg-gray-100 text-gray-800 border border-gray-300 flex items-center justify-center py-2 px-4 space-x-2"
             disabled={loading}
           >
-            {loading 
-              ? 'Procesando...' 
-              : isLocalDev
-                ? 'Iniciar sesión (Modo desarrollo)'
-                : isSignUp 
-                  ? 'Crear cuenta' 
-                  : 'Iniciar sesión'}
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px">
+              <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
+              <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
+              <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
+              <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
+            </svg>
+            <span>
+              {loading 
+                ? 'Procesando...' 
+                : isLocalDev
+                  ? 'Iniciar sesión con Google (Simulado)'
+                  : 'Iniciar sesión con Google'}
+            </span>
           </Button>
           
-          <div className="text-center mt-4">
-            <button
-              type="button"
-              className="text-sm text-emerald-600 hover:text-emerald-800"
-              onClick={() => setIsSignUp(!isSignUp)}
-            >
-              {isSignUp 
-                ? '¿Ya tienes cuenta? Inicia sesión' 
-                : '¿No tienes cuenta? Regístrate'}
-            </button>
+          <div className="text-center mt-4 text-sm text-gray-500">
+            Solo los usuarios autorizados pueden acceder al sistema.
+            <br />
+            Si tienes problemas, contacta al administrador.
           </div>
-        </form>
+        </div>
       </div>
     </div>
   );
