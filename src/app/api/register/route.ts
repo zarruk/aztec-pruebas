@@ -13,7 +13,7 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl || '', supabaseKey || '');
 
 // URL del webhook principal
-const WEBHOOK_URL = 'https://aztec.app.n8n.cloud/webhook/a466287a-5bad-45a2-a2fa-dd768a6319bf';
+const WEBHOOK_URL = 'https://aztec.app.n8n.cloud/webhook/6ab724ec-631c-4a0f-b3f8-c5a401c28619';
 // URL de webhook de respaldo para depuración (opcional)
 // const DEBUG_WEBHOOK_URL = 'https://webhook.site/tu-url-única';
 
