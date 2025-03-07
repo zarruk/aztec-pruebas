@@ -11,6 +11,12 @@ import { toast } from 'react-hot-toast';
 // Lista de correos autorizados para crear cuentas
 const ALLOWED_EMAILS = ['martin@azteclab.co', 'salomon@azteclab.co'];
 
+// Usuario hardcodeado para desarrollo local
+const DEV_USER = {
+  email: 'salomon@azteclab.co',
+  password: 'azteclab123'
+};
+
 // Componente interno que usa useSearchParams
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -18,8 +24,23 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isLocalDev, setIsLocalDev] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  // Verificar si estamos en desarrollo local
+  useEffect(() => {
+    const isLocal = window.location.hostname === 'localhost' || 
+                    window.location.hostname === '127.0.0.1';
+    setIsLocalDev(isLocal);
+    
+    if (isLocal) {
+      console.log('Modo de desarrollo local detectado');
+      // Pre-llenar con el usuario de desarrollo
+      setEmail(DEV_USER.email);
+      setPassword(DEV_USER.password);
+    }
+  }, []);
 
   // Verificar si hay un error en los parámetros de la URL
   useEffect(() => {
@@ -41,6 +62,28 @@ function LoginForm() {
     checkSession();
   }, [searchParams, router]);
 
+  // Función para traducir mensajes de error de Supabase
+  const translateError = (errorMessage: string) => {
+    const errorMap: Record<string, string> = {
+      'Invalid login credentials': 'Credenciales de inicio de sesión inválidas. Verifica tu correo y contraseña.',
+      'Email not confirmed': 'El correo electrónico no ha sido confirmado. Por favor, verifica tu bandeja de entrada.',
+      'User not found': 'Usuario no encontrado. ¿Estás seguro de que tienes una cuenta?',
+      'Email already in use': 'Este correo ya está registrado. Intenta iniciar sesión.',
+      'Password should be at least 6 characters': 'La contraseña debe tener al menos 6 caracteres.',
+    };
+
+    return errorMap[errorMessage] || errorMessage;
+  };
+
+  // Función para iniciar sesión en modo de desarrollo local
+  const handleLocalDevLogin = () => {
+    console.log('Iniciando sesión en modo desarrollo local');
+    // Simular inicio de sesión exitoso
+    toast.success(`Inicio de sesión de desarrollo como ${email}`);
+    // Redirigir al dashboard
+    router.push('/dashboard');
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -48,6 +91,12 @@ function LoginForm() {
 
     try {
       console.log('Iniciando proceso de autenticación para:', email);
+      
+      // Si estamos en desarrollo local, usar el inicio de sesión simplificado
+      if (isLocalDev) {
+        handleLocalDevLogin();
+        return;
+      }
       
       let response;
       
@@ -61,7 +110,40 @@ function LoginForm() {
         response = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            // Crear usuario sin necesidad de confirmación por correo
+            data: {
+              role: 'admin'
+            }
+          }
         });
+
+        // Verificar si hay errores específicos
+        if (response.error) {
+          throw new Error(translateError(response.error.message));
+        }
+
+        // Si el registro fue exitoso pero no hay sesión, intentar iniciar sesión automáticamente
+        if (!response.data.session) {
+          console.log('Cuenta creada, intentando iniciar sesión automáticamente...');
+          
+          // Iniciar sesión automáticamente después de crear la cuenta
+          const loginResponse = await supabase.auth.signInWithPassword({
+            email,
+            password
+          });
+          
+          if (loginResponse.error) {
+            console.log('Error al iniciar sesión automáticamente:', loginResponse.error.message);
+            toast.success('Cuenta creada correctamente. Ahora puedes iniciar sesión manualmente.');
+            setIsSignUp(false);
+            setPassword('');
+            setLoading(false);
+            return;
+          }
+          
+          response = loginResponse;
+        }
       } else {
         // Iniciar sesión con usuario existente
         response = await supabase.auth.signInWithPassword({
@@ -72,15 +154,11 @@ function LoginForm() {
 
       const { error, data } = response;
       
-      if (error) throw error;
+      if (error) {
+        throw new Error(translateError(error.message));
+      }
       
-      if (isSignUp && !data.session) {
-        toast.success('Cuenta creada correctamente. Ahora puedes iniciar sesión.');
-        console.log('Usuario creado:', email);
-        // Cambiar a modo de inicio de sesión después de crear la cuenta
-        setIsSignUp(false);
-        setPassword('');
-      } else if (data.session) {
+      if (data.session) {
         toast.success(`Inicio de sesión exitoso como ${data.session.user.email}`);
         console.log('Detalles de la sesión:', {
           userId: data.session.user.id,
@@ -88,10 +166,14 @@ function LoginForm() {
           lastSignIn: new Date(data.session.user.last_sign_in_at || '').toLocaleString()
         });
         router.push('/dashboard');
+      } else {
+        // Este caso no debería ocurrir normalmente
+        throw new Error('No se pudo establecer la sesión. Intenta nuevamente.');
       }
     } catch (err: any) {
-      setError(err.message || 'Error al iniciar sesión');
-      toast.error('Error al iniciar sesión');
+      const errorMessage = translateError(err.message);
+      setError(errorMessage);
+      toast.error(errorMessage);
       console.error('Error detallado:', err);
     } finally {
       setLoading(false);
@@ -110,6 +192,11 @@ function LoginForm() {
               ? 'Ingresa tus datos para crear una cuenta' 
               : 'Ingresa tus credenciales para acceder'}
           </p>
+          {isLocalDev && (
+            <p className="mt-2 text-xs bg-blue-100 p-2 rounded">
+              Modo de desarrollo local activo. Las credenciales están pre-llenadas.
+            </p>
+          )}
           {isSignUp && (
             <p className="mt-2 text-xs text-gray-500">
               Nota: Solo los correos autorizados pueden crear cuentas.
@@ -163,9 +250,11 @@ function LoginForm() {
           >
             {loading 
               ? 'Procesando...' 
-              : isSignUp 
-                ? 'Crear cuenta' 
-                : 'Iniciar sesión'}
+              : isLocalDev
+                ? 'Iniciar sesión (Modo desarrollo)'
+                : isSignUp 
+                  ? 'Crear cuenta' 
+                  : 'Iniciar sesión'}
           </Button>
           
           <div className="text-center mt-4">
