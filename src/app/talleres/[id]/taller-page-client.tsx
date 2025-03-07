@@ -1,6 +1,6 @@
 'use client';
 
-import { Taller } from '@/lib/types';
+import { TallerConHerramientas, Herramienta } from '@/lib/types';
 import { VideoEmbed } from '@/components/video-embed';
 import { TallerRegistro } from '@/components/taller-registro';
 import { format } from 'date-fns';
@@ -9,7 +9,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 interface TallerPageClientProps {
-  taller: Taller;
+  taller: TallerConHerramientas;
   referidoPor?: string;
 }
 
@@ -76,19 +76,25 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-xl font-semibold mb-4">Herramientas que utilizaremos</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {taller.herramientas.map((herramientaId: number, index: number) => {
-                    return (
-                      <div key={index} className="bg-[#f8f5f0] p-4 rounded-lg text-center">
-                        <div className="flex justify-center items-center h-16 mb-2">
-                          {/* Usar un div coloreado como placeholder para las herramientas */}
+                  {taller.herramientas.map((herramienta: Herramienta, index: number) => (
+                    <div key={herramienta.id} className="bg-[#f8f5f0] p-4 rounded-lg text-center flex flex-col items-center">
+                      <div className="flex justify-center items-center h-16 mb-2">
+                        {herramienta.imagen_url ? (
+                          <img 
+                            src={herramienta.imagen_url} 
+                            alt={herramienta.nombre}
+                            className="w-12 h-12 object-contain"
+                          />
+                        ) : (
                           <div className="w-12 h-12 bg-emerald-200 rounded-full flex items-center justify-center text-emerald-800 font-bold">
                             {index + 1}
                           </div>
-                        </div>
-                        <p className="text-sm font-medium">Herramienta {index + 1}</p>
+                        )}
                       </div>
-                    );
-                  })}
+                      <p className="text-sm font-medium mb-2">{herramienta.nombre}</p>
+                      <p className="text-xs text-gray-600">{herramienta.descripcion}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
