@@ -27,6 +27,16 @@ const nextConfig = {
     return config;
   },
   transpilePackages: ['@supabase/realtime-js', 'date-fns'],
+  // Configuración para rutas dinámicas
+  output: 'standalone',
+  experimental: {
+    serverActions: {
+      allowedOrigins: ['localhost:3000', 'aztec-nuevo.onrender.com'],
+    },
+  },
+  // Configurar rutas que deben ser dinámicas
+  // Esto evita que Next.js intente renderizar estáticamente rutas que usan cookies o sesiones
+  serverComponentsExternalPackages: ['@supabase/auth-helpers-nextjs'],
 };
 
 module.exports = nextConfig; 

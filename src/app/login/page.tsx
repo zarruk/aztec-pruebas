@@ -1,13 +1,25 @@
 'use client';
 
-import { useState, FormEvent, useEffect } from 'react';
+import { useState, FormEvent, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/components/auth/auth-provider';
 
 // Lista de correos autorizados
 const ALLOWED_EMAILS = ['martin@azteclab.co', 'salomon@azteclab.co'];
 
-export default function LoginPage() {
+// Componente de carga para el Suspense
+function LoginLoading() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md text-center">
+        <p>Cargando...</p>
+      </div>
+    </div>
+  );
+}
+
+// Componente principal de login
+function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
@@ -153,5 +165,14 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Componente exportado que envuelve el formulario en un Suspense
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoginLoading />}>
+      <LoginForm />
+    </Suspense>
   );
 } 
