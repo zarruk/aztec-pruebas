@@ -23,23 +23,32 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: true,
-    flowType: 'pkce',
-    storageKey: 'supabase.auth.token'
-  },
-  global: {
-    headers: {
-      'X-Supabase-Auth-Redirect-To': `${getSiteUrl()}/auth/callback`
-    }
+    detectSessionInUrl: false, // Desactivamos esto para manejar manualmente el callback
+    flowType: 'pkce'
   }
 });
 
-console.log('Supabase configurado con URL de redirección:', `${getSiteUrl()}/auth/callback`);
+// Configurar la URL de redirección para la autenticación
+const redirectUrl = `${getSiteUrl()}/auth/callback`;
+console.log('Supabase configurado con URL de redirección:', redirectUrl);
+
+// Función para iniciar sesión con enlace mágico
+export async function signInWithMagicLink(email: string) {
+  return supabase.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: redirectUrl
+    }
+  });
+}
 
 // Inicializar el cliente de Supabase
 supabase.auth.onAuthStateChange((event, session) => {
   console.log('Evento de autenticación:', event);
   console.log('Sesión presente:', session ? 'Sí' : 'No');
+  if (session) {
+    console.log('Usuario autenticado:', session.user.email);
+  }
 });
 
 export function createSupabaseClient() {

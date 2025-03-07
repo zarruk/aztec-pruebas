@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { supabase } from '@/lib/supabase-browser';
+import { supabase, signInWithMagicLink } from '@/lib/supabase-browser';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FormError } from '@/components/ui/form-error';
@@ -43,20 +43,10 @@ function LoginForm() {
     setError('');
 
     try {
-      // URL HARDCODEADA para redirección
-      const SITE_URL = 'https://aztec-nuevo.onrender.com';
-      console.log('Usando URL hardcodeada para redirección:', SITE_URL);
+      console.log('Iniciando proceso de autenticación para:', email);
       
-      // No intentamos sobrescribir window.location.origin ya que causa errores
-      // en navegadores modernos que protegen esta propiedad
-      
-      // Enviar enlace mágico al correo con URL explícita
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo: `${SITE_URL}/auth/callback`,
-        },
-      });
+      // Usar la función centralizada para iniciar sesión con enlace mágico
+      const { error } = await signInWithMagicLink(email);
 
       if (error) throw error;
       
