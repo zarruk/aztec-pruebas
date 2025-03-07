@@ -24,6 +24,7 @@ export function middleware(req: NextRequest) {
 }
 
 // Configurar las rutas que deben ser verificadas por el middleware
+// Excluimos /auth/callback para evitar interferir con el proceso de autenticación
 export const config = {
-  matcher: ['/dashboard/:path*', '/login', '/auth/callback'],
+  matcher: ['/dashboard/:path*', '/login'],
 }; 

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase-browser';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,16 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [magicLinkSent, setMagicLinkSent] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Verificar si hay un error en los parámetros de la URL
+  useEffect(() => {
+    const errorParam = searchParams?.get('error');
+    if (errorParam) {
+      setError(decodeURIComponent(errorParam));
+      toast.error(decodeURIComponent(errorParam));
+    }
+  }, [searchParams]);
 
   const handleMagicLinkLogin = async (e: React.FormEvent) => {
     e.preventDefault();

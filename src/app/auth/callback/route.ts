@@ -10,15 +10,32 @@ export async function GET(request: NextRequest) {
   // URL HARDCODEADA para redirección
   const SITE_URL = 'https://aztec-nuevo.onrender.com';
   console.log('URL hardcodeada para redirección en callback:', SITE_URL);
+  console.log('Código de autenticación recibido:', code ? 'Sí' : 'No');
 
   if (code) {
-    const cookieStore = cookies();
-    const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
-    
-    // Intercambiar el código por una sesión
-    await supabase.auth.exchangeCodeForSession(code);
+    try {
+      const cookieStore = cookies();
+      const supabase = createRouteHandlerClient({ cookies: () => cookieStore });
+      
+      // Intercambiar el código por una sesión
+      const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+      
+      if (error) {
+        console.error('Error al intercambiar código por sesión:', error.message);
+        // Redirigir a la página de login con un mensaje de error
+        return NextResponse.redirect(`${SITE_URL}/login?error=${encodeURIComponent('Error de autenticación')}`);
+      }
+      
+      console.log('Sesión establecida correctamente:', data.session ? 'Sí' : 'No');
+      
+      // Redirigir al dashboard después de la autenticación exitosa
+      return NextResponse.redirect(`${SITE_URL}/dashboard`);
+    } catch (err) {
+      console.error('Excepción en el callback de autenticación:', err);
+      return NextResponse.redirect(`${SITE_URL}/login?error=${encodeURIComponent('Error inesperado')}`);
+    }
+  } else {
+    console.error('No se recibió código de autenticación en el callback');
+    return NextResponse.redirect(`${SITE_URL}/login?error=${encodeURIComponent('No se recibió código de autenticación')}`);
   }
-
-  // Redirigir al dashboard después de la autenticación
-  return NextResponse.redirect(`${SITE_URL}/dashboard`);
 } 
