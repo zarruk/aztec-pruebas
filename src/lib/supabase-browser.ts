@@ -42,14 +42,37 @@ export async function signInWithMagicLink(email: string) {
   });
 }
 
-// Inicializar el cliente de Supabase
+// Inicializar el cliente de Supabase y configurar el listener de eventos de autenticación
 supabase.auth.onAuthStateChange((event, session) => {
   console.log('Evento de autenticación:', event);
   console.log('Sesión presente:', session ? 'Sí' : 'No');
+  
   if (session) {
-    console.log('Usuario autenticado:', session.user.email);
+    console.log('Información del usuario autenticado:');
+    console.log('- ID:', session.user.id);
+    console.log('- Email:', session.user.email);
+    console.log('- Último inicio de sesión:', new Date(session.user.last_sign_in_at || '').toLocaleString());
+    console.log('- Creado:', new Date(session.user.created_at || '').toLocaleString());
+    
+    // Verificar si el usuario tiene datos adicionales
+    if (session.user.user_metadata) {
+      console.log('- Metadatos:', session.user.user_metadata);
+    }
   }
 });
+
+// Verificar si hay una sesión activa al cargar la página
+async function checkInitialSession() {
+  const { data } = await supabase.auth.getSession();
+  if (data.session) {
+    console.log('Sesión inicial detectada para:', data.session.user.email);
+  } else {
+    console.log('No hay sesión inicial activa');
+  }
+}
+
+// Ejecutar la verificación inicial
+checkInitialSession();
 
 export function createSupabaseClient() {
   return supabase;

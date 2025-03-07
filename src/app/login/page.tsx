@@ -8,6 +8,9 @@ import { Button } from '@/components/ui/button';
 import { FormError } from '@/components/ui/form-error';
 import { toast } from 'react-hot-toast';
 
+// Lista de correos autorizados para crear cuentas
+const ALLOWED_EMAILS = ['martin@azteclab.co', 'salomon@azteclab.co'];
+
 // Componente interno que usa useSearchParams
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -49,6 +52,11 @@ function LoginForm() {
       let response;
       
       if (isSignUp) {
+        // Verificar si el correo está autorizado para crear cuenta
+        if (!ALLOWED_EMAILS.includes(email)) {
+          throw new Error('No estás autorizado para crear una cuenta. Solo los administradores pueden registrarse.');
+        }
+
         // Registrar nuevo usuario
         response = await supabase.auth.signUp({
           email,
@@ -67,9 +75,18 @@ function LoginForm() {
       if (error) throw error;
       
       if (isSignUp && !data.session) {
-        toast.success('Cuenta creada. Por favor verifica tu correo para confirmar tu cuenta.');
+        toast.success('Cuenta creada correctamente. Ahora puedes iniciar sesión.');
+        console.log('Usuario creado:', email);
+        // Cambiar a modo de inicio de sesión después de crear la cuenta
+        setIsSignUp(false);
+        setPassword('');
       } else if (data.session) {
-        toast.success('Inicio de sesión exitoso');
+        toast.success(`Inicio de sesión exitoso como ${data.session.user.email}`);
+        console.log('Detalles de la sesión:', {
+          userId: data.session.user.id,
+          email: data.session.user.email,
+          lastSignIn: new Date(data.session.user.last_sign_in_at || '').toLocaleString()
+        });
         router.push('/dashboard');
       }
     } catch (err: any) {
@@ -93,6 +110,13 @@ function LoginForm() {
               ? 'Ingresa tus datos para crear una cuenta' 
               : 'Ingresa tus credenciales para acceder'}
           </p>
+          {isSignUp && (
+            <p className="mt-2 text-xs text-gray-500">
+              Nota: Solo los correos autorizados pueden crear cuentas.
+              <br />
+              Las credenciales se almacenan de forma segura en Supabase.
+            </p>
+          )}
         </div>
 
         <form onSubmit={handleLogin} className="mt-8 space-y-6">
@@ -123,7 +147,11 @@ function LoginForm() {
               required
               className="mt-1"
               placeholder="********"
+              minLength={6}
             />
+            <p className="text-xs text-gray-500 mt-1">
+              {isSignUp ? 'La contraseña debe tener al menos 6 caracteres' : ''}
+            </p>
           </div>
 
           {error && <FormError>{error}</FormError>}
