@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase-browser';
 import { Session, User } from '@supabase/supabase-js';
-import { SITE_URL, forceRedirectUrl } from '@/lib/auth-config';
+import { SITE_URL } from '@/lib/auth-config';
 
 type AuthContextType = {
   user: User | null;
@@ -27,8 +27,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    // Forzar la URL de redirección
-    forceRedirectUrl();
+    // Registrar la URL del sitio para depuración
+    console.log('AuthProvider: URL del sitio configurada como', SITE_URL);
     
     async function loadUserData() {
       const { data: { session } } = await supabase.auth.getSession();
