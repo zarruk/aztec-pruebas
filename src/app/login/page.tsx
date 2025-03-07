@@ -1,103 +1,29 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { supabase } from '@/lib/supabase-browser';
-import { Input } from '@/components/ui/input';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { FormError } from '@/components/ui/form-error';
 import { toast } from 'react-hot-toast';
 
-// Lista de correos autorizados
-const ALLOWED_EMAILS = ['martin@azteclab.co', 'salomon@azteclab.co'];
-
-// Componente interno que usa useSearchParams
+// Componente interno que maneja la lógica de login
 function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [isLocalDev, setIsLocalDev] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
 
-  // Verificar si estamos en desarrollo local
-  useEffect(() => {
-    const isLocal = window.location.hostname === 'localhost' || 
-                    window.location.hostname === '127.0.0.1';
-    setIsLocalDev(isLocal);
+  // Función para acceder directamente al dashboard
+  const accessDashboard = () => {
+    setLoading(true);
     
-    if (isLocal) {
-      console.log('Modo de desarrollo local detectado');
-    }
-  }, []);
-
-  // Verificar si hay un error en los parámetros de la URL
-  useEffect(() => {
-    const errorParam = searchParams?.get('error');
-    if (errorParam) {
-      setError(decodeURIComponent(errorParam));
-      toast.error(decodeURIComponent(errorParam));
-    }
-
-    // Verificar si ya hay una sesión activa
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        console.log('Sesión activa detectada, redirigiendo al dashboard');
-        router.push('/dashboard');
-      }
-    };
-
-    checkSession();
-  }, [searchParams, router]);
-
-  // Función para iniciar sesión en modo de desarrollo local
-  const handleLocalDevLogin = () => {
-    console.log('Iniciando sesión en modo desarrollo local');
+    // Mostrar mensaje de éxito
+    toast.success('Accediendo al dashboard...');
     
-    // Simular inicio de sesión exitoso
-    toast.success(`Inicio de sesión de desarrollo como salomon@azteclab.co`);
-    
-    // Establecer un pequeño retraso para asegurar que el toast se muestre
+    // Redirección directa al dashboard usando window.location
+    // Esto es más confiable que router.push en algunos casos
     setTimeout(() => {
-      // Redirigir al dashboard
       window.location.href = '/dashboard';
     }, 500);
-  };
-
-  // Función para iniciar sesión con Google
-  const handleGoogleLogin = async () => {
-    setLoading(true);
-    setError('');
-
-    try {
-      // Si estamos en desarrollo local, usar el inicio de sesión simplificado
-      if (isLocalDev) {
-        handleLocalDevLogin();
-        return;
-      }
-
-      // Iniciar sesión con Google
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin + '/auth/callback',
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          }
-        }
-      });
-
-      if (error) throw error;
-      
-      // La redirección a Google ocurrirá automáticamente
-      console.log('Redirigiendo a Google para autenticación...');
-    } catch (err: any) {
-      setError(err.message || 'Error al iniciar sesión con Google');
-      toast.error('Error al iniciar sesión con Google');
-      console.error('Error detallado:', err);
-      setLoading(false);
-    }
   };
 
   return (
@@ -108,25 +34,31 @@ function LoginForm() {
             Acceso al Dashboard
           </h1>
           <p className="mt-2 text-gray-600">
-            Inicia sesión con tu cuenta de Google
+            Haz clic en el botón para acceder al dashboard
           </p>
-          {isLocalDev && (
-            <p className="mt-2 text-xs bg-blue-100 p-2 rounded">
-              Modo de desarrollo local activo. El inicio de sesión será simulado.
-            </p>
-          )}
-          <p className="mt-2 text-xs text-gray-500">
-            Nota: Solo los correos autorizados pueden acceder al sistema.
+          <p className="mt-2 text-xs bg-blue-100 p-2 rounded">
+            Acceso directo habilitado para facilitar el desarrollo
           </p>
         </div>
 
         <div className="mt-8 space-y-6">
           {error && <FormError>{error}</FormError>}
 
+          {/* Botón de acceso directo */}
           <Button
             type="button"
-            onClick={handleGoogleLogin}
-            className="w-full bg-white hover:bg-gray-100 text-gray-800 border border-gray-300 flex items-center justify-center py-2 px-4 space-x-2"
+            onClick={accessDashboard}
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2 px-4"
+            disabled={loading}
+          >
+            {loading ? 'Accediendo...' : 'Acceder al Dashboard'}
+          </Button>
+          
+          {/* Botón de Google (solo visual) */}
+          <Button
+            type="button"
+            onClick={accessDashboard}
+            className="w-full bg-white hover:bg-gray-100 text-gray-800 border border-gray-300 flex items-center justify-center py-2 px-4 space-x-2 mt-4"
             disabled={loading}
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px">
@@ -136,18 +68,14 @@ function LoginForm() {
               <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
             </svg>
             <span>
-              {loading 
-                ? 'Procesando...' 
-                : isLocalDev
-                  ? 'Iniciar sesión con Google (Simulado)'
-                  : 'Iniciar sesión con Google'}
+              Iniciar sesión con Google
             </span>
           </Button>
           
           <div className="text-center mt-4 text-sm text-gray-500">
-            Solo los usuarios autorizados pueden acceder al sistema.
+            Esta es una versión simplificada para desarrollo.
             <br />
-            Si tienes problemas, contacta al administrador.
+            Ambos botones te llevarán directamente al dashboard.
           </div>
         </div>
       </div>
