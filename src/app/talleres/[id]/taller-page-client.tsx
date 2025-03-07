@@ -79,18 +79,18 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
                   {taller.herramientas.map((herramienta: Herramienta, index: number) => (
                     <div 
                       key={herramienta.id} 
-                      className="bg-[#f8f5f0] p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col items-center flex-shrink-0"
-                      style={{ width: '220px', height: '320px' }}
+                      className="bg-[#f8f5f0] p-3 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col items-center flex-shrink-0"
+                      style={{ width: '187px', height: '272px' }}
                     >
-                      <div className="flex justify-center items-center mb-5 bg-white p-4 rounded-lg w-36 h-36 border border-gray-200">
+                      <div className="flex justify-center items-center mb-4 bg-white p-3 rounded-lg w-30 h-30 border border-gray-200">
                         {herramienta.imagen_url ? (
                           <img 
                             src={herramienta.imagen_url} 
                             alt={herramienta.nombre}
-                            className="w-32 h-32 object-contain"
+                            className="w-28 h-28 object-contain"
                           />
                         ) : (
-                          <div className="w-20 h-20 bg-emerald-200 rounded-full flex items-center justify-center text-emerald-800 font-bold text-2xl">
+                          <div className="w-16 h-16 bg-emerald-200 rounded-full flex items-center justify-center text-emerald-800 font-bold text-xl">
                             {index + 1}
                           </div>
                         )}
