@@ -34,5 +34,5 @@ export function middleware(req: NextRequest) {
 
 // Configurar las rutas que deben ser verificadas por el middleware
 export const config = {
-  matcher: ['/', '/dashboard/:path*', '/login'],
+  matcher: ['/', '/dashboard/:path*', '/login', '/backoffice/:path*'],
 }; 
