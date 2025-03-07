@@ -218,6 +218,59 @@ export async function POST(request: NextRequest) {
       mensaje = 'Registro creado correctamente';
     }
     
+    // Obtener información del taller
+    console.log('Obteniendo información del taller:', tallerId);
+    const { data: tallerInfo, error: errorTaller } = await supabase
+      .from('talleres')
+      .select('*')
+      .eq('id', tallerId)
+      .single();
+    
+    if (errorTaller) {
+      console.error('Error al obtener información del taller:', errorTaller);
+      // Continuamos aunque no se pueda obtener la info del taller
+    }
+    
+    // Enviar datos al webhook
+    try {
+      console.log('Enviando datos al webhook:', WEBHOOK_URL);
+      
+      const webhookData = {
+        nombre: name,
+        email: email,
+        telefono: telefonoLimpio,
+        taller_id: tallerId,
+        taller_nombre: tallerInfo?.nombre || 'Taller no encontrado',
+        taller_tipo: tallerInfo?.tipo || 'desconocido',
+        taller_fecha: tallerInfo?.fecha || null,
+        usuario_id: usuarioId,
+        registro_id: registroId,
+        referido_por: referidoPor || null,
+        fecha_registro: new Date().toISOString()
+      };
+      
+      console.log('Datos a enviar al webhook:', webhookData);
+      
+      const webhookResponse = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(webhookData),
+      });
+      
+      if (!webhookResponse.ok) {
+        console.error('Error al enviar datos al webhook. Status:', webhookResponse.status);
+        const errorText = await webhookResponse.text();
+        console.error('Respuesta de error del webhook:', errorText);
+      } else {
+        console.log('Datos enviados correctamente al webhook');
+      }
+    } catch (webhookError: any) {
+      console.error('Error al enviar datos al webhook:', webhookError);
+      // No interrumpimos el flujo si falla el webhook
+    }
+    
     // 6. RESPUESTA EXITOSA
     return NextResponse.json({
       success: true,
