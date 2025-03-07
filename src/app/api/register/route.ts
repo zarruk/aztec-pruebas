@@ -167,6 +167,27 @@ export async function POST(request: NextRequest) {
     let registroId;
     let mensaje;
     
+    // Verificar si el referidoPor existe como usuario
+    let referidoPorValido = null;
+    if (referidoPor) {
+      console.log('Verificando si el referido existe:', referidoPor);
+      const { data: usuarioReferido, error: errorReferido } = await supabase
+        .from('usuarios')
+        .select('id')
+        .eq('id', referidoPor)
+        .maybeSingle();
+      
+      if (errorReferido) {
+        console.error('Error al verificar referido:', errorReferido);
+        // Continuamos con referidoPorValido = null
+      } else if (usuarioReferido) {
+        referidoPorValido = usuarioReferido.id;
+        console.log('Referido válido encontrado:', referidoPorValido);
+      } else {
+        console.log('Referido no encontrado, se usará null');
+      }
+    }
+    
     if (registroExistente) {
       // REGISTRO EXISTE - ACTUALIZAR
       registroId = registroExistente.id;
@@ -175,7 +196,7 @@ export async function POST(request: NextRequest) {
       const { error: errorActualizacionRegistro } = await supabase
         .from('registros_talleres')
         .update({
-          referido_por: referidoPor || null,
+          referido_por: referidoPorValido,
           fecha_registro: new Date().toISOString()
         })
         .eq('id', registroId);
@@ -199,7 +220,7 @@ export async function POST(request: NextRequest) {
         .insert({
           usuario_id: usuarioId,
           taller_id: tallerId,
-          referido_por: referidoPor || null,
+          referido_por: referidoPorValido,
           fecha_registro: new Date().toISOString()
         })
         .select('id')
@@ -245,7 +266,7 @@ export async function POST(request: NextRequest) {
         taller_fecha: tallerInfo?.fecha || null,
         usuario_id: usuarioId,
         registro_id: registroId,
-        referido_por: referidoPor || null,
+        referido_por: referidoPorValido,
         fecha_registro: new Date().toISOString()
       };
       
