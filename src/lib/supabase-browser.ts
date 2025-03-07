@@ -9,15 +9,14 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 // URL HARDCODEADA para redirección - ASEGÚRATE DE QUE ESTA ES LA URL CORRECTA
 const SITE_URL = 'https://aztec-nuevo.onrender.com';
 
-// Sobrescribir window.location.origin para forzar la URL correcta
-if (typeof window !== 'undefined') {
-  // Definir una propiedad getter para origin que siempre devuelva la URL correcta
-  Object.defineProperty(window.location, 'origin', {
-    get: function() { return SITE_URL; }
-  });
-  
-  console.log('window.location.origin sobrescrito a:', window.location.origin);
-}
+// Función para obtener la URL del sitio (sin intentar modificar window.location.origin)
+const getSiteUrl = () => {
+  // En producción, usar la URL hardcodeada
+  return SITE_URL;
+};
+
+// Registrar la URL que se usará para redirección
+console.log('URL del sitio para redirección:', getSiteUrl());
 
 // Crear el cliente de Supabase para uso exclusivo en el navegador
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
@@ -29,13 +28,13 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
   global: {
     headers: {
-      'X-Supabase-Auth-Redirect-To': `${SITE_URL}/auth/callback`,
-      'X-Supabase-Site-URL': SITE_URL
+      'X-Supabase-Auth-Redirect-To': `${getSiteUrl()}/auth/callback`,
+      'X-Supabase-Site-URL': getSiteUrl()
     }
   }
 });
 
-console.log('Supabase configurado con URL de redirección:', SITE_URL);
+console.log('Supabase configurado con URL de redirección:', `${getSiteUrl()}/auth/callback`);
 
 export function createSupabaseClient() {
   return supabase;

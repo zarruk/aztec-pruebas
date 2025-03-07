@@ -25,11 +25,8 @@ export default function LoginPage() {
       const SITE_URL = 'https://aztec-nuevo.onrender.com';
       console.log('Usando URL hardcodeada para redirección:', SITE_URL);
       
-      // Sobrescribir temporalmente window.location.origin para este proceso
-      const originalOrigin = window.location.origin;
-      Object.defineProperty(window.location, 'origin', {
-        get: function() { return SITE_URL; }
-      });
+      // No intentamos sobrescribir window.location.origin ya que causa errores
+      // en navegadores modernos que protegen esta propiedad
       
       // Enviar enlace mágico al correo con URL explícita
       const { error } = await supabase.auth.signInWithOtp({
@@ -41,15 +38,6 @@ export default function LoginPage() {
           }
         },
       });
-      
-      // Restaurar el valor original (aunque probablemente no sea necesario)
-      try {
-        Object.defineProperty(window.location, 'origin', {
-          get: function() { return originalOrigin; }
-        });
-      } catch (e) {
-        console.error('Error al restaurar window.location.origin:', e);
-      }
 
       if (error) throw error;
       
