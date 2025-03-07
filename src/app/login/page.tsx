@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { supabase, signInWithMagicLink } from '@/lib/supabase-browser';
+import { supabase } from '@/lib/supabase-browser';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { FormError } from '@/components/ui/form-error';
@@ -11,9 +11,10 @@ import { toast } from 'react-hot-toast';
 // Componente interno que usa useSearchParams
 function LoginForm() {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [magicLinkSent, setMagicLinkSent] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -37,7 +38,7 @@ function LoginForm() {
     checkSession();
   }, [searchParams, router]);
 
-  const handleMagicLinkLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
@@ -45,16 +46,35 @@ function LoginForm() {
     try {
       console.log('Iniciando proceso de autenticación para:', email);
       
-      // Usar la función centralizada para iniciar sesión con enlace mágico
-      const { error } = await signInWithMagicLink(email);
+      let response;
+      
+      if (isSignUp) {
+        // Registrar nuevo usuario
+        response = await supabase.auth.signUp({
+          email,
+          password,
+        });
+      } else {
+        // Iniciar sesión con usuario existente
+        response = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+      }
 
+      const { error, data } = response;
+      
       if (error) throw error;
       
-      setMagicLinkSent(true);
-      toast.success('Se ha enviado un enlace de acceso a tu correo');
+      if (isSignUp && !data.session) {
+        toast.success('Cuenta creada. Por favor verifica tu correo para confirmar tu cuenta.');
+      } else if (data.session) {
+        toast.success('Inicio de sesión exitoso');
+        router.push('/dashboard');
+      }
     } catch (err: any) {
-      setError(err.message || 'Error al enviar el enlace de acceso');
-      toast.error('Error al enviar el enlace de acceso');
+      setError(err.message || 'Error al iniciar sesión');
+      toast.error('Error al iniciar sesión');
       console.error('Error detallado:', err);
     } finally {
       setLoading(false);
@@ -65,59 +85,73 @@ function LoginForm() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900">Acceso al Dashboard</h1>
-          <p className="mt-2 text-gray-600">Ingresa tu correo para recibir un enlace de acceso</p>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {isSignUp ? 'Crear cuenta' : 'Acceso al Dashboard'}
+          </h1>
+          <p className="mt-2 text-gray-600">
+            {isSignUp 
+              ? 'Ingresa tus datos para crear una cuenta' 
+              : 'Ingresa tus credenciales para acceder'}
+          </p>
         </div>
 
-        {magicLinkSent ? (
-          <div className="mt-8 p-6 bg-emerald-50 rounded-lg text-center">
-            <h2 className="text-xl font-medium text-emerald-800 mb-4">¡Enlace enviado!</h2>
-            <p className="text-gray-700 mb-6">
-              Hemos enviado un enlace de acceso a <strong>{email}</strong>. 
-              Por favor, revisa tu correo y haz clic en el enlace para iniciar sesión.
-            </p>
-            <p className="text-sm text-gray-500">
-              Si no encuentras el correo, revisa tu carpeta de spam o correo no deseado.
-            </p>
-            <Button
-              type="button"
-              className="mt-6 bg-emerald-600 hover:bg-emerald-700 text-white"
-              onClick={() => {
-                setMagicLinkSent(false);
-                setEmail('');
-              }}
-            >
-              Volver a intentar
-            </Button>
+        <form onSubmit={handleLogin} className="mt-8 space-y-6">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              Correo electrónico
+            </label>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="mt-1"
+              placeholder="tu@email.com"
+            />
           </div>
-        ) : (
-          <form onSubmit={handleMagicLinkLogin} className="mt-8 space-y-6">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Correo electrónico
-              </label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="mt-1"
-                placeholder="tu@email.com"
-              />
-            </div>
 
-            {error && <FormError>{error}</FormError>}
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              Contraseña
+            </label>
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="mt-1"
+              placeholder="********"
+            />
+          </div>
 
-            <Button
-              type="submit"
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
-              disabled={loading}
+          {error && <FormError>{error}</FormError>}
+
+          <Button
+            type="submit"
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+            disabled={loading}
+          >
+            {loading 
+              ? 'Procesando...' 
+              : isSignUp 
+                ? 'Crear cuenta' 
+                : 'Iniciar sesión'}
+          </Button>
+          
+          <div className="text-center mt-4">
+            <button
+              type="button"
+              className="text-sm text-emerald-600 hover:text-emerald-800"
+              onClick={() => setIsSignUp(!isSignUp)}
             >
-              {loading ? 'Enviando enlace...' : 'Recibir enlace de acceso'}
-            </Button>
-          </form>
-        )}
+              {isSignUp 
+                ? '¿Ya tienes cuenta? Inicia sesión' 
+                : '¿No tienes cuenta? Regístrate'}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
