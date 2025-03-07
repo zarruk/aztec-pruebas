@@ -5,9 +5,22 @@ import { createClient } from '@supabase/supabase-js';
 // Estas variables deben estar en tu archivo .env.local
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://aztec-nuevo-ii.vercel.app';
 
 // Crear el cliente de Supabase para uso exclusivo en el navegador
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true,
+    flowType: 'pkce'
+  },
+  global: {
+    headers: {
+      'X-Supabase-Auth-Redirect-To': `${baseUrl}/auth/callback`
+    }
+  }
+});
 
 export function createSupabaseClient() {
   return supabase;

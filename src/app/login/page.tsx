@@ -21,8 +21,8 @@ export default function LoginPage() {
     setError('');
 
     try {
-      // Usar la URL base de las variables de entorno o window.location.origin como respaldo
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || window.location.origin;
+      // Usar la URL base de las variables de entorno o una URL de producción por defecto
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://aztec-nuevo-ii.vercel.app';
       console.log('Usando URL base para redirección:', baseUrl);
       
       // Enviar enlace mágico al correo
