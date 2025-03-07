@@ -14,8 +14,7 @@ export interface Taller {
   descripcion: string;
   video_url?: string;
   tipo: TipoTaller;
-  fecha_vivo?: string;
-  fecha_live_build?: string;
+  fecha: string;
   herramientas: number[];
   campos_webhook?: Record<string, string>;
   capacidad?: number;

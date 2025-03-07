@@ -224,24 +224,21 @@ export function TalleresList() {
                 
                 <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <h4 className="text-sm font-medium flex items-center gap-1 text-slate-700">
+                    <h4 className="text-sm font-medium text-slate-700 mb-2 flex items-center">
                       {taller.tipo === 'vivo' ? (
                         <>
                           <Calendar className="h-4 w-4" />
-                          Fecha del taller en vivo
+                          Fecha del taller
                         </>
                       ) : (
                         <>
                           <Video className="h-4 w-4" />
-                          Fecha del live build
+                          Fecha del taller
                         </>
                       )}
                     </h4>
                     <p className="text-sm text-slate-600">
-                      {taller.tipo === 'vivo' 
-                        ? formatDate(taller.fecha_vivo)
-                        : formatDate(taller.fecha_live_build)
-                      }
+                      {formatDate(taller.fecha)}
                     </p>
                   </div>
                   

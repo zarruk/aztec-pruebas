@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Depurador de Formulario de Talleres</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2563eb;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #1f2937;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        @media (min-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        .card {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .button-blue {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .button-blue:hover {
+            background-color: #2563eb;
+        }
+        .button-green {
+            background-color: #10b981;
+            color: white;
+        }
+        .button-green:hover {
+            background-color: #059669;
+        }
+        .button-red {
+            background-color: #ef4444;
+            color: white;
+        }
+        .button-red:hover {
+            background-color: #dc2626;
+        }
+        .logs {
+            background-color: #f3f4f6;
+            border-radius: 6px;
+            padding: 15px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 5px;
+        }
+        pre {
+            background-color: #f3f4f6;
+            border-radius: 6px;
+            padding: 15px;
+            overflow: auto;
+            max-height: 400px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Depurador de Formulario de Talleres</h1>
+    
+    <div class="grid">
+        <div class="card">
+            <h2>Acciones</h2>
+            <button id="loadData" class="button button-green">Cargar datos del formulario</button>
+            <button id="clearData" class="button button-red">Limpiar datos guardados</button>
+            <button id="debugForm" class="button button-blue">Depurar Formulario</button>
+        </div>
+        
+        <div class="card">
+            <h2>Logs</h2>
+            <div id="logs" class="logs"></div>
+        </div>
+    </div>
+    
+    <div id="dataContainer" style="display: none;" class="card" style="margin-top: 20px;">
+        <h2>Datos del formulario</h2>
+        <pre id="formData"></pre>
+    </div>
+    
+    <script>
+        // Función para agregar logs
+        function addLog(message) {
+            const logsContainer = document.getElementById('logs');
+            const time = new Date().toTimeString().split(' ')[0];
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.textContent = `${time} - ${message}`;
+            logsContainer.appendChild(logEntry);
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+        }
+        
+        // Función para cargar datos
+        function loadFormData() {
+            try {
+                const data = localStorage.getItem('taller_form_data');
+                if (data) {
+                    const parsedData = JSON.parse(data);
+                    document.getElementById('formData').textContent = JSON.stringify(parsedData, null, 2);
+                    document.getElementById('dataContainer').style.display = 'block';
+                    addLog('Datos del formulario cargados desde localStorage');
+                    
+                    // Mostrar información de tipos
+                    addLog(`Tipo de fecha_vivo: ${typeof parsedData.fecha_vivo}, es array: ${Array.isArray(parsedData.fecha_vivo)}`);
+                    addLog(`Tipo de fecha_live_build: ${typeof parsedData.fecha_live_build}, es array: ${Array.isArray(parsedData.fecha_live_build)}`);
+                    addLog(`Tipo de campos_webhook: ${typeof parsedData.campos_webhook}, es array: ${Array.isArray(parsedData.campos_webhook)}`);
+                } else {
+                    addLog('No hay datos del formulario en localStorage');
+                    document.getElementById('dataContainer').style.display = 'none';
+                }
+            } catch (error) {
+                addLog(`Error al cargar datos: ${error.message}`);
+                document.getElementById('dataContainer').style.display = 'none';
+            }
+        }
+        
+        // Función para depurar el formulario
+        function handleDebug() {
+            const formData = localStorage.getItem('taller_form_data');
+            
+            if (formData) {
+                try {
+                    const parsedData = JSON.parse(formData);
+                    document.getElementById('formData').textContent = JSON.stringify(parsedData, null, 2);
+                    document.getElementById('dataContainer').style.display = 'block';
+                    addLog('Datos del formulario recuperados para depuración');
+                    
+                    // Mostrar alerta con información básica
+                    alert(`Datos recuperados del formulario:\n- Tipo: ${parsedData.tipo || 'No definido'}\n- Fecha vivo: ${Array.isArray(parsedData.fecha_vivo) ? 'Es array' : 'No es array'}\n- Campos webhook: ${typeof parsedData.campos_webhook === 'object' ? 'Es objeto' : 'No es objeto'}`);
+                } catch (error) {
+                    addLog(`Error al parsear datos del formulario: ${error.message}`);
+                    alert('Error al recuperar datos del formulario. Ver logs para más detalles.');
+                }
+            } else {
+                alert('No hay datos del formulario guardados. Completa algunos campos primero.');
+            }
+        }
+        
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            addLog('Depurador iniciado');
+            
+            // Configurar eventos de botones
+            document.getElementById('loadData').addEventListener('click', loadFormData);
+            
+            document.getElementById('clearData').addEventListener('click', function() {
+                localStorage.removeItem('taller_form_data');
+                document.getElementById('dataContainer').style.display = 'none';
+                addLog('Datos del formulario eliminados de localStorage');
+            });
+            
+            document.getElementById('debugForm').addEventListener('click', handleDebug);
+            
+            // Cargar datos iniciales
+            loadFormData();
+        });
+    </script>
+</body>
+</html> 

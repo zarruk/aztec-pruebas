@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { createSupabaseClient } from '@/lib/supabase-browser';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, isAfter, isBefore } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 // Componente para el aviso intermitente de Live Build
@@ -31,13 +31,12 @@ interface Taller {
   nombre: string;
   descripcion: string;
   tipo?: string;
-  fecha_vivo?: string;
+  fecha?: string;
   precio?: number;
   herramientas?: number[];
   capacidad?: number;
   video_url?: string;
   imagen_url?: string;
-  fecha_live_build?: string;
   [key: string]: any; // Permitir campos adicionales
 }
 
@@ -100,7 +99,7 @@ export default function TalleresPage() {
         nombre: 'Tracker de Gastos con Tarjeta (Ejemplo)',
         descripcion: 'Sube un archivo escaneado e inmediatamente los movimientos quedan en un Google Sheets y recibe un WhatsApp con un resumen de los gastos.',
         tipo: 'vivo',
-        fecha_vivo: '2024-02-03T18:00:00+00:00',
+        fecha: '2024-02-03T18:00:00+00:00',
         precio: 99000,
         capacidad: 20,
         video_url: 'https://www.youtube.com/watch?v=ejemplo1',
@@ -111,7 +110,7 @@ export default function TalleresPage() {
         nombre: 'Automatización de Respuesta a Leads (Ejemplo)',
         descripcion: 'Cuando tu cliente llene un formulario online, recibirá seguimiento inmediato por correo y sus datos quedarán registrados en un Sheets',
         tipo: 'vivo',
-        fecha_vivo: '2024-02-10T18:00:00+00:00',
+        fecha: '2024-02-10T18:00:00+00:00',
         precio: 99000,
         capacidad: 20,
         video_url: 'https://www.youtube.com/watch?v=ejemplo2',
@@ -122,7 +121,7 @@ export default function TalleresPage() {
         nombre: 'Automatización de Posts en Redes Sociales (Ejemplo)',
         descripcion: 'Programa tus posts en múltiples redes sociales automáticamente y recibe un resumen de tu actividad en WhatsApp',
         tipo: 'pregrabado',
-        fecha_vivo: '2024-01-01T00:00:00+00:00',
+        fecha: '2024-01-01T00:00:00+00:00',
         precio: 99000,
         capacidad: 50,
         video_url: 'https://www.youtube.com/watch?v=ejemplo4',
@@ -149,11 +148,12 @@ const obtenerTextoTipo = (tipo: string) => {
 // Función para verificar si una fecha es futura
 const esFechaFutura = (fechaISO?: string) => {
   if (!fechaISO) return false;
+  
   try {
     const fecha = parseISO(fechaISO);
-    return fecha > new Date();
+    return isAfter(fecha, new Date());
   } catch (error) {
-    console.error('Error al parsear fecha:', error);
+    console.error('Error al verificar si la fecha es futura:', error);
     return false;
   }
 };
@@ -161,9 +161,10 @@ const esFechaFutura = (fechaISO?: string) => {
 // Función para verificar si una fecha es pasada
 const esFechaPasada = (fechaISO?: string) => {
   if (!fechaISO) return false;
+  
   try {
     const fecha = parseISO(fechaISO);
-    return fecha < new Date();
+    return isBefore(fecha, new Date());
   } catch (error) {
     console.error('Error al verificar si la fecha es pasada:', error);
     return false;
@@ -171,11 +172,11 @@ const esFechaPasada = (fechaISO?: string) => {
 };
 
 // Función para formatear la fecha con mejor manejo de errores
-const formatearFecha = (fechaISO?: string, tipo?: string, fechaLiveBuild?: string) => {
+const formatearFecha = (fechaISO?: string, tipo?: string) => {
   try {
     // Si es un taller pregrabado con fecha de live build futura, mostrar esa fecha
-    if (tipo === 'pregrabado' && fechaLiveBuild && esFechaFutura(fechaLiveBuild)) {
-      const fecha = parseISO(fechaLiveBuild);
+    if (tipo === 'pregrabado' && fechaISO && esFechaFutura(fechaISO)) {
+      const fecha = parseISO(fechaISO);
       return `Live Build: ${format(fecha, "d 'de' MMMM", { locale: es })}`;
     }
     
@@ -311,12 +312,12 @@ const formatearFecha = (fechaISO?: string, tipo?: string, fechaLiveBuild?: strin
                           PREGRABADO
                         </div>
                       )}
-                      {taller.tipo === 'vivo' && esFechaFutura(taller.fecha_vivo) && (
+                      {taller.tipo === 'vivo' && esFechaFutura(taller.fecha) && (
                         <div className="absolute top-2 right-2 bg-green-600 text-white font-bold py-1 px-3 rounded-md text-sm">
                           PRÓXIMAMENTE
                         </div>
                       )}
-                      {esFechaFutura(taller.fecha_live_build) && (
+                      {taller.tipo === 'live_build' && esFechaFutura(taller.fecha) && (
                         <LiveBuildAlert />
                       )}
                     </div>
@@ -324,8 +325,8 @@ const formatearFecha = (fechaISO?: string, tipo?: string, fechaLiveBuild?: strin
                       <h3 className="text-xl font-bold mb-2">{taller.nombre || 'Taller sin nombre'}</h3>
                       <p className="text-gray-600 mb-4">{taller.descripcion || 'Sin descripción disponible'}</p>
                       <div className="text-sm text-gray-500 mb-4">
-                        {formatearFecha(taller.fecha_vivo, taller.tipo, taller.fecha_live_build)}
-                        {formatearFecha(taller.fecha_vivo, taller.tipo, taller.fecha_live_build) && ` • ${obtenerDuracion()}`}
+                        {formatearFecha(taller.fecha, taller.tipo)}
+                        {formatearFecha(taller.fecha, taller.tipo) && ` • ${obtenerDuracion()}`}
                       </div>
                       
                       <div className="flex justify-between items-center">

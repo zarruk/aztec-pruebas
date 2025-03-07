@@ -104,33 +104,18 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
             {/* Fechas disponibles para talleres en vivo */}
             {(taller.tipo === 'vivo' || taller.tipo === 'live_build') && (
               <div className="bg-white rounded-lg shadow-md p-6">
-                <h3 className="text-lg font-semibold mb-4">Fechas disponibles</h3>
+                <h3 className="text-lg font-semibold mb-4">Fecha del taller</h3>
                 <div className="space-y-4">
-                  {taller.fecha_vivo && (
+                  {taller.fecha && (
                     <div className="border border-gray-200 rounded-md p-4">
                       <div className="flex justify-between items-center">
                         <div>
-                          <p className="font-medium">{format(new Date(taller.fecha_vivo), 'EEEE', { locale: es })}</p>
-                          <p className="text-sm text-gray-500">{format(new Date(taller.fecha_vivo), 'd \'de\' MMMM', { locale: es })}</p>
-                          <p className="text-sm text-gray-500">{format(new Date(taller.fecha_vivo), 'h:mm a', { locale: es })}</p>
+                          <p className="font-medium">{format(new Date(taller.fecha), 'EEEE', { locale: es })}</p>
+                          <p className="text-sm text-gray-500">{format(new Date(taller.fecha), 'd \'de\' MMMM', { locale: es })}</p>
+                          <p className="text-sm text-gray-500">{format(new Date(taller.fecha), 'h:mm a', { locale: es })}</p>
                         </div>
                         <div className="bg-emerald-100 text-emerald-800 text-xs font-medium px-2.5 py-0.5 rounded">
                           {taller.capacidad && taller.capacidad > 0 ? `${taller.capacidad} cupos disponibles` : 'Cupos limitados'}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {taller.fecha_live_build && (
-                    <div className="border border-gray-200 rounded-md p-4">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="font-medium">{format(new Date(taller.fecha_live_build), 'EEEE', { locale: es })}</p>
-                          <p className="text-sm text-gray-500">{format(new Date(taller.fecha_live_build), 'd \'de\' MMMM', { locale: es })}</p>
-                          <p className="text-sm text-gray-500">{format(new Date(taller.fecha_live_build), 'h:mm a', { locale: es })}</p>
-                        </div>
-                        <div className="bg-emerald-100 text-emerald-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                          No hay cupos disponibles
                         </div>
                       </div>
                     </div>

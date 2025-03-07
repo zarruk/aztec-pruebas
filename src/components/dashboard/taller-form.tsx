@@ -35,8 +35,7 @@ interface TallerFormData {
   descripcion: string;
   video_url: string;
   tipo: string;
-  fecha_vivo: string;
-  fecha_live_build: string;
+  fecha: string;
   herramientas: number[];
   campos_webhook: string[];
   capacidad: string;
@@ -73,8 +72,7 @@ export function TallerForm({ taller }: TallerFormProps) {
           descripcion: taller.descripcion,
           video_url: taller.video_url || '',
           tipo: taller.tipo,
-          fecha_vivo: taller.fecha_vivo ? new Date(taller.fecha_vivo).toISOString().split('T')[0] : '',
-          fecha_live_build: taller.fecha_live_build ? new Date(taller.fecha_live_build).toISOString().split('T')[0] : '',
+          fecha: taller.fecha ? new Date(taller.fecha).toISOString().split('T')[0] : '',
           herramientas: taller.herramientas || [],
           campos_webhook: Array.isArray(taller.campos_webhook) ? taller.campos_webhook : [],
           capacidad: taller.capacidad?.toString() || '20',
@@ -85,8 +83,7 @@ export function TallerForm({ taller }: TallerFormProps) {
           descripcion: '',
           video_url: '',
           tipo: 'vivo',
-          fecha_vivo: '',
-          fecha_live_build: '',
+          fecha: '',
           herramientas: [],
           campos_webhook: [],
           capacidad: '20',
@@ -145,8 +142,7 @@ export function TallerForm({ taller }: TallerFormProps) {
         nombre: data.nombre,
         descripcion: data.descripcion,
         tipo: data.tipo,
-        fecha_vivo: data.fecha_vivo ? new Date(data.fecha_vivo).toISOString() : null,
-        fecha_live_build: data.fecha_live_build ? new Date(data.fecha_live_build).toISOString() : null,
+        fecha: data.fecha ? new Date(data.fecha).toISOString() : null,
         capacidad: safeInteger(data.capacidad, 20), // Convertir a número seguro
         precio: safeInteger(data.precio, 99000), // Convertir a número seguro
         video_url: data.video_url || "https://example.com/video-placeholder",
@@ -545,28 +541,18 @@ export function TallerForm({ taller }: TallerFormProps) {
           )}
         </div>
 
-        {tipoTaller === 'vivo' ? (
-          <div>
-            <FormLabel>Fechas del taller en vivo</FormLabel>
-            <MultiDatePickerInput 
-              dates={fechas} 
-              onChange={setFechas} 
-            />
-          </div>
-        ) : (
-          <div>
-            <FormLabel htmlFor="fecha_live_build">Fecha del live build</FormLabel>
-            <Input
-              id="fecha_live_build"
-              type="datetime-local"
-              {...register('fecha_live_build')}
-              className={`bg-white text-slate-900 ${errors.fecha_live_build ? 'border-red-500' : 'border-slate-300'}`}
-            />
-            {errors.fecha_live_build && (
-              <FormError>{errors.fecha_live_build.message}</FormError>
-            )}
-          </div>
-        )}
+        <div>
+          <FormLabel htmlFor="fecha">Fecha del taller</FormLabel>
+          <Input
+            id="fecha"
+            type="datetime-local"
+            {...register('fecha')}
+            className={`bg-white text-slate-900 ${errors.fecha ? 'border-red-500' : 'border-slate-300'}`}
+          />
+          {errors.fecha && (
+            <FormError>{errors.fecha.message}</FormError>
+          )}
+        </div>
 
         <div>
           <FormLabel>Herramientas necesarias</FormLabel>

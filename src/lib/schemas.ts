@@ -24,28 +24,11 @@ export const tallerSchema = z.object({
   tipo: z.enum(['vivo', 'pregrabado', 'live_build'], {
     required_error: 'Debes seleccionar un tipo de taller',
   }),
-  fecha_vivo: z.string().optional(),
-  fecha_live_build: z.string().optional(),
+  fecha: z.string().min(1, 'La fecha del taller es requerida'),
   herramientas: z.array(z.number()).default([]),
   campos_webhook: camposWebhookSchema,
   capacidad: z.string().optional(),
   precio: z.string().optional(),
   imagen_url: z.string().optional(),
   fechas: z.array(tallerFechaSchema).optional(),
-}).refine((data) => {
-  if (data.tipo === 'vivo') {
-    return !!data.fecha_vivo;
-  }
-  return true;
-}, {
-  message: "La fecha del taller en vivo es requerida para talleres en vivo",
-  path: ["fecha_vivo"]
-}).refine((data) => {
-  if (data.tipo === 'live_build') {
-    return !!data.fecha_live_build;
-  }
-  return true;
-}, {
-  message: "La fecha del Live Build es requerida para talleres de tipo Live Build",
-  path: ["fecha_live_build"]
 }); 

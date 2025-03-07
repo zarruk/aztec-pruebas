@@ -14,8 +14,7 @@ CREATE TABLE talleres (
   descripcion TEXT NOT NULL,
   video_url TEXT NOT NULL,
   tipo TEXT NOT NULL CHECK (tipo IN ('vivo', 'pregrabado', 'live_build')),
-  fecha_vivo TIMESTAMP WITH TIME ZONE,
-  fecha_live_build TIMESTAMP WITH TIME ZONE,
+  fecha TIMESTAMP WITH TIME ZONE NOT NULL, -- Campo de fecha unificado
   herramientas INTEGER[] DEFAULT '{}',
   campos_webhook TEXT[] DEFAULT '{}',
   capacidad INTEGER,
@@ -73,8 +72,7 @@ COMMENT ON COLUMN talleres.nombre IS 'Nombre del taller';
 COMMENT ON COLUMN talleres.descripcion IS 'Descripción del taller';
 COMMENT ON COLUMN talleres.video_url IS 'URL del video con información del taller';
 COMMENT ON COLUMN talleres.tipo IS 'Tipo de taller: vivo, pregrabado o live build';
-COMMENT ON COLUMN talleres.fecha_vivo IS 'Fecha en la que se realizará el taller en vivo';
-COMMENT ON COLUMN talleres.fecha_live_build IS 'Fecha en la que se realizará el live build para talleres pregrabados';
+COMMENT ON COLUMN talleres.fecha IS 'Fecha en la que se realizará el taller, independiente del tipo';
 COMMENT ON COLUMN talleres.herramientas IS 'IDs de las herramientas utilizadas en el taller';
 COMMENT ON COLUMN talleres.campos_webhook IS 'Campos adicionales para el webhook cuando alguien se registra';
 COMMENT ON COLUMN talleres.capacidad IS 'Capacidad del taller';
@@ -3705,6 +3703,1212 @@ COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo elect
 
 -- Crear índices para mejorar el rendimiento
 CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_nombre IS 'Nombre del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_nombre ON registros_talleres (referido_por_usuario_nombre);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_nombre IS 'Nombre del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_email ON registros_talleres (referido_por_usuario_email);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_email IS 'Correo electrónico del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_telefono ON registros_talleres (referido_por_usuario_telefono);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_telefono IS 'Número de teléfono del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_usuario_id ON registros_talleres (referido_por_usuario_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_usuario_id IS 'ID del usuario que refirió al participante';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_id ON registros_talleres (referido_por_taller_id);
+
+-- Comentarios para documentar las columnas
+COMMENT ON COLUMN registros_talleres.referido_por_taller_id IS 'ID del taller al que se registró el referido';
+
+-- Crear índices para mejorar el rendimiento
+CREATE INDEX idx_registros_referido_por_taller_nombre ON registros_talleres (referido_por_taller_nombre);
 
 -- Comentarios para documentar las columnas
 COMMENT ON COLUMN registros_talleres.datos_adicionales IS 'Datos adicionales del registro en formato JSON'; 
