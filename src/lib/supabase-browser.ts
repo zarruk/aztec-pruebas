@@ -24,17 +24,23 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
-    flowType: 'pkce'
+    flowType: 'pkce',
+    storageKey: 'supabase.auth.token'
   },
   global: {
     headers: {
-      'X-Supabase-Auth-Redirect-To': `${getSiteUrl()}/auth/callback`,
-      'X-Supabase-Site-URL': getSiteUrl()
+      'X-Supabase-Auth-Redirect-To': `${getSiteUrl()}/auth/callback`
     }
   }
 });
 
 console.log('Supabase configurado con URL de redirección:', `${getSiteUrl()}/auth/callback`);
+
+// Inicializar el cliente de Supabase
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('Evento de autenticación:', event);
+  console.log('Sesión presente:', session ? 'Sí' : 'No');
+});
 
 export function createSupabaseClient() {
   return supabase;

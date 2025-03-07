@@ -24,7 +24,18 @@ function LoginForm() {
       setError(decodeURIComponent(errorParam));
       toast.error(decodeURIComponent(errorParam));
     }
-  }, [searchParams]);
+
+    // Verificar si ya hay una sesión activa
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        console.log('Sesión activa detectada, redirigiendo al dashboard');
+        router.push('/dashboard');
+      }
+    };
+
+    checkSession();
+  }, [searchParams, router]);
 
   const handleMagicLinkLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,9 +55,6 @@ function LoginForm() {
         email,
         options: {
           emailRedirectTo: `${SITE_URL}/auth/callback`,
-          data: {
-            redirectUrl: SITE_URL
-          }
         },
       });
 
@@ -57,6 +65,7 @@ function LoginForm() {
     } catch (err: any) {
       setError(err.message || 'Error al enviar el enlace de acceso');
       toast.error('Error al enviar el enlace de acceso');
+      console.error('Error detallado:', err);
     } finally {
       setLoading(false);
     }
