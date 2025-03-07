@@ -1,58 +1,75 @@
-import { createClient } from '@supabase/supabase-js';
-import Link from 'next/link';
-import Image from 'next/image';
-import { redirect } from 'next/navigation';
+'use client';
 
-// Importa la interfaz Taller si está en un archivo separado
-interface Taller {
-  id: number;
-  titulo: string;
-  descripcion: string;
-  precio: number;
-  fecha: string;
-  duracion: string;
-  tipo: string;
-  imagen_url: string;
-  [key: string]: any; // Para permitir campos adicionales
-}
+import React from 'react';
 
-async function fetchTalleres() {
-  console.log("Iniciando carga de talleres...");
-  
-  // Verificar que las variables de entorno estén configuradas
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    console.error("Variables de entorno de Supabase no configuradas");
-    return [];
-  }
-  
-  try {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    );
-    
-    console.log("Cliente Supabase creado, obteniendo talleres...");
-    
-    const { data, error } = await supabase
-      .from('talleres')
-      .select('*');
-    
-    if (error) {
-      console.error("Error al obtener talleres:", error);
-      return [];
-    }
-    
-    console.log(`Talleres obtenidos: ${data?.length || 0}`);
-    return data || [];
-  } catch (error) {
-    console.error("Error inesperado al obtener talleres:", error);
-    return [];
-  }
-}
+export default function HomePage() {
+  return (
+    <div className="bg-white text-gray-800 p-8">
+      <h1 className="text-2xl font-bold mb-6 text-gray-800">Panel de Administración Aztec</h1>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">Talleres</h2>
+          <p className="text-gray-600 mb-4">Gestiona los talleres disponibles en la plataforma.</p>
+          <a 
+            href="/dashboard/talleres" 
+            className="inline-block bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded"
+          >
+            Administrar talleres
+          </a>
+        </div>
+        
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">Usuarios</h2>
+          <p className="text-gray-600 mb-4">Administra los usuarios registrados en la plataforma.</p>
+          <a 
+            href="/dashboard/usuarios" 
+            className="inline-block bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded"
+          >
+            Administrar usuarios
+          </a>
+        </div>
+        
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">Estadísticas</h2>
+          <p className="text-gray-600 mb-4">Visualiza las estadísticas de uso de la plataforma.</p>
+          <a 
+            href="/dashboard/estadisticas" 
+            className="inline-block bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded"
+          >
+            Ver estadísticas
+          </a>
+        </div>
 
-export default function Home() {
-  redirect('/talleres');
-  
-  // Este código nunca se ejecutará debido a la redirección
-  return null;
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">Herramientas</h2>
+          <p className="text-gray-600 mb-4">Accede a las herramientas de la plataforma.</p>
+          <a 
+            href="/dashboard/herramientas" 
+            className="inline-block bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded"
+          >
+            Ver herramientas
+          </a>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">Referidos</h2>
+          <p className="text-gray-600 mb-4">Gestiona el sistema de referidos.</p>
+          <a 
+            href="/dashboard/referidos" 
+            className="inline-block bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded"
+          >
+            Ver referidos
+          </a>
+        </div>
+      </div>
+
+      <div className="mt-8 p-4 bg-blue-50 rounded-lg">
+        <p className="text-blue-800">
+          <strong>Nota:</strong> Esta es una versión simplificada del dashboard que no requiere inicio de sesión.
+          Accede directamente a las secciones haciendo clic en los botones correspondientes.
+        </p>
+      </div>
+    </div>
+  );
 }
