@@ -21,7 +21,7 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
     <div className="bg-[#f8f5f0] min-h-screen">
       {/* Navbar - FIJO */}
       <header className="bg-[#f2efe7] py-1 px-3 md:px-4 fixed top-0 left-0 right-0 z-50 shadow-sm">
-        <div className="container mx-auto w-[65%] flex justify-center items-center">
+        <div className="container mx-auto w-[65%] flex justify-start items-center">
           <Link href="/" className="flex items-center">
             <img 
               src="/aztec-logo-new.png" 
@@ -36,7 +36,7 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
       <div className="pt-20"></div>
 
       {/* Contenido principal */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 w-[65%]">
         {/* Encabezado del taller */}
         <div className="bg-emerald-800 text-white py-10 px-6 rounded-lg mb-8 text-center">
           <h1 className="text-3xl font-bold mb-4">{taller.nombre}</h1>
