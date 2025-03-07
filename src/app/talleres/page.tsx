@@ -246,7 +246,7 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
   return (
     <div className="min-h-screen bg-[#f8f5f0]">
       {/* Navbar */}
-      <header className="bg-[#f2efe7] py-1 px-3 md:px-4 flex justify-between items-center">
+      <header className="bg-[#f2efe7] py-1 px-3 md:px-4 fixed top-0 left-0 right-0 z-50 shadow-sm">
         <div className="container mx-auto w-[65%] flex justify-between items-center">
           <Link href="/" className="flex items-center">
             <img 
@@ -256,18 +256,18 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
             />
           </Link>
           <nav className="hidden md:flex space-x-6">
-            <Link href="/talleres" className="text-[#1b5e4f] font-medium hover:text-[#0d4a3d]">
+            <a href="#talleres" className="text-[#1b5e4f] font-medium hover:text-[#0d4a3d]">
               Talleres
-            </Link>
-            <Link href="/instructores" className="text-[#1b5e4f] font-medium hover:text-[#0d4a3d]">
+            </a>
+            <a href="#instructores" className="text-[#1b5e4f] font-medium hover:text-[#0d4a3d]">
               Instructores
-            </Link>
+            </a>
           </nav>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="bg-[#1b5e4f] text-white py-16 px-6 md:px-12 text-center">
+      <section className="bg-[#1b5e4f] text-white py-16 px-6 md:px-12 text-center pt-32">
         <div className="container mx-auto w-[65%]">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
             Automatiza tu trabajo sin escribir código
@@ -290,7 +290,7 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
       </section>
 
       {/* Listado de Talleres */}
-      <section className="py-16 px-6 md:px-12">
+      <section id="talleres" className="py-16 px-6 md:px-12">
         <div className="container mx-auto w-[65%]">
           <div className="text-center mb-12">
             <h2 className="text-2xl md:text-3xl font-bold mb-2">Nuestros Talleres</h2>
@@ -397,7 +397,7 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
       </section>
 
       {/* Instructores */}
-      <section className="py-16 px-6 md:px-12">
+      <section id="instructores" className="py-16 px-6 md:px-12">
         <div className="container mx-auto w-[65%]">
           <div className="text-center mb-12">
             <h2 className="text-2xl md:text-3xl font-bold mb-2">Conoce a tus instructores</h2>
