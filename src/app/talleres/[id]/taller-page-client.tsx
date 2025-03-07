@@ -75,18 +75,22 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
             {taller.herramientas && taller.herramientas.length > 0 && (
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-xl font-semibold mb-6">Herramientas que utilizaremos</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="flex flex-nowrap overflow-x-auto pb-4 gap-6">
                   {taller.herramientas.map((herramienta: Herramienta, index: number) => (
-                    <div key={herramienta.id} className="bg-[#f8f5f0] p-5 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col items-center">
-                      <div className="flex justify-center items-center mb-4 bg-white p-4 rounded-lg w-24 h-24">
+                    <div 
+                      key={herramienta.id} 
+                      className="bg-[#f8f5f0] p-5 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col items-center flex-shrink-0"
+                      style={{ width: '280px' }}
+                    >
+                      <div className="flex justify-center items-center mb-4 bg-white p-4 rounded-lg w-32 h-32">
                         {herramienta.imagen_url ? (
                           <img 
                             src={herramienta.imagen_url} 
                             alt={herramienta.nombre}
-                            className="w-20 h-20 object-contain"
+                            className="w-28 h-28 object-contain"
                           />
                         ) : (
-                          <div className="w-16 h-16 bg-emerald-200 rounded-full flex items-center justify-center text-emerald-800 font-bold text-xl">
+                          <div className="w-20 h-20 bg-emerald-200 rounded-full flex items-center justify-center text-emerald-800 font-bold text-2xl">
                             {index + 1}
                           </div>
                         )}
