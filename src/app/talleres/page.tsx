@@ -300,7 +300,7 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {talleres.length > 0 ? (
                 talleres.map((taller) => (
-                  <div key={taller.id} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02]">
+                  <div key={taller.id} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02] flex flex-col min-h-[550px]">
                     <div className="relative">
                       <img 
                         src={obtenerImagenTaller(taller.nombre, taller.tipo || '', taller.imagen_url)}
@@ -321,24 +321,31 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
                         <LiveBuildAlert />
                       )}
                     </div>
-                    <div className="p-6">
+                    <div className="p-6 flex flex-col h-full">
                       <h3 className="text-xl font-bold mb-2">{taller.nombre || 'Taller sin nombre'}</h3>
-                      <p className="text-gray-600 mb-4">{taller.descripcion || 'Sin descripción disponible'}</p>
+                      <p className="text-gray-600 mb-4 line-clamp-4 overflow-hidden">{taller.descripcion || 'Sin descripción disponible'}</p>
                       <div className="text-sm text-gray-500 mb-4">
                         {formatearFecha(taller.fecha, taller.tipo)}
                         {formatearFecha(taller.fecha, taller.tipo) && ` • ${obtenerDuracion()}`}
                       </div>
                       
-                      <div className="flex justify-between items-center">
-                        <div className="font-medium">
+                      {/* Espacio flexible para empujar el precio y botón al fondo */}
+                      <div className="flex-grow"></div>
+                      
+                      {/* Contenedor para precio y botón */}
+                      <div className="mt-4">
+                        {/* Precio */}
+                        <div className="font-medium mb-3">
                           {taller.precio 
                             ? `COP $${Number(taller.precio).toLocaleString()} / USD $${obtenerPrecioUSD(Number(taller.precio))}`
                             : 'Precio no disponible'
                           }
                         </div>
+                        
+                        {/* Botón Ver más */}
                         <Link 
                           href={`/talleres/${taller.id}`}
-                          className="bg-[#1b5e4f] text-white px-4 py-2 rounded hover:bg-[#0d4a3d] transition-colors"
+                          className="block w-full text-center bg-[#1b5e4f] text-white px-4 py-2 rounded hover:bg-[#0d4a3d] transition-colors"
                         >
                           Ver más
                         </Link>
