@@ -22,7 +22,7 @@ export default function LoginPage() {
 
     try {
       // URL HARDCODEADA para redirección
-      const SITE_URL = 'https://aztec-nuevo-ii.onrender.com';
+      const SITE_URL = 'https://aztec-nuevo.onrender.com';
       console.log('Usando URL hardcodeada para redirección:', SITE_URL);
       
       // Enviar enlace mágico al correo

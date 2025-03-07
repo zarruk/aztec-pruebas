@@ -7,7 +7,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
 
 // URL HARDCODEADA para redirección - ASEGÚRATE DE QUE ESTA ES LA URL CORRECTA
-const SITE_URL = 'https://aztec-nuevo-ii.onrender.com';
+const SITE_URL = 'https://aztec-nuevo.onrender.com';
 
 // Crear el cliente de Supabase para uso exclusivo en el navegador
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {

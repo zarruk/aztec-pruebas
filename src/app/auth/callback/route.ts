@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   const code = requestUrl.searchParams.get('code');
   
   // URL HARDCODEADA para redirección
-  const SITE_URL = 'https://aztec-nuevo-ii.onrender.com';
+  const SITE_URL = 'https://aztec-nuevo.onrender.com';
   console.log('URL hardcodeada para redirección en callback:', SITE_URL);
 
   if (code) {
