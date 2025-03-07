@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase-browser';
 import { Input } from '@/components/ui/input';
@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { FormError } from '@/components/ui/form-error';
 import { toast } from 'react-hot-toast';
 
-export default function LoginPage() {
+// Componente interno que usa useSearchParams
+function LoginForm() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -120,5 +121,25 @@ export default function LoginPage() {
         )}
       </div>
     </div>
+  );
+}
+
+// Componente de carga para el Suspense
+function LoginLoading() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md text-center">
+        <p>Cargando...</p>
+      </div>
+    </div>
+  );
+}
+
+// Componente principal que envuelve el formulario en un Suspense
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoginLoading />}>
+      <LoginForm />
+    </Suspense>
   );
 } 
