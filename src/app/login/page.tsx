@@ -53,10 +53,15 @@ function LoginForm() {
   // Función para iniciar sesión en modo de desarrollo local
   const handleLocalDevLogin = () => {
     console.log('Iniciando sesión en modo desarrollo local');
+    
     // Simular inicio de sesión exitoso
     toast.success(`Inicio de sesión de desarrollo como salomon@azteclab.co`);
-    // Redirigir al dashboard
-    router.push('/dashboard');
+    
+    // Establecer un pequeño retraso para asegurar que el toast se muestre
+    setTimeout(() => {
+      // Redirigir al dashboard
+      window.location.href = '/dashboard';
+    }, 500);
   };
 
   // Función para iniciar sesión con Google
