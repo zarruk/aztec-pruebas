@@ -80,22 +80,22 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
                     <div 
                       key={herramienta.id} 
                       className="bg-[#f8f5f0] p-5 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col items-center flex-shrink-0"
-                      style={{ width: '280px' }}
+                      style={{ width: '240px', height: '360px' }}
                     >
-                      <div className="flex justify-center items-center mb-4 bg-white p-4 rounded-lg w-32 h-32">
+                      <div className="flex justify-center items-center mb-6 bg-white p-5 rounded-lg w-40 h-40">
                         {herramienta.imagen_url ? (
                           <img 
                             src={herramienta.imagen_url} 
                             alt={herramienta.nombre}
-                            className="w-28 h-28 object-contain"
+                            className="w-36 h-36 object-contain"
                           />
                         ) : (
-                          <div className="w-20 h-20 bg-emerald-200 rounded-full flex items-center justify-center text-emerald-800 font-bold text-2xl">
+                          <div className="w-24 h-24 bg-emerald-200 rounded-full flex items-center justify-center text-emerald-800 font-bold text-2xl">
                             {index + 1}
                           </div>
                         )}
                       </div>
-                      <h3 className="text-base font-semibold mb-2 text-[#1b5e4f]">{herramienta.nombre}</h3>
+                      <h3 className="text-lg font-semibold mb-3 text-[#1b5e4f] text-center">{herramienta.nombre}</h3>
                       <p className="text-sm text-gray-600 text-center">{herramienta.descripcion}</p>
                     </div>
                   ))}
