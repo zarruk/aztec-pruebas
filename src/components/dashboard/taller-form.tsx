@@ -28,6 +28,7 @@ type FormValues = z.infer<typeof tallerSchema>;
 
 interface TallerFormProps {
   taller?: Taller;
+  backofficeMode?: boolean;
 }
 
 interface TallerFormData {
@@ -43,7 +44,7 @@ interface TallerFormData {
   tags: string[];
 }
 
-export function TallerForm({ taller }: TallerFormProps) {
+export function TallerForm({ taller, backofficeMode = false }: TallerFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -133,7 +134,9 @@ export function TallerForm({ taller }: TallerFormProps) {
   // Función simplificada para crear/actualizar taller
   const onSubmit = async (data: z.infer<typeof tallerSchema>) => {
     setIsSubmitting(true);
-    
+    setError(null);
+    setSuccessMessage(null);
+
     try {
       console.log("Datos del formulario:", data);
       
@@ -174,8 +177,14 @@ export function TallerForm({ taller }: TallerFormProps) {
           await handleFechas(taller.id, fechas);
         }
         
-        // Redireccionar a la página del taller
-        router.push(`/dashboard/talleres/${taller.id}`);
+        setSuccessMessage('Taller actualizado correctamente');
+        setTimeout(() => {
+          if (backofficeMode) {
+            router.push('/backoffice/talleres');
+          } else {
+            router.push('/dashboard/talleres');
+          }
+        }, 1500);
       } 
       // MODO CREACIÓN: Crear nuevo taller
       else {
@@ -210,8 +219,14 @@ export function TallerForm({ taller }: TallerFormProps) {
           await handleFechas(nextId, fechas);
         }
         
-        // Redireccionar a la página del taller
-        router.push(`/dashboard/talleres/${nextId}`);
+        setSuccessMessage('Taller creado correctamente');
+        setTimeout(() => {
+          if (backofficeMode) {
+            router.push('/backoffice/talleres');
+          } else {
+            router.push('/dashboard/talleres');
+          }
+        }, 1500);
       }
       
     } catch (error: any) {

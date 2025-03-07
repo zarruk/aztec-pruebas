@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { TalleresList } from '@/components/dashboard/talleres-list';
+import { BackofficeTalleresList } from '@/components/backoffice/talleres-list';
 import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -28,7 +28,7 @@ export default function BackofficeTalleresPage() {
         </Button>
       </div>
       
-      <TalleresList />
+      <BackofficeTalleresList />
       
       <div className="flex justify-center mt-8">
         <a 

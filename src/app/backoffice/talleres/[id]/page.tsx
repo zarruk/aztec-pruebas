@@ -8,7 +8,7 @@ import { Taller } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
-export default function EditarTallerPage() {
+export default function BackofficeEditarTallerPage() {
   const params = useParams();
   const id = typeof params.id === 'string' ? parseInt(params.id) : null;
   
@@ -67,7 +67,7 @@ export default function EditarTallerPage() {
           </svg>
         </div>
         <h3 className="text-lg font-medium text-slate-800 mb-2">{error || 'Taller no encontrado'}</h3>
-        <Link href="/dashboard/talleres">
+        <Link href="/backoffice/talleres">
           <Button 
             variant="outline" 
             className="mt-4"
@@ -87,7 +87,7 @@ export default function EditarTallerPage() {
       </div>
       
       <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
-        <TallerForm taller={taller} />
+        <TallerForm taller={taller} backofficeMode={true} />
       </div>
     </div>
   );

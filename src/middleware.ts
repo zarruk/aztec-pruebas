@@ -26,6 +26,12 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/talleres', req.url));
   }
   
+  // Redireccionar /dashboard a /backoffice
+  if (pathname.startsWith('/dashboard')) {
+    const newPath = pathname.replace('/dashboard', '/backoffice');
+    return NextResponse.redirect(new URL(newPath, req.url));
+  }
+  
   console.log('Middleware ejecutándose para:', pathname);
   
   // Permitir acceso a todas las rutas
