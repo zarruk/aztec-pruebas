@@ -230,20 +230,9 @@ export async function POST(request: NextRequest) {
         console.error('Error al verificar referido:', errorReferido);
         // Continuamos con referidoPorValido = null
       } else if (usuarioReferido) {
-        // Intentar convertir el ID a un número entero para referido_por
-        try {
-          // Si el ID es numérico, lo convertimos a entero
-          if (/^\d+$/.test(usuarioReferido.id)) {
-            referidoPorValido = parseInt(usuarioReferido.id, 10);
-            console.log('Referido válido encontrado (convertido a INTEGER):', referidoPorValido);
-          } else {
-            console.log('El ID del referido no es numérico, no se puede usar como referido_por:', usuarioReferido.id);
-            referidoPorValido = null;
-          }
-        } catch (e) {
-          console.error('Error al convertir ID a entero:', e);
-          referidoPorValido = null;
-        }
+        // Usar el UUID directamente como referido_por
+        referidoPorValido = usuarioReferido.id;
+        console.log('Referido válido encontrado:', referidoPorValido);
       } else {
         console.log('Referido no encontrado, se usará null');
       }
