@@ -281,9 +281,6 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
           <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
             Aprende a usar herramientas de automatización sin necesidad de saber programar
           </p>
-          <a href="#talleres" className="inline-block bg-white text-[#2a7c60] px-6 py-3 rounded-md font-medium text-lg hover:bg-gray-100 transition-colors">
-            Ver talleres disponibles
-          </a>
         </div>
       </section>
 
@@ -463,9 +460,9 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
         <div className="container mx-auto w-[65%] flex flex-col md:flex-row justify-between items-center">
           <div className="mb-6 md:mb-0">
             <img 
-              src="https://taller-fundamental.web.app/Logo%20Aztec%20(800%20x%20400%20px)%20(2).png" 
+              src="/aztec-logo-new.png" 
               alt="Aztec Logo" 
-              className="h-10 w-auto invert"
+              className="h-10 w-auto invert brightness-0 invert"
             />
           </div>
           <div className="text-center md:text-right">
