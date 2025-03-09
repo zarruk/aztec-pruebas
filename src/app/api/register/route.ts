@@ -56,12 +56,32 @@ export async function POST(request: NextRequest) {
     const data = await request.json();
     console.log('Datos recibidos:', data);
     
-    const { name, email, phone, tallerId, referidoPor } = data;
+    const { name, email, phone, tallerId: tallerIdRaw, referidoPor } = data;
     
     // Validar datos requeridos
-    if (!name || !email || !phone || !tallerId) {
+    if (!name || !email || !phone || !tallerIdRaw) {
       return NextResponse.json(
         { error: 'Faltan datos requeridos' },
+        { status: 400 }
+      );
+    }
+    
+    // Asegurarse de que tallerId sea un número entero
+    let tallerId;
+    try {
+      tallerId = parseInt(tallerIdRaw.toString(), 10);
+      if (isNaN(tallerId)) {
+        console.error('tallerId no es un número válido:', tallerIdRaw);
+        return NextResponse.json(
+          { error: 'ID de taller inválido' },
+          { status: 400 }
+        );
+      }
+      console.log('tallerId convertido a entero:', tallerId);
+    } catch (error) {
+      console.error('Error al convertir tallerId:', error);
+      return NextResponse.json(
+        { error: 'ID de taller inválido' },
         { status: 400 }
       );
     }
@@ -197,20 +217,85 @@ export async function POST(request: NextRequest) {
     
     // 5. VERIFICAR SI YA EXISTE UN REGISTRO PARA ESTE USUARIO Y TALLER
     console.log('Verificando si ya existe un registro para usuario:', usuarioId, 'y taller:', tallerId);
-    const { data: registroExistente, error: errorBusquedaRegistro } = await supabase
+    console.log('Tipo de usuarioId:', typeof usuarioId, 'Valor:', usuarioId);
+    console.log('Tipo de tallerId:', typeof tallerId, 'Valor:', tallerId);
+
+    // Primero verificar si hay múltiples registros (esto no debería ocurrir)
+    const { data: todosRegistros, error: errorTodosRegistros } = await supabase
       .from('registros_talleres')
       .select('id')
       .eq('usuario_id', usuarioId)
-      .eq('taller_id', tallerId)
-      .maybeSingle();
-    
+      .eq('taller_id', tallerId);
+
+    if (errorTodosRegistros) {
+      console.error('Error al buscar todos los registros:', errorTodosRegistros);
+    } else {
+      console.log('Cantidad de registros encontrados:', todosRegistros?.length || 0);
+      if (todosRegistros && todosRegistros.length > 1) {
+        console.warn('ALERTA: Se encontraron múltiples registros para el mismo usuario y taller:', todosRegistros);
+        
+        // Mantener solo el primer registro y eliminar los demás
+        const primerRegistroId = todosRegistros[0].id;
+        console.log('Manteniendo el primer registro con ID:', primerRegistroId);
+        
+        // Eliminar los registros duplicados
+        for (let i = 1; i < todosRegistros.length; i++) {
+          const duplicadoId = todosRegistros[i].id;
+          console.log('Eliminando registro duplicado con ID:', duplicadoId);
+          
+          const { error: errorEliminacion } = await supabase
+            .from('registros_talleres')
+            .delete()
+            .eq('id', duplicadoId);
+          
+          if (errorEliminacion) {
+            console.error('Error al eliminar registro duplicado:', errorEliminacion);
+          } else {
+            console.log('Registro duplicado eliminado correctamente');
+          }
+        }
+      }
+    }
+
+    // Ahora hacer la consulta con single() si sabemos que hay exactamente un registro,
+    // o con maybeSingle() si podría no haber ninguno
+    let registroExistente = null;
+    let errorBusquedaRegistro = null;
+
+    if (todosRegistros && todosRegistros.length === 1) {
+      // Sabemos que hay exactamente un registro, usar single()
+      const resultado = await supabase
+        .from('registros_talleres')
+        .select('id')
+        .eq('usuario_id', usuarioId)
+        .eq('taller_id', tallerId)
+        .single();
+      
+      registroExistente = resultado.data;
+      errorBusquedaRegistro = resultado.error;
+    } else {
+      // Podría no haber ningún registro, usar maybeSingle()
+      const resultado = await supabase
+        .from('registros_talleres')
+        .select('id')
+        .eq('usuario_id', usuarioId)
+        .eq('taller_id', tallerId)
+        .maybeSingle();
+      
+      registroExistente = resultado.data;
+      errorBusquedaRegistro = resultado.error;
+    }
+
     if (errorBusquedaRegistro) {
       console.error('Error al buscar registro existente:', errorBusquedaRegistro);
+      console.error('Detalles completos del error:', JSON.stringify(errorBusquedaRegistro));
       return NextResponse.json(
         { error: 'Error al buscar registro', details: errorBusquedaRegistro.message },
         { status: 500 }
       );
     }
+
+    console.log('Registro existente encontrado:', registroExistente);
     
     let registroId;
     let mensaje;
