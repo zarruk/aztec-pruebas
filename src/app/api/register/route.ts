@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { randomUUID } from 'crypto';
 
 // Inicializar cliente de Supabase con la clave correcta
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -68,30 +69,48 @@ export async function POST(request: NextRequest) {
     // 2. Limpiar teléfono
     const telefonoLimpio = limpiarTelefono(phone);
     
-    // 3. BUSCAR USUARIO POR TELÉFONO
-    console.log('Buscando usuario existente con teléfono:', telefonoLimpio);
-    const { data: usuarioExistente, error: errorBusqueda } = await supabase
+    // 3. BUSCAR USUARIO POR TELÉFONO O EMAIL
+    console.log('Buscando usuario existente con teléfono:', telefonoLimpio, 'o email:', email);
+
+    // Primero buscar por teléfono
+    const { data: usuarioPorTelefono, error: errorBusquedaTelefono } = await supabase
       .from('usuarios')
       .select('id, nombre, email, telefono')
       .eq('telefono', telefonoLimpio)
       .maybeSingle();
-    
-    if (errorBusqueda) {
-      console.error('Error al buscar usuario:', errorBusqueda);
+
+    if (errorBusquedaTelefono) {
+      console.error('Error al buscar usuario por teléfono:', errorBusquedaTelefono);
       return NextResponse.json(
-        { error: 'Error al buscar usuario', details: errorBusqueda.message },
+        { error: 'Error al buscar usuario', details: errorBusquedaTelefono.message },
         { status: 500 }
       );
     }
-    
-    console.log('Usuario existente por teléfono:', usuarioExistente);
-    
+
+    // Luego buscar por email
+    const { data: usuarioPorEmail, error: errorBusquedaEmail } = await supabase
+      .from('usuarios')
+      .select('id, nombre, email, telefono')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (errorBusquedaEmail) {
+      console.error('Error al buscar usuario por email:', errorBusquedaEmail);
+      return NextResponse.json(
+        { error: 'Error al buscar usuario', details: errorBusquedaEmail.message },
+        { status: 500 }
+      );
+    }
+
+    console.log('Usuario existente por teléfono:', usuarioPorTelefono);
+    console.log('Usuario existente por email:', usuarioPorEmail);
+
     let usuarioId;
     
     // 4. ACTUALIZAR O CREAR USUARIO
-    if (usuarioExistente) {
-      // USUARIO EXISTE - ACTUALIZAR
-      usuarioId = usuarioExistente.id;
+    if (usuarioPorTelefono) {
+      // USUARIO EXISTE CON ESTE TELÉFONO - ACTUALIZAR
+      usuarioId = usuarioPorTelefono.id;
       console.log('Actualizando usuario existente con ID:', usuarioId);
       
       const { error: errorActualizacion } = await supabase
@@ -122,12 +141,41 @@ export async function POST(request: NextRequest) {
       }
       
       console.log('Usuario actualizado correctamente');
+    } else if (usuarioPorEmail) {
+      // USUARIO EXISTE CON ESTE EMAIL PERO DIFERENTE TELÉFONO
+      usuarioId = usuarioPorEmail.id;
+      console.log('Usuario con este email ya existe pero con diferente teléfono. ID:', usuarioId);
+      
+      // Actualizar el teléfono del usuario existente
+      const { error: errorActualizacion } = await supabase
+        .from('usuarios')
+        .update({
+          nombre: name,
+          telefono: telefonoLimpio
+        })
+        .eq('id', usuarioId);
+      
+      if (errorActualizacion) {
+        console.error('Error al actualizar usuario:', errorActualizacion);
+        return NextResponse.json(
+          { error: 'Error al actualizar usuario', details: errorActualizacion.message },
+          { status: 500 }
+        );
+      }
+      
+      console.log('Usuario actualizado correctamente con nuevo teléfono');
     } else {
       // USUARIO NO EXISTE - CREAR NUEVO
       console.log('Creando nuevo usuario');
+      
+      // Generar un UUID manualmente
+      const userId = randomUUID();
+      console.log('UUID generado para el usuario:', userId);
+      
       const { data: nuevoUsuario, error: errorCreacion } = await supabase
         .from('usuarios')
         .insert({
+          id: userId,
           nombre: name,
           email: email,
           telefono: telefonoLimpio
@@ -171,6 +219,7 @@ export async function POST(request: NextRequest) {
     let referidoPorValido = null;
     if (referidoPor) {
       console.log('Verificando si el referido existe:', referidoPor);
+      
       const { data: usuarioReferido, error: errorReferido } = await supabase
         .from('usuarios')
         .select('id')
@@ -181,8 +230,20 @@ export async function POST(request: NextRequest) {
         console.error('Error al verificar referido:', errorReferido);
         // Continuamos con referidoPorValido = null
       } else if (usuarioReferido) {
-        referidoPorValido = usuarioReferido.id;
-        console.log('Referido válido encontrado:', referidoPorValido);
+        // Intentar convertir el ID a un número entero para referido_por
+        try {
+          // Si el ID es numérico, lo convertimos a entero
+          if (/^\d+$/.test(usuarioReferido.id)) {
+            referidoPorValido = parseInt(usuarioReferido.id, 10);
+            console.log('Referido válido encontrado (convertido a INTEGER):', referidoPorValido);
+          } else {
+            console.log('El ID del referido no es numérico, no se puede usar como referido_por:', usuarioReferido.id);
+            referidoPorValido = null;
+          }
+        } catch (e) {
+          console.error('Error al convertir ID a entero:', e);
+          referidoPorValido = null;
+        }
       } else {
         console.log('Referido no encontrado, se usará null');
       }
