@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { createSupabaseClient } from '@/lib/supabase-browser';
 import { format, parseISO, isAfter, isBefore } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { es } from 'date-fns/locale/es';
 
 // Componente para el aviso intermitente de Live Build
 const LiveBuildAlert = () => {
@@ -247,16 +247,16 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
     <div className="min-h-screen bg-[#fffdf9]">
       {/* Navbar */}
       <header className="bg-[#fffdf9] py-1 px-3 md:px-4 fixed top-0 left-0 right-0 z-50 shadow-sm">
-        <div className="container mx-auto w-[65%] flex justify-between items-center">
+        <div className="container mx-auto flex justify-between items-center">
           <Link href="/" className="flex items-center">
             <img 
               src="/aztec-logo-new.png" 
               alt="Aztec Logo" 
-              className="h-16 w-auto"
+              className="h-12 md:h-16 w-auto object-contain"
             />
           </Link>
           <nav>
-            <ul className="flex space-x-6">
+            <ul className="flex space-x-4 md:space-x-6">
               <li>
                 <a href="#talleres" className="text-[#2a7c60] font-medium hover:text-[#1e5a46]">
                   Talleres
@@ -273,32 +273,32 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
       </header>
 
       {/* Hero Section */}
-      <section className="bg-[#2a7c60] text-white py-16 px-6 md:px-12 text-center pt-32">
-        <div className="container mx-auto w-[65%]">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+      <section className="bg-[#2a7c60] text-white py-12 md:py-16 px-4 md:px-6 text-center pt-28 md:pt-32">
+        <div className="container mx-auto">
+          <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">
             Automatiza tu trabajo y ahorra tiempo
           </h1>
-          <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+          <p className="text-lg md:text-2xl mb-6 md:mb-8 max-w-3xl mx-auto">
             Aprende a usar herramientas de automatización sin necesidad de saber programar
           </p>
         </div>
       </section>
 
       {/* Listado de Talleres */}
-      <section id="talleres" className="py-16 px-6 md:px-12">
-        <div className="container mx-auto w-[65%]">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold mb-2">Nuestros Talleres</h2>
+      <section id="talleres" className="py-10 md:py-16 px-4 md:px-6">
+        <div className="container mx-auto">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-xl md:text-3xl font-bold mb-2">Nuestros Talleres</h2>
             <p className="text-gray-600">Aprende habilidades prácticas en nuestros talleres</p>
           </div>
           
           {loading ? (
             <div className="text-center py-12">Cargando talleres...</div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
               {talleres.length > 0 ? (
                 talleres.map((taller) => (
-                  <div key={taller.id} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02] flex flex-col min-h-[550px]">
+                  <div key={taller.id} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02] flex flex-col min-h-[450px] md:min-h-[550px]">
                     <div className="relative">
                       <img 
                         src={obtenerImagenTaller(taller.nombre, taller.tipo || '', taller.imagen_url)}
@@ -362,14 +362,14 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
       </section>
 
       {/* Testimonios */}
-      <section className="py-16 px-6 md:px-12 bg-[#f2efe7]">
-        <div className="container mx-auto w-[65%]">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold mb-2">Lo que dicen nuestros estudiantes</h2>
+      <section className="py-10 md:py-16 px-4 md:px-6 bg-[#f2efe7]">
+        <div className="container mx-auto">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-xl md:text-3xl font-bold mb-2">Lo que dicen nuestros estudiantes</h2>
             <p className="text-gray-600">Experiencias reales de participantes de nuestros talleres</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 max-w-5xl mx-auto">
             <div className="bg-[#5baa91] text-white p-6 rounded-lg">
               <p className="italic mb-4">
                 "El taller estuvo muy bueno para romper la barrera de conocimiento de la interfaz del programa. Me generó muchas ideas para automatizar procesos."
@@ -392,14 +392,14 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
       </section>
 
       {/* Instructores */}
-      <section id="instructores" className="py-16 px-6 md:px-12">
-        <div className="container mx-auto w-[65%]">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold mb-2">Conoce a tus instructores</h2>
+      <section id="instructores" className="py-10 md:py-16 px-4 md:px-6">
+        <div className="container mx-auto">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-xl md:text-3xl font-bold mb-2">Conoce a tus instructores</h2>
             <p className="text-gray-600">Expertos en automatización y tecnología</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 max-w-4xl mx-auto">
             <div className="text-center">
               <div className="mb-4 mx-auto w-48 h-48 overflow-hidden rounded-lg">
                 <img 
@@ -456,13 +456,13 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#2a7c60] text-white py-8 px-6 md:px-12">
-        <div className="container mx-auto w-[65%] flex flex-col md:flex-row justify-between items-center">
-          <div className="mb-6 md:mb-0">
+      <footer className="bg-[#2a7c60] text-white py-6 md:py-8 px-4 md:px-6">
+        <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
+          <div className="mb-4 md:mb-0">
             <img 
               src="/aztec-logo-new.png" 
               alt="Aztec Logo" 
-              className="h-10 w-auto invert brightness-0 invert"
+              className="h-8 md:h-10 w-auto object-contain invert brightness-0 invert"
             />
           </div>
           <div className="text-center md:text-right">
