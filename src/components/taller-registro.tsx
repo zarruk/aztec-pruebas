@@ -193,15 +193,71 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
 
       {submitSuccess ? (
         <div className="text-center py-4">
-          <div className="bg-[#2a7c60] bg-opacity-10 text-[#2a7c60] p-4 rounded-md mb-4">
-            <p className="font-medium">¡Registro exitoso!</p>
-            <p className="text-sm mt-1">Gracias por registrarte. Te contactaremos pronto con más detalles.</p>
+          <div className="flex flex-col items-center justify-center mb-6">
+            <div className="w-16 h-16 bg-[#2a7c60] bg-opacity-10 rounded-full flex items-center justify-center mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-[#2a7c60]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h4 className="text-xl font-bold text-[#2a7c60] mb-2">¡Registro exitoso!</h4>
+            <p className="text-gray-600">Gracias por registrarte. Te contactaremos pronto con más detalles.</p>
           </div>
-          <p className="text-gray-600 mt-4">
-            {taller.tipo === 'pregrabado' 
-              ? 'Recibirás acceso al taller pregrabado en tu correo electrónico.' 
-              : 'Te enviaremos un recordatorio antes del taller.'}
-          </p>
+          
+          <div className="bg-[#f8f9fa] border border-gray-200 rounded-lg p-4 mb-4">
+            <h5 className="font-medium text-gray-800 mb-2">Recibirás en tu correo electrónico:</h5>
+            <ul className="text-gray-600 text-sm space-y-2">
+              {taller.tipo === 'pregrabado' ? (
+                <>
+                  <li className="flex items-start">
+                    <svg className="h-5 w-5 text-[#2a7c60] mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Acceso inmediato al taller pregrabado
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="h-5 w-5 text-[#2a7c60] mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Material complementario
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="h-5 w-5 text-[#2a7c60] mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Soporte por correo electrónico
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li className="flex items-start">
+                    <svg className="h-5 w-5 text-[#2a7c60] mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Enlace para unirte al taller en vivo
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="h-5 w-5 text-[#2a7c60] mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Recordatorio 24 horas antes
+                  </li>
+                  <li className="flex items-start">
+                    <svg className="h-5 w-5 text-[#2a7c60] mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Grabación del taller después del evento
+                  </li>
+                </>
+              )}
+            </ul>
+          </div>
+          
+          <a 
+            href="/talleres" 
+            className="inline-block bg-[#2a7c60] hover:bg-[#1e5a46] text-white font-medium py-2 px-6 rounded-md transition duration-150 ease-in-out"
+          >
+            Ver más talleres
+          </a>
         </div>
       ) : (
         <>
