@@ -21,7 +21,7 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
     <div className="bg-[#fffdf9] min-h-screen">
       {/* Navbar - FIJO */}
       <header className="bg-[#fffdf9] py-1 px-3 md:px-4 fixed top-0 left-0 right-0 z-50 shadow-sm">
-        <div className="container mx-auto md:w-[65%] flex justify-start items-center">
+        <div className="container mx-auto w-full md:w-[65%] flex justify-start items-center">
           <Link href="/" className="flex items-center">
             <img 
               src="/aztec-logo-new.png" 
@@ -36,7 +36,7 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
       <div className="pt-20"></div>
 
       {/* Contenido principal */}
-      <div className="container mx-auto px-4 py-8 md:w-[65%]">
+      <div className="container mx-auto px-4 py-8 w-full md:w-[65%]">
         {/* Encabezado del taller */}
         <div className="bg-[#2a7c60] text-white py-10 px-6 rounded-lg mb-8 text-center">
           <h1 className="text-3xl font-bold mb-4">{taller.nombre}</h1>
@@ -75,38 +75,30 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
             {taller.herramientas && taller.herramientas.length > 0 && (
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-xl font-semibold mb-6">Herramientas que utilizaremos</h2>
-                <div className="relative">
-                  <div className="flex flex-nowrap overflow-x-auto pb-4 gap-6 scrollbar-thin scrollbar-thumb-[#2a7c60] scrollbar-track-gray-100 -mx-2 px-2">
-                    {taller.herramientas.map((herramienta: Herramienta, index: number) => (
-                      <div 
-                        key={herramienta.id} 
-                        className="bg-[#fffdf9] p-3 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col items-center flex-shrink-0"
-                        style={{ width: '187px', height: '272px' }}
-                      >
-                        <div className="flex justify-center items-center mb-4 bg-white p-3 rounded-lg w-30 h-30 border border-gray-200">
-                          {herramienta.imagen_url ? (
-                            <img 
-                              src={herramienta.imagen_url} 
-                              alt={herramienta.nombre}
-                              className="w-28 h-28 object-contain"
-                            />
-                          ) : (
-                            <div className="w-16 h-16 bg-[#2a7c60] rounded-full flex items-center justify-center text-white font-bold text-xl">
-                              {index + 1}
-                            </div>
-                          )}
-                        </div>
-                        <h3 className="text-base font-semibold mb-2 text-[#2a7c60] text-center">{herramienta.nombre}</h3>
-                        <p className="text-xs text-gray-600 text-center">{herramienta.descripcion}</p>
+                <div className="flex flex-row overflow-x-auto pb-4 gap-4 md:gap-6 scrollbar-hide -mx-6 px-6">
+                  {taller.herramientas.map((herramienta: Herramienta, index: number) => (
+                    <div 
+                      key={herramienta.id} 
+                      className="bg-[#fffdf9] p-3 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col items-center flex-shrink-0"
+                      style={{ width: '160px', minWidth: '160px', height: '250px' }}
+                    >
+                      <div className="flex justify-center items-center mb-4 bg-white p-3 rounded-lg w-24 h-24 border border-gray-200">
+                        {herramienta.imagen_url ? (
+                          <img 
+                            src={herramienta.imagen_url} 
+                            alt={herramienta.nombre}
+                            className="w-20 h-20 object-contain"
+                          />
+                        ) : (
+                          <div className="w-16 h-16 bg-[#2a7c60] rounded-full flex items-center justify-center text-white font-bold text-xl">
+                            {index + 1}
+                          </div>
+                        )}
                       </div>
-                    ))}
-                  </div>
-                  {taller.herramientas.length > 2 && (
-                    <div className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gradient-to-l from-white via-white to-transparent w-12 h-full pointer-events-none"></div>
-                  )}
-                </div>
-                <div className="flex justify-center mt-4">
-                  <div className="text-sm text-gray-500 italic">Desliza para ver más herramientas →</div>
+                      <h3 className="text-base font-semibold mb-2 text-[#2a7c60] text-center">{herramienta.nombre}</h3>
+                      <p className="text-xs text-gray-600 text-center line-clamp-4">{herramienta.descripcion}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
