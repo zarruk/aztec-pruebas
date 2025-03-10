@@ -34,6 +34,11 @@ export default function BackofficeLayout({
                 </a>
               </li>
               <li>
+                <a href="/backoffice/herramientas" style={{color: '#1f2937', textDecoration: 'none'}}>
+                  Herramientas
+                </a>
+              </li>
+              <li>
                 <a href="/talleres" style={{color: '#1f2937', textDecoration: 'none'}}>
                   Ver Sitio Público
                 </a>

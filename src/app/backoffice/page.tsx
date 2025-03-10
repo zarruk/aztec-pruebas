@@ -32,6 +32,17 @@ export default function BackofficePage() {
         </div>
         
         <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">Herramientas</h2>
+          <p className="text-gray-600 mb-4">Gestiona las herramientas utilizadas en los talleres.</p>
+          <a 
+            href="/backoffice/herramientas" 
+            className="inline-block bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded"
+          >
+            Administrar herramientas
+          </a>
+        </div>
+        
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
           <h2 className="text-xl font-semibold mb-4 text-gray-800">Ver Sitio Público</h2>
           <p className="text-gray-600 mb-4">Visita el sitio público para ver cómo se ven los talleres.</p>
           <a 
