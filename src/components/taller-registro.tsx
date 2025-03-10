@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Taller, TallerConHerramientas } from '@/lib/types';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { useRouter } from 'next/navigation';
 
 interface TallerRegistroProps {
   taller: Taller | TallerConHerramientas;
@@ -59,9 +60,10 @@ type FormDataBase = z.infer<typeof baseSchema>;
 type FormDataVivo = z.infer<typeof tallerVivoSchema>;
 
 export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   // Determinar si es un taller en vivo
   const esVivoOLiveBuild = taller.tipo === 'vivo' || taller.tipo === 'live_build';
@@ -173,7 +175,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
       }
 
       console.log('Registro exitoso:', responseData);
-      setSubmitSuccess(true);
+      router.push(`/talleres/${taller.id}/success`);
     } catch (error: any) {
       console.error('Error en el proceso de registro:', error);
       setSubmitError(error.message || 'Error al registrarse. Intenta de nuevo más tarde.');
@@ -200,7 +202,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
               </svg>
             </div>
             <h4 className="text-xl font-bold text-[#2a7c60] mb-2">¡Registro exitoso!</h4>
-            <p className="text-gray-600">Gracias por registrarte. Te contactaremos pronto con más detalles.</p>
+            <p className="text-gray-600">Revisa tu correo y tu WhatsApp, a donde te enviamos los detalles de pago. Luego recibirás las instrucciones.</p>
           </div>
           
           <div className="bg-[#f8f9fa] border border-gray-200 rounded-lg p-4 mb-4">
@@ -212,7 +214,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
                     <svg className="h-5 w-5 text-[#2a7c60] mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    Acceso inmediato al taller pregrabado
+                    Acceso al taller pregrabado
                   </li>
                   <li className="flex items-start">
                     <svg className="h-5 w-5 text-[#2a7c60] mr-2 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -353,13 +355,34 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
                         vivoForm.setValue('telefono', newValue);
                       }}
                     >
+                      {/* Países latinoamericanos primero */}
                       <option value="+57">🇨🇴 +57</option>
-                      <option value="+1">🇺🇸 +1</option>
-                      <option value="+52">🇲🇽 +52</option>
-                      <option value="+34">🇪🇸 +34</option>
-                      <option value="+51">🇵🇪 +51</option>
-                      <option value="+56">🇨🇱 +56</option>
                       <option value="+54">🇦🇷 +54</option>
+                      <option value="+591">🇧🇴 +591</option>
+                      <option value="+55">🇧🇷 +55</option>
+                      <option value="+56">🇨🇱 +56</option>
+                      <option value="+506">🇨🇷 +506</option>
+                      <option value="+593">🇪🇨 +593</option>
+                      <option value="+503">🇸🇻 +503</option>
+                      <option value="+502">🇬🇹 +502</option>
+                      <option value="+504">🇭🇳 +504</option>
+                      <option value="+52">🇲🇽 +52</option>
+                      <option value="+505">🇳🇮 +505</option>
+                      <option value="+507">🇵🇦 +507</option>
+                      <option value="+595">🇵🇾 +595</option>
+                      <option value="+51">🇵🇪 +51</option>
+                      <option value="+1">🇵🇷 +1787</option>
+                      <option value="+598">🇺🇾 +598</option>
+                      <option value="+58">🇻🇪 +58</option>
+                      {/* Otros países */}
+                      <option value="+1">🇺🇸 +1</option>
+                      <option value="+1">🇨🇦 +1</option>
+                      <option value="+34">🇪🇸 +34</option>
+                      <option value="+44">🇬🇧 +44</option>
+                      <option value="+33">🇫🇷 +33</option>
+                      <option value="+49">🇩🇪 +49</option>
+                      <option value="+39">🇮🇹 +39</option>
+                      <option value="+351">🇵🇹 +351</option>
                     </select>
                   </div>
                   <input
@@ -497,13 +520,34 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
                         pregrabadoForm.setValue('telefono', newValue);
                       }}
                     >
+                      {/* Países latinoamericanos primero */}
                       <option value="+57">🇨🇴 +57</option>
-                      <option value="+1">🇺🇸 +1</option>
-                      <option value="+52">🇲🇽 +52</option>
-                      <option value="+34">🇪🇸 +34</option>
-                      <option value="+51">🇵🇪 +51</option>
-                      <option value="+56">🇨🇱 +56</option>
                       <option value="+54">🇦🇷 +54</option>
+                      <option value="+591">🇧🇴 +591</option>
+                      <option value="+55">🇧🇷 +55</option>
+                      <option value="+56">🇨🇱 +56</option>
+                      <option value="+506">🇨🇷 +506</option>
+                      <option value="+593">🇪🇨 +593</option>
+                      <option value="+503">🇸🇻 +503</option>
+                      <option value="+502">🇬🇹 +502</option>
+                      <option value="+504">🇭🇳 +504</option>
+                      <option value="+52">🇲🇽 +52</option>
+                      <option value="+505">🇳🇮 +505</option>
+                      <option value="+507">🇵🇦 +507</option>
+                      <option value="+595">🇵🇾 +595</option>
+                      <option value="+51">🇵🇪 +51</option>
+                      <option value="+1">🇵🇷 +1787</option>
+                      <option value="+598">🇺🇾 +598</option>
+                      <option value="+58">🇻🇪 +58</option>
+                      {/* Otros países */}
+                      <option value="+1">🇺🇸 +1</option>
+                      <option value="+1">🇨🇦 +1</option>
+                      <option value="+34">🇪🇸 +34</option>
+                      <option value="+44">🇬🇧 +44</option>
+                      <option value="+33">🇫🇷 +33</option>
+                      <option value="+49">🇩🇪 +49</option>
+                      <option value="+39">🇮🇹 +39</option>
+                      <option value="+351">🇵🇹 +351</option>
                     </select>
                   </div>
                   <input
@@ -543,9 +587,8 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
                   Al registrarte recibirás:
                 </p>
                 <ul className="list-disc pl-5 text-sm text-gray-600 space-y-1">
-                  <li>Acceso inmediato al taller pregrabado</li>
+                  <li>Acceso al taller pregrabado</li>
                   <li>Material complementario</li>
-                  <li>Soporte por correo electrónico</li>
                 </ul>
               </div>
 
