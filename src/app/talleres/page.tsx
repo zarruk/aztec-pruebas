@@ -247,7 +247,7 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
     <div className="min-h-screen bg-[#fffdf9]">
       {/* Navbar */}
       <header className="bg-[#fffdf9] py-1 px-3 md:px-4 fixed top-0 left-0 right-0 z-50 shadow-sm">
-        <div className="container mx-auto flex justify-between items-center">
+        <div className="container mx-auto md:w-[65%] flex justify-between items-center">
           <Link href="/" className="flex items-center">
             <img 
               src="/aztec-logo-new.png" 
@@ -274,7 +274,7 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
 
       {/* Hero Section */}
       <section className="bg-[#2a7c60] text-white py-12 md:py-16 px-4 md:px-6 text-center pt-28 md:pt-32">
-        <div className="container mx-auto">
+        <div className="container mx-auto md:w-[65%]">
           <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">
             Automatiza tu trabajo y ahorra tiempo
           </h1>
@@ -286,7 +286,7 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
 
       {/* Listado de Talleres */}
       <section id="talleres" className="py-10 md:py-16 px-4 md:px-6">
-        <div className="container mx-auto">
+        <div className="container mx-auto md:w-[65%]">
           <div className="text-center mb-8 md:mb-12">
             <h2 className="text-xl md:text-3xl font-bold mb-2">Nuestros Talleres</h2>
             <p className="text-gray-600">Aprende habilidades prácticas en nuestros talleres</p>
@@ -363,7 +363,7 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
 
       {/* Testimonios */}
       <section className="py-10 md:py-16 px-4 md:px-6 bg-[#f2efe7]">
-        <div className="container mx-auto">
+        <div className="container mx-auto md:w-[65%]">
           <div className="text-center mb-8 md:mb-12">
             <h2 className="text-xl md:text-3xl font-bold mb-2">Lo que dicen nuestros estudiantes</h2>
             <p className="text-gray-600">Experiencias reales de participantes de nuestros talleres</p>
@@ -393,7 +393,7 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
 
       {/* Instructores */}
       <section id="instructores" className="py-10 md:py-16 px-4 md:px-6">
-        <div className="container mx-auto">
+        <div className="container mx-auto md:w-[65%]">
           <div className="text-center mb-8 md:mb-12">
             <h2 className="text-xl md:text-3xl font-bold mb-2">Conoce a tus instructores</h2>
             <p className="text-gray-600">Expertos en automatización y tecnología</p>
@@ -457,7 +457,7 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
 
       {/* Footer */}
       <footer className="bg-[#2a7c60] text-white py-6 md:py-8 px-4 md:px-6">
-        <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
+        <div className="container mx-auto md:w-[65%] flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0">
             <img 
               src="/aztec-logo-new.png" 
