@@ -146,7 +146,7 @@ export default function TalleresPage() {
       setCurrentTestimonial(prev => (prev + 1) % testimonios.length);
     }, 8000);
   };
-
+  
   useEffect(() => {
     async function fetchTalleres() {
       try {
@@ -359,21 +359,21 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
             <ul className="flex space-x-4 md:space-x-6">
               <li>
                 <a href="#talleres" className="text-[#2a7c60] font-medium hover:text-[#1e5a46]">
-                  Talleres
-                </a>
+              Talleres
+            </a>
               </li>
               <li>
                 <a href="#instructores" className="text-[#2a7c60] font-medium hover:text-[#1e5a46]">
-                  Instructores
-                </a>
+              Instructores
+            </a>
               </li>
             </ul>
           </nav>
         </div>
       </header>
 
-      {/* Hero Section - Versión mejorada */}
-      <section className="bg-gradient-to-br from-[#2a7c60] to-[#1b5e4f] text-white py-16 md:py-24 px-4 md:px-6 relative overflow-hidden">
+      {/* Banner principal */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#1a5a46] to-[#2a7c60] text-white py-16 md:py-24 px-4 md:px-6">
         {/* Elementos decorativos animados */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-20 left-10 w-20 h-20 rounded-full bg-white opacity-5 animate-float-slow"></div>
@@ -388,7 +388,7 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
             <div className="text-center lg:text-left">
               <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
                 Automatiza tu trabajo y <span className="text-[#8be0c9]">ahorra tiempo</span>
-              </h1>
+          </h1>
               <p className="text-lg md:text-xl mb-8 text-gray-100 max-w-xl mx-auto lg:mx-0">
                 Aprende a usar herramientas de automatización sin necesidad de saber programar y transforma tu forma de trabajar.
               </p>
@@ -477,76 +477,234 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
         }
       `}</style>
 
-      {/* Listado de Talleres */}
-      <section id="talleres" className="py-10 md:py-16 px-4 md:px-6">
+      {/* Estadísticas */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 py-10 px-4 md:px-6 container mx-auto w-full sm:w-[90%] md:w-[85%] lg:w-[75%] xl:w-[65%]">
+        <div className="text-center p-6 bg-[#f0f9f6] rounded-xl transform transition-transform hover:scale-105 duration-300">
+          <div className="text-[#2a7c60] font-bold text-4xl md:text-5xl mb-2">500+</div>
+          <div className="text-gray-600">Estudiantes</div>
+        </div>
+        <div className="text-center p-6 bg-[#f0f9f6] rounded-xl transform transition-transform hover:scale-105 duration-300">
+          <div className="text-[#2a7c60] font-bold text-4xl md:text-5xl mb-2">6</div>
+          <div className="text-gray-600">Talleres</div>
+        </div>
+        <div className="text-center p-6 bg-[#f0f9f6] rounded-xl transform transition-transform hover:scale-105 duration-300">
+          <div className="text-[#2a7c60] font-bold text-4xl md:text-5xl mb-2">4.65</div>
+          <div className="text-gray-600">Calificación promedio</div>
+        </div>
+        <div className="text-center p-6 bg-[#f0f9f6] rounded-xl transform transition-transform hover:scale-105 duration-300">
+          <div className="text-[#2a7c60] font-bold text-4xl md:text-5xl mb-2">24/7</div>
+          <div className="text-gray-600">Soporte</div>
+        </div>
+      </div>
+
+      {/* Beneficios */}
+      <section className="py-8 md:py-12 px-4 md:px-6 bg-white">
         <div className="container mx-auto w-full sm:w-[90%] md:w-[85%] lg:w-[75%] xl:w-[65%]">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-xl md:text-3xl font-bold mb-2">Nuestros Talleres</h2>
-            <p className="text-gray-600">Aprende habilidades prácticas en nuestros talleres</p>
+          <div className="text-center mb-12 md:mb-16">
+            <h2 className="text-2xl md:text-4xl font-bold mb-4 relative inline-block">
+              <span className="relative z-10">¿Por qué elegir nuestros talleres?</span>
+              <span className="absolute -bottom-2 left-0 right-0 h-3 bg-[#8be0c9] opacity-30 rounded-full transform -rotate-1"></span>
+            </h2>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-12">
+              Aprende habilidades prácticas que transformarán tu forma de trabajar
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+            <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100">
+              <div className="w-16 h-16 bg-[#f0f9f6] rounded-full flex items-center justify-center mb-6 mx-auto md:mx-0">
+                <svg className="w-8 h-8 text-[#2a7c60]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold mb-3 text-center md:text-left">Aprende rápido</h3>
+              <p className="text-gray-600">
+                Nuestros talleres están diseñados para que aprendas de forma rápida y efectiva, sin necesidad de conocimientos previos.
+              </p>
+            </div>
+            
+            <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100">
+              <div className="w-16 h-16 bg-[#f0f9f6] rounded-full flex items-center justify-center mb-6 mx-auto md:mx-0">
+                <svg className="w-8 h-8 text-[#2a7c60]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold mb-3 text-center md:text-left">Aplicación inmediata</h3>
+              <p className="text-gray-600">
+                Todo lo que aprendes lo puedes aplicar inmediatamente en tu trabajo o proyectos personales.
+              </p>
+            </div>
+            
+            <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100">
+              <div className="w-16 h-16 bg-[#f0f9f6] rounded-full flex items-center justify-center mb-6 mx-auto md:mx-0">
+                <svg className="w-8 h-8 text-[#2a7c60]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold mb-3 text-center md:text-left">Comunidad de apoyo</h3>
+              <p className="text-gray-600">
+                Únete a una comunidad de profesionales que, como tú, buscan optimizar su trabajo con herramientas de automatización.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Talleres */}
+      <section id="talleres" className="py-8 md:py-12 px-4 md:px-6 bg-[#f7f5f0]">
+        <div className="container mx-auto w-full sm:w-[90%] md:w-[85%] lg:w-[75%] xl:w-[65%]">
+          <div className="text-center mb-12 md:mb-16">
+            <h2 className="text-2xl md:text-4xl font-bold mb-4 relative inline-block">
+              <span className="relative z-10">Nuestros Talleres</span>
+              <span className="absolute -bottom-2 left-0 right-0 h-3 bg-[#8be0c9] opacity-30 rounded-full transform -rotate-1"></span>
+            </h2>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+              Aprende habilidades prácticas que transformarán tu forma de trabajar
+            </p>
+          </div>
+          
+          {/* Filtros de talleres */}
+          <div className="flex flex-wrap justify-center gap-3 mb-10">
+            <button className="px-5 py-2 rounded-full bg-[#2a7c60] text-white font-medium hover:bg-[#1e5a46] transition-colors">
+              Todos
+            </button>
+            <button className="px-5 py-2 rounded-full bg-white border border-[#2a7c60] text-[#2a7c60] font-medium hover:bg-[#f0f9f6] transition-colors">
+              En vivo
+            </button>
+            <button className="px-5 py-2 rounded-full bg-white border border-[#2a7c60] text-[#2a7c60] font-medium hover:bg-[#f0f9f6] transition-colors">
+              Pregrabados
+            </button>
+            <button className="px-5 py-2 rounded-full bg-white border border-[#2a7c60] text-[#2a7c60] font-medium hover:bg-[#f0f9f6] transition-colors">
+              Próximamente
+            </button>
           </div>
           
           {loading ? (
-            <div className="text-center py-12">Cargando talleres...</div>
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#2a7c60]"></div>
+            </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
               {talleres.length > 0 ? (
                 talleres.map((taller) => (
-                  <div key={taller.id} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02] flex flex-col min-h-[450px] md:min-h-[550px]">
-                    <div className="relative">
+                  <div 
+                    key={taller.id} 
+                    className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 flex flex-col min-h-[450px] md:min-h-[500px] relative"
+                  >
+                    {/* Imagen con overlay */}
+                    <div className="relative h-56 overflow-hidden">
                       <img 
                         src={obtenerImagenTaller(taller.nombre, taller.tipo || '', taller.imagen_url)}
                         alt={taller.nombre}
-                        className="w-full h-48 object-cover"
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-60"></div>
+                      
+                      {/* Badges */}
+                      <div className="absolute top-4 right-4 flex flex-col gap-2">
                       {taller.tipo === 'pregrabado' && (
-                        <div className="absolute top-2 right-2 bg-[#5baa91] text-white font-bold py-1 px-3 rounded-md text-sm">
+                          <span className="bg-[#5baa91] text-white font-bold py-1 px-3 rounded-md text-sm shadow-lg">
                           PREGRABADO
+                          </span>
+                        )}
+                        {taller.tipo === 'vivo' && esFechaFutura(taller.fecha) && (
+                          <span className="bg-green-600 text-white font-bold py-1 px-3 rounded-md text-sm shadow-lg">
+                            PRÓXIMAMENTE
+                          </span>
+                        )}
+                      </div>
+                      
+                      {/* Fecha y duración */}
+                      <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center">
+                        <div className="text-white text-sm font-medium">
+                          {formatearFecha(taller.fecha, taller.tipo) && (
+                            <span className="flex items-center">
+                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                              </svg>
+                              {formatearFecha(taller.fecha, taller.tipo)}
+                            </span>
+                          )}
                         </div>
-                      )}
-                      {taller.tipo === 'vivo' && esFechaFutura(taller.fecha) && (
-                        <div className="absolute top-2 right-2 bg-green-600 text-white font-bold py-1 px-3 rounded-md text-sm">
-                          PRÓXIMAMENTE
+                        <div className="text-white text-sm font-medium">
+                          <span className="flex items-center">
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {obtenerDuracion()}
+                          </span>
                         </div>
-                      )}
+                      </div>
+                      
                       {taller.tipo === 'pregrabado' && esFechaFutura(taller.fecha) && (
                         <LiveBuildAlert />
                       )}
                     </div>
-                    <div className="p-6 flex flex-col h-full">
-                      <h3 className="text-xl font-bold mb-2">{taller.nombre || 'Taller sin nombre'}</h3>
-                      <p className="text-gray-600 mb-4 line-clamp-4 overflow-hidden">{taller.descripcion || 'Sin descripción disponible'}</p>
-                      <div className="text-sm text-gray-500 mb-4">
-                        {formatearFecha(taller.fecha, taller.tipo)}
-                        {formatearFecha(taller.fecha, taller.tipo) && ` • ${obtenerDuracion()}`}
-                      </div>
+                    
+                    <div className="p-6 flex flex-col flex-grow">
+                      <h3 className="text-xl font-bold mb-3 text-gray-800 group-hover:text-[#2a7c60] transition-colors line-clamp-2">
+                        {taller.nombre || 'Taller sin nombre'}
+                      </h3>
                       
-                      {/* Espacio flexible para empujar el precio y botón al fondo */}
+                      <p className="text-gray-600 mb-4 line-clamp-3 text-sm">
+                        {taller.descripcion || 'Sin descripción disponible'}
+                      </p>
+                      
+                      {/* Herramientas utilizadas */}
+                      {taller.herramientas && taller.herramientas.length > 0 && (
+                        <div className="mb-4">
+                          <p className="text-xs text-gray-500 mb-2">Herramientas:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {taller.herramientas.map((id, index) => (
+                              <span key={id} className="inline-block bg-gray-100 rounded-full px-3 py-1 text-xs font-medium text-gray-700">
+                                Herramienta {index + 1}
+                              </span>
+                            )).slice(0, 3)}
+                            {taller.herramientas.length > 3 && (
+                              <span className="inline-block bg-gray-100 rounded-full px-3 py-1 text-xs font-medium text-gray-700">
+                                +{taller.herramientas.length - 3}
+                              </span>
+                            )}
+                          </div>
+                      </div>
+                      )}
+                      
+                      {/* Espacio flexible */}
                       <div className="flex-grow"></div>
                       
-                      {/* Contenedor para precio y botón */}
-                      <div className="mt-4">
-                        {/* Precio */}
-                        <div className="font-medium mb-3">
+                      {/* Precio y botón */}
+                      <div className="mt-4 flex flex-col">
+                        <div className="font-medium mb-3 flex justify-between items-center">
+                          <span className="text-[#2a7c60] font-bold text-lg">
                           {taller.precio 
-                            ? `COP $${Number(taller.precio).toLocaleString()} / USD $${obtenerPrecioUSD(Number(taller.precio))}`
+                              ? `$${Number(taller.precio).toLocaleString()}`
                             : 'Precio no disponible'
                           }
+                          </span>
+                          <span className="text-gray-500 text-sm">
+                            USD ${obtenerPrecioUSD(Number(taller.precio))}
+                          </span>
                         </div>
                         
-                        {/* Botón Ver más */}
                         <Link 
                           href={`/talleres/${taller.id}`}
-                          className="block w-full text-center bg-[#1b5e4f] text-white px-4 py-2 rounded hover:bg-[#0d4a3d] transition-colors"
+                          className="block w-full text-center bg-[#1b5e4f] text-white px-4 py-3 rounded-lg hover:bg-[#0d4a3d] transition-colors transform group-hover:scale-105 duration-300 font-medium"
                         >
-                          Ver más
+                          Ver detalles
                         </Link>
                       </div>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="col-span-full text-center py-12">
-                  No hay talleres disponibles en este momento.
+                <div className="col-span-full text-center py-16">
+                  <div className="bg-gray-50 rounded-lg p-8 max-w-md mx-auto">
+                    <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <h3 className="text-xl font-bold mb-2 text-gray-700">No hay talleres disponibles</h3>
+                    <p className="text-gray-500">Estamos preparando nuevos talleres. ¡Vuelve pronto!</p>
+                  </div>
                 </div>
               )}
             </div>
@@ -555,56 +713,43 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
       </section>
 
       {/* Testimonios */}
-      <section id="testimonios" className="py-10 md:py-16 px-4 md:px-6 bg-[#f2efe7]">
+      <section id="testimonios" className="py-8 md:py-12 px-4 md:px-6 bg-gradient-to-b from-[#ffffff] to-[#f7f5f0]">
         <div className="container mx-auto w-full sm:w-[90%] md:w-[85%] lg:w-[75%] xl:w-[65%]">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-xl md:text-3xl font-bold mb-2">Lo que dicen nuestros estudiantes</h2>
-            <p className="text-gray-600">Experiencias reales de participantes de nuestros talleres</p>
+          <div className="text-center mb-12 md:mb-16">
+            <h2 className="text-2xl md:text-4xl font-bold mb-4 relative inline-block">
+              <span className="relative z-10">Lo que dicen nuestros estudiantes</span>
+              <span className="absolute -bottom-2 left-0 right-0 h-3 bg-[#8be0c9] opacity-30 rounded-full transform -rotate-1"></span>
+            </h2>
           </div>
           
           <div className="relative max-w-4xl mx-auto">
-            {/* Controles del carrusel */}
-            <button 
-              onClick={prevTestimonial}
-              className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-2 md:-translate-x-8 bg-white rounded-full p-2 shadow-md z-10 focus:outline-none hover:bg-gray-100 transition-colors"
-              aria-label="Testimonio anterior"
-            >
-              <svg className="w-5 h-5 text-[#2a7c60]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            
-            {/* Contenedor del carrusel con efecto de transición */}
             <div className="overflow-hidden">
               <div 
-                className="transition-transform duration-500 ease-in-out" 
-                style={{ transform: `translateX(-${currentTestimonial * 100}%)`, display: 'flex' }}
+                className="flex transition-transform duration-500 ease-in-out" 
+                style={{ transform: `translateX(-${currentTestimonial * 100}%)` }}
               >
-                {testimonios.map((testimonio, index) => (
-                  <div 
-                    key={index} 
-                    className="w-full flex-shrink-0 bg-white rounded-xl shadow-lg p-6 md:p-8"
-                  >
-                    {/* Icono de comillas */}
-                    <div className="text-[#5baa91] mb-4">
-                      <svg className="w-10 h-10 opacity-20" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-                      </svg>
-                    </div>
-                    
-                    {/* Texto del testimonio */}
-                    <p className="text-gray-700 italic mb-6 text-lg leading-relaxed">
-                      "{testimonio.texto}"
-                    </p>
-                    
-                    {/* Información del autor */}
-                    <div className="flex items-center mt-4">
-                      <div className="w-12 h-12 rounded-full bg-[#5baa91] text-white overflow-hidden flex items-center justify-center mr-4">
-                        <span className="text-xl font-bold">{testimonio.autor.charAt(0)}</span>
+                {testimonios.map((testimonial, index) => (
+                  <div key={index} className="w-full flex-shrink-0 px-4">
+                    <div className="bg-white rounded-xl p-8 md:p-10 shadow-lg relative">
+                      <div className="absolute top-6 left-8 text-[#2a7c60] opacity-20">
+                        <svg className="w-16 h-16" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+                        </svg>
                       </div>
-                      <div>
-                        <h4 className="font-bold text-gray-900">{testimonio.autor}</h4>
-                        <p className="text-sm text-gray-500">{testimonio.profesion}</p>
+                      <div className="relative z-10">
+                        <p className="text-gray-700 text-lg md:text-xl mb-8 italic">
+                          {testimonial.texto}
+                        </p>
+                        {/* Eliminando nombre y profesión, dejando solo las estrellas */}
+                        <div className="flex items-center">
+                          <div className="flex text-yellow-400">
+                            {[...Array(5)].map((_, i) => (
+                              <svg key={i} className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                              </svg>
+                            ))}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -612,24 +757,33 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
               </div>
             </div>
             
-            {/* Botón siguiente */}
+            {/* Controles de navegación */}
             <button 
-              onClick={nextTestimonial}
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-2 md:translate-x-8 bg-white rounded-full p-2 shadow-md z-10 focus:outline-none hover:bg-gray-100 transition-colors"
-              aria-label="Siguiente testimonio"
+              onClick={prevTestimonial} 
+              className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 md:-translate-x-8 bg-white rounded-full p-2 shadow-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#2a7c60] z-10"
+              aria-label="Testimonio anterior"
             >
-              <svg className="w-5 h-5 text-[#2a7c60]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-[#2a7c60]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button 
+              onClick={nextTestimonial} 
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 md:translate-x-8 bg-white rounded-full p-2 shadow-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#2a7c60] z-10"
+              aria-label="Testimonio siguiente"
+            >
+              <svg className="w-6 h-6 text-[#2a7c60]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
             
-            {/* Indicadores de posición */}
-            <div className="flex justify-center mt-6 space-x-2">
+            {/* Indicadores */}
+            <div className="flex justify-center mt-8 space-x-2">
               {testimonios.map((_, index) => (
-                <button 
+                <button
                   key={index}
                   onClick={() => selectTestimonial(index)}
-                  className={`w-3 h-3 rounded-full transition-colors ${
+                  className={`w-3 h-3 rounded-full focus:outline-none ${
                     currentTestimonial === index ? 'bg-[#2a7c60]' : 'bg-gray-300 hover:bg-gray-400'
                   }`}
                   aria-label={`Ir al testimonio ${index + 1}`}
@@ -640,81 +794,248 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
         </div>
       </section>
 
-      {/* Instructores */}
-      <section id="instructores" className="py-10 md:py-16 px-4 md:px-6">
+      {/* Instructores - Versión Rediseñada */}
+      <section id="instructores" className="py-8 md:py-12 px-4 md:px-6 bg-gradient-to-b from-[#f7f5f0] to-[#fffdf9]">
         <div className="container mx-auto w-full sm:w-[90%] md:w-[85%] lg:w-[75%] xl:w-[65%]">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-xl md:text-3xl font-bold mb-2">Conoce a tus instructores</h2>
+          <div className="text-center mb-12 md:mb-16">
+            <h2 className="text-2xl md:text-4xl font-bold mb-4 relative inline-block">
+              <span className="relative z-10">Conoce a tus instructores</span>
+              <span className="absolute -bottom-2 left-0 right-0 h-3 bg-[#8be0c9] opacity-30 rounded-full transform -rotate-1"></span>
+            </h2>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 max-w-4xl mx-auto">
-            <div className="text-center">
-              <div className="mb-4 mx-auto w-48 h-48 overflow-hidden rounded-lg">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 max-w-5xl mx-auto">
+            {/* Instructor 1 */}
+            <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group">
+              <div className="relative">
+                <div className="h-64 overflow-hidden">
                 <img 
                   src="/images/instructores/martin.jpg"
                   alt="Martín Vásquez"
-                  className="w-full h-full object-cover"
-                />
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-60"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h3 className="text-2xl font-bold text-white mb-1">Martín Vásquez</h3>
+                  <p className="text-white/80 text-sm">Experto en Automatización</p>
+                </div>
               </div>
-              <h3 className="text-xl font-bold mb-2">Martín Vásquez</h3>
-              <p className="text-gray-600 mb-4">
+              
+              <div className="p-6">
+                <p className="text-gray-600 mb-6 italic">
                 "Como abogado, nunca imaginé que podría automatizar mi trabajo. Descubrí esto, cómo y transformó mi forma de trabajar. Hoy ayudo a otros profesionales a hacer lo mismo, demostrando que la tecnología está al alcance de todos."
               </p>
-              <div className="flex justify-center space-x-4">
-                <a href="https://www.linkedin.com/in/martin-vasquez-escobar/" target="_blank" rel="noopener noreferrer" className="text-[#2a7c60]">
+                
+                <div className="flex justify-between items-center">
+                  <div className="flex space-x-4">
+                    <a href="https://www.linkedin.com/in/martin-vasquez-escobar/" target="_blank" rel="noopener noreferrer" className="text-[#2a7c60] hover:text-[#1e5a46] transition-colors">
                   <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
                   </svg>
                 </a>
-                <a href="https://wa.me/573128511052" target="_blank" rel="noopener noreferrer" className="text-[#2a7c60]">
+                    <a href="https://wa.me/573128511052" target="_blank" rel="noopener noreferrer" className="text-[#2a7c60] hover:text-[#1e5a46] transition-colors">
                   <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
                   </svg>
                 </a>
+                  </div>
+                  
+                  <a 
+                    href="https://wa.me/573128511052" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="inline-flex items-center text-sm font-medium text-[#2a7c60] hover:text-[#1e5a46] transition-colors"
+                  >
+                    <span>Contactar</span>
+                    <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </a>
+                </div>
               </div>
             </div>
             
-            <div className="text-center">
-              <div className="mb-4 mx-auto w-48 h-48 overflow-hidden rounded-lg">
+            {/* Instructor 2 */}
+            <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group">
+              <div className="relative">
+                <div className="h-64 overflow-hidden">
                 <img 
                   src="/images/instructores/salomon.jpg"
                   alt="Salomón Zarruk"
-                  className="w-full h-full object-cover"
-                />
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-60"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h3 className="text-2xl font-bold text-white mb-1">Salomón Zarruk</h3>
+                  <p className="text-white/80 text-sm">Especialista en Automatización</p>
+                </div>
               </div>
-              <h3 className="text-xl font-bold mb-2">Salomón Zarruk</h3>
-              <p className="text-gray-600 mb-4">
+              
+              <div className="p-6">
+                <p className="text-gray-600 mb-6 italic">
                 "Al igual que Martín, yo también soy abogado de profesión. Si yo pude aprender estas herramientas sin tener background técnico, tú también puedes. Mi misión es demostrar que la tecnología no tiene barreras profesionales."
-              </p>
-              <div className="flex justify-center space-x-4">
-                <a href="https://www.linkedin.com/in/zarruk/" target="_blank" rel="noopener noreferrer" className="text-[#2a7c60]">
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                  </svg>
-                </a>
-                <a href="https://wa.me/573187033333" target="_blank" rel="noopener noreferrer" className="text-[#2a7c60]">
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
-                  </svg>
-                </a>
+                </p>
+                
+                <div className="flex justify-between items-center">
+                  <div className="flex space-x-4">
+                    <a href="https://www.linkedin.com/in/zarruk/" target="_blank" rel="noopener noreferrer" className="text-[#2a7c60] hover:text-[#1e5a46] transition-colors">
+                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                      </svg>
+                    </a>
+                    <a href="https://wa.me/573187033333" target="_blank" rel="noopener noreferrer" className="text-[#2a7c60] hover:text-[#1e5a46] transition-colors">
+                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                      </svg>
+                    </a>
+                  </div>
+                  
+                  <a 
+                    href="https://wa.me/573187033333" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="inline-flex items-center text-sm font-medium text-[#2a7c60] hover:text-[#1e5a46] transition-colors"
+                  >
+                    <span>Contactar</span>
+                    <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </a>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-[#2a7c60] text-white py-6 md:py-8 px-4 md:px-6">
-        <div className="container mx-auto w-full sm:w-[90%] md:w-[85%] lg:w-[75%] xl:w-[65%] flex flex-col md:flex-row justify-between items-center">
-          <div className="mb-4 md:mb-0">
-            <img 
-              src="/aztec-logo-new.png" 
-              alt="Aztec Logo" 
-              className="h-8 md:h-10 w-auto object-contain invert brightness-0 invert"
-            />
+      {/* Footer - Versión Rediseñada */}
+      <footer className="bg-[#2a7c60] text-white py-8 md:py-12 px-4 md:px-6">
+        <div className="container mx-auto w-full sm:w-[90%] md:w-[85%] lg:w-[75%] xl:w-[65%]">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
+            {/* Logo y descripción */}
+            <div className="md:col-span-1">
+              <img 
+                src="/aztec-logo-new.png" 
+                alt="Aztec Logo" 
+                className="h-10 w-auto object-contain invert brightness-0 invert mb-4"
+              />
+              <p className="text-white/80 text-sm mb-6">
+                Plataforma de aprendizaje especializada en automatización para profesionales sin conocimientos técnicos.
+              </p>
+              <div className="flex space-x-4">
+                <a href="https://www.linkedin.com/company/azteclab" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#8be0c9] transition-colors">
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                  </svg>
+                </a>
+                <a href="https://twitter.com/azteclab" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#8be0c9] transition-colors">
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723 10.054 10.054 0 01-3.127 1.184 4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                  </svg>
+                </a>
+                <a href="https://www.instagram.com/azteclab" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#8be0c9] transition-colors">
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fillRule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.255-.06-2.39-1.475-2.777-2.39-2.777-2.777 0-.018-.018-.018-.018-.018-.018-.018-.018-.018-.018-.018zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clipRule="evenodd" />
+                  </svg>
+                </a>
+                <a href="https://www.youtube.com/channel/azteclab" target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#8be0c9] transition-colors">
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path fillRule="evenodd" d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM14 11a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+            
+            {/* Enlaces rápidos */}
+            <div>
+              <h3 className="text-lg font-bold mb-4">Enlaces rápidos</h3>
+              <ul className="space-y-2">
+                <li>
+                  <a href="#talleres" className="text-white/80 hover:text-white transition-colors">Talleres</a>
+                </li>
+                <li>
+                  <a href="#testimonios" className="text-white/80 hover:text-white transition-colors">Testimonios</a>
+                </li>
+                <li>
+                  <a href="#instructores" className="text-white/80 hover:text-white transition-colors">Instructores</a>
+                </li>
+                <li>
+                  <a href="/blog" className="text-white/80 hover:text-white transition-colors">Blog</a>
+                </li>
+                <li>
+                  <a href="/faq" className="text-white/80 hover:text-white transition-colors">Preguntas frecuentes</a>
+                </li>
+              </ul>
           </div>
-          <div className="text-center md:text-right">
-            <p>© {new Date().getFullYear()} Aztec. Todos los derechos reservados.</p>
+            
+            {/* Contacto */}
+            <div>
+              <h3 className="text-lg font-bold mb-4">Contacto</h3>
+              <ul className="space-y-3">
+                <li className="flex items-start">
+                  <svg className="w-5 h-5 mr-3 mt-0.5 text-[#8be0c9]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  <span className="text-white/80">contacto@azteclab.co</span>
+                </li>
+                <li className="flex items-start">
+                  <svg className="w-5 h-5 mr-3 mt-0.5 text-[#8be0c9]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l2.257 1.13a1 1 0 01.502 1.21l-1.13 2.257a1 1 0 01-1.21.502l-2.257-1.13a1 1 0 01.502-1.21l1.13-2.257a1 1 0 011.21-.502z" />
+                  </svg>
+                  <span className="text-white/80">+57 312 851 1052</span>
+                </li>
+                <li className="flex items-start">
+                  <svg className="w-5 h-5 mr-3 mt-0.5 text-[#8be0c9]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  <span className="text-white/80">Bogotá, Colombia</span>
+                </li>
+              </ul>
+        </div>
+            
+            {/* Newsletter */}
+            <div>
+              <h3 className="text-lg font-bold mb-4">Suscríbete</h3>
+              <p className="text-white/80 text-sm mb-4">
+                Recibe noticias sobre nuevos talleres y contenido exclusivo.
+              </p>
+              <form className="flex flex-col space-y-2">
+                <input 
+                  type="email" 
+                  placeholder="Tu correo electrónico" 
+                  className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#8be0c9] focus:border-transparent"
+                />
+                <button 
+                  type="submit" 
+                  className="px-4 py-2 bg-[#8be0c9] text-[#2a7c60] font-medium rounded-lg hover:bg-white transition-colors"
+                >
+                  Suscribirme
+                </button>
+              </form>
+            </div>
+          </div>
+          
+          {/* Línea divisoria */}
+          <div className="border-t border-white/20 pt-8 mt-8">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <p className="text-white/60 text-sm mb-4 md:mb-0">
+                © {new Date().getFullYear()} Aztec. Todos los derechos reservados.
+              </p>
+              <div className="flex space-x-6">
+                <a href="/terminos" className="text-white/60 text-sm hover:text-white transition-colors">
+                  Términos y condiciones
+                </a>
+                <a href="/privacidad" className="text-white/60 text-sm hover:text-white transition-colors">
+                  Política de privacidad
+                </a>
+                <a href="/cookies" className="text-white/60 text-sm hover:text-white transition-colors">
+                  Cookies
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </footer>
