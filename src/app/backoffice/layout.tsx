@@ -1,13 +1,23 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function BackofficeLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+  
+  const handleLogout = () => {
+    // Eliminar la cookie de autenticación
+    document.cookie = 'backoffice_auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
+    
+    // Redirigir al login
+    router.push('/backoffice/login');
+  };
+  
   return (
     <div style={{backgroundColor: 'white', color: 'black', minHeight: '100vh'}}>
       {/* Header/Navbar */}
@@ -22,7 +32,7 @@ export default function BackofficeLayout({
             <h1 style={{fontSize: '1.25rem', fontWeight: '600', color: '#1f2937'}}>Backoffice - Panel de Administración</h1>
           </div>
           <nav>
-            <ul style={{display: 'flex', gap: '1.5rem'}}>
+            <ul style={{display: 'flex', gap: '1.5rem', alignItems: 'center'}}>
               <li>
                 <a href="/backoffice" style={{color: '#1f2937', textDecoration: 'none'}}>
                   Inicio
@@ -42,6 +52,23 @@ export default function BackofficeLayout({
                 <a href="/talleres" style={{color: '#1f2937', textDecoration: 'none'}}>
                   Ver Sitio Público
                 </a>
+              </li>
+              <li>
+                <button
+                  onClick={handleLogout}
+                  style={{
+                    backgroundColor: '#dc2626',
+                    color: 'white',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '0.375rem',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontWeight: '500',
+                    fontSize: '0.875rem',
+                  }}
+                >
+                  Cerrar Sesión
+                </button>
               </li>
             </ul>
           </nav>

@@ -1,12 +1,30 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function BackofficePage() {
+  const router = useRouter();
+  
+  const handleLogout = () => {
+    // Eliminar la cookie de autenticación
+    document.cookie = 'backoffice_auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
+    
+    // Redirigir al login
+    router.push('/backoffice/login');
+  };
+  
   return (
     <div className="bg-white text-gray-800 p-8">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">Panel de Administración Backoffice</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold text-gray-800">Panel de Administración Backoffice</h1>
+        <button
+          onClick={handleLogout}
+          className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+        >
+          Cerrar Sesión
+        </button>
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
@@ -52,13 +70,6 @@ export default function BackofficePage() {
             Ver talleres
           </a>
         </div>
-      </div>
-
-      <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-        <p className="text-blue-800">
-          <strong>Nota:</strong> Este es el panel de administración backoffice que no requiere inicio de sesión.
-          Puedes acceder directamente a todas las funciones de administración de talleres.
-        </p>
       </div>
     </div>
   );
