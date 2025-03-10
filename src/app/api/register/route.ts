@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
         .update({
           nombre: name,
           email: email,
-          updated_at: new Date().toISOString()
+          ultima_actualizacion: new Date().toISOString()
         })
         .eq('id', usuarioId);
       
@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
           .from('usuarios')
           .update({ 
             nombre: name,
-            updated_at: new Date().toISOString()
+            ultima_actualizacion: new Date().toISOString()
           })
           .eq('id', usuarioId);
         
@@ -176,7 +176,7 @@ export async function POST(request: NextRequest) {
         .update({
           nombre: name,
           telefono: telefonoLimpio,
-          updated_at: new Date().toISOString()
+          ultima_actualizacion: new Date().toISOString()
         })
         .eq('id', usuarioId);
       

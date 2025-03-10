@@ -1,24 +1,24 @@
--- Añadir columna updated_at a la tabla usuarios
-ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+-- Añadir columna ultima_actualizacion a la tabla usuarios
+ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS ultima_actualizacion TIMESTAMP WITH TIME ZONE DEFAULT NOW();
 
--- Crear o reemplazar la función que actualizará el campo updated_at
-CREATE OR REPLACE FUNCTION update_updated_at_column()
+-- Crear o reemplazar la función que actualizará el campo ultima_actualizacion
+CREATE OR REPLACE FUNCTION update_ultima_actualizacion_column()
 RETURNS TRIGGER AS $$
 BEGIN
-    NEW.updated_at = NOW();
+    NEW.ultima_actualizacion = NOW();
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Crear el trigger para la tabla usuarios
-DROP TRIGGER IF EXISTS set_updated_at ON usuarios;
-CREATE TRIGGER set_updated_at
+DROP TRIGGER IF EXISTS set_ultima_actualizacion ON usuarios;
+CREATE TRIGGER set_ultima_actualizacion
 BEFORE UPDATE ON usuarios
 FOR EACH ROW
-EXECUTE FUNCTION update_updated_at_column();
+EXECUTE FUNCTION update_ultima_actualizacion_column();
 
--- Actualizar todos los registros existentes para establecer updated_at
-UPDATE usuarios SET updated_at = NOW() WHERE updated_at IS NULL;
+-- Actualizar todos los registros existentes para establecer ultima_actualizacion
+UPDATE usuarios SET ultima_actualizacion = NOW() WHERE ultima_actualizacion IS NULL;
 
 -- Comentario para documentar la columna
-COMMENT ON COLUMN usuarios.updated_at IS 'Fecha y hora de la última actualización del usuario'; 
+COMMENT ON COLUMN usuarios.ultima_actualizacion IS 'Fecha y hora de la última actualización del usuario'; 
