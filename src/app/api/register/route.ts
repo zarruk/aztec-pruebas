@@ -137,7 +137,8 @@ export async function POST(request: NextRequest) {
         .from('usuarios')
         .update({
           nombre: name,
-          email: email
+          email: email,
+          updated_at: new Date().toISOString()
         })
         .eq('id', usuarioId);
       
@@ -148,7 +149,10 @@ export async function POST(request: NextRequest) {
         console.log('Intentando actualizar solo el nombre');
         const { error: errorNombre } = await supabase
           .from('usuarios')
-          .update({ nombre: name })
+          .update({ 
+            nombre: name,
+            updated_at: new Date().toISOString()
+          })
           .eq('id', usuarioId);
         
         if (errorNombre) {
@@ -171,7 +175,8 @@ export async function POST(request: NextRequest) {
         .from('usuarios')
         .update({
           nombre: name,
-          telefono: telefonoLimpio
+          telefono: telefonoLimpio,
+          updated_at: new Date().toISOString()
         })
         .eq('id', usuarioId);
       
