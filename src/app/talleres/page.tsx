@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { createSupabaseClient } from '@/lib/supabase-browser';
 import { format, parseISO, isAfter, isBefore } from 'date-fns';
@@ -46,7 +46,107 @@ interface Taller {
 export default function TalleresPage() {
   const [talleres, setTalleres] = useState<Taller[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const testimonialInterval = useRef<NodeJS.Timeout | null>(null);
   
+  // Testimonios
+  const testimonios = [
+    {
+      texto: "Los amé, súper recomendados, para mí que cambié de carrera por la fobia a programar, esto es lo máximo. Valió la pena, me salí de la clase y vi la grabación, pues no me funcionó y me perdí, pero volví a ver la grabación y me dio. Honestamente tenía muchas taras, pues pensé que era un mensaje más del universo diciéndome que la programación no es para mí, pero sí lo logré, me funcionó.",
+      autor: "María C.",
+      profesion: "Diseñadora UX"
+    },
+    {
+      texto: "El taller estuvo muy bueno para romper la barrera de conocimiento de la interfaz del programa. Me generó muchas ideas para automatizar procesos.",
+      autor: "Juan P.",
+      profesion: "Gerente de Proyectos"
+    },
+    {
+      texto: "Fue muy útil y me ayudó a expandir mis conocimientos. Ahora veo con más claridad cómo aplicar estas herramientas en diversos proyectos.",
+      autor: "Ana M.",
+      profesion: "Analista de Datos"
+    },
+    {
+      texto: "Muy buen taller: práctico, sencillo y funcional. Definitivamente me hace pensar en cómo usarlo para automatizar tanto mis tareas personales como las del trabajo.",
+      autor: "Carlos R.",
+      profesion: "Contador"
+    },
+    {
+      texto: "El taller espectacular, muy útil y rompe esa creencia de que si no sé programar no puedo. Es como esa primera brazada cuando uno aprende a nadar, da confianza para seguir. Lo único es que la expectativa de tiempo era menor, pero lo personalizado del contenido lo ameritaba.",
+      autor: "Laura G.",
+      profesion: "Emprendedora"
+    },
+    {
+      texto: "Primero agradecer todo el conocimiento que compartieron en el taller. Para mí estuvo muy bueno la verdad, y otro factor que resalto es el nivel de paciencia que tuvo Martin para absolver las dudas de cada persona, ¡me saco el sombrero! Les recomendé el próximo taller a un familiar y ya se inscribió jejeje (así nomás no recomiendo cursos o talleres a nadie).",
+      autor: "Diego S.",
+      profesion: "Consultor de Marketing"
+    }
+  ];
+  
+  // Efecto para el carrusel automático
+  useEffect(() => {
+    // Iniciar el intervalo para cambiar automáticamente los testimonios
+    testimonialInterval.current = setInterval(() => {
+      setCurrentTestimonial(prev => (prev + 1) % testimonios.length);
+    }, 8000); // Cambiar cada 8 segundos
+    
+    // Limpiar el intervalo cuando el componente se desmonte
+    return () => {
+      if (testimonialInterval.current) {
+        clearInterval(testimonialInterval.current);
+      }
+    };
+  }, [testimonios.length]);
+  
+  // Función para cambiar manualmente al testimonio anterior
+  const prevTestimonial = () => {
+    // Reiniciar el intervalo para evitar cambios bruscos
+    if (testimonialInterval.current) {
+      clearInterval(testimonialInterval.current);
+    }
+    
+    setCurrentTestimonial(prev => 
+      prev === 0 ? testimonios.length - 1 : prev - 1
+    );
+    
+    // Reiniciar el intervalo
+    testimonialInterval.current = setInterval(() => {
+      setCurrentTestimonial(prev => (prev + 1) % testimonios.length);
+    }, 8000);
+  };
+  
+  // Función para cambiar manualmente al siguiente testimonio
+  const nextTestimonial = () => {
+    // Reiniciar el intervalo para evitar cambios bruscos
+    if (testimonialInterval.current) {
+      clearInterval(testimonialInterval.current);
+    }
+    
+    setCurrentTestimonial(prev => 
+      (prev + 1) % testimonios.length
+    );
+    
+    // Reiniciar el intervalo
+    testimonialInterval.current = setInterval(() => {
+      setCurrentTestimonial(prev => (prev + 1) % testimonios.length);
+    }, 8000);
+  };
+  
+  // Función para seleccionar un testimonio específico
+  const selectTestimonial = (index: number) => {
+    // Reiniciar el intervalo para evitar cambios bruscos
+    if (testimonialInterval.current) {
+      clearInterval(testimonialInterval.current);
+    }
+    
+    setCurrentTestimonial(index);
+    
+    // Reiniciar el intervalo
+    testimonialInterval.current = setInterval(() => {
+      setCurrentTestimonial(prev => (prev + 1) % testimonios.length);
+    }, 8000);
+  };
+
   useEffect(() => {
     async function fetchTalleres() {
       try {
@@ -247,7 +347,7 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
     <div className="min-h-screen bg-[#fffdf9]">
       {/* Navbar */}
       <header className="bg-[#fffdf9] py-1 px-3 md:px-4 fixed top-0 left-0 right-0 z-50 shadow-sm">
-        <div className="container mx-auto w-full md:w-[65%] flex justify-between items-center">
+        <div className="container mx-auto w-full sm:w-[90%] md:w-[85%] lg:w-[75%] xl:w-[65%] flex justify-between items-center">
           <Link href="/" className="flex items-center">
             <img 
               src="/aztec-logo-new.png" 
@@ -272,21 +372,114 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="bg-[#2a7c60] text-white py-12 md:py-16 px-4 md:px-6 text-center pt-28 md:pt-32">
-        <div className="container mx-auto w-full md:w-[65%]">
-          <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">
-            Automatiza tu trabajo y ahorra tiempo
-          </h1>
-          <p className="text-lg md:text-2xl mb-6 md:mb-8 max-w-3xl mx-auto">
-            Aprende a usar herramientas de automatización sin necesidad de saber programar
-          </p>
+      {/* Hero Section - Versión mejorada */}
+      <section className="bg-gradient-to-br from-[#2a7c60] to-[#1b5e4f] text-white py-16 md:py-24 px-4 md:px-6 relative overflow-hidden">
+        {/* Elementos decorativos animados */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-20 left-10 w-20 h-20 rounded-full bg-white opacity-5 animate-float-slow"></div>
+          <div className="absolute bottom-10 right-10 w-32 h-32 rounded-full bg-white opacity-5 animate-float-medium"></div>
+          <div className="absolute top-1/3 right-1/4 w-16 h-16 rounded-full bg-white opacity-5 animate-float-fast"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-24 h-24 rounded-full bg-white opacity-5 animate-float-medium"></div>
+        </div>
+        
+        <div className="container mx-auto w-full sm:w-[90%] md:w-[85%] lg:w-[75%] xl:w-[65%] relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            {/* Contenido de texto */}
+            <div className="text-center lg:text-left">
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                Automatiza tu trabajo y <span className="text-[#8be0c9]">ahorra tiempo</span>
+              </h1>
+              <p className="text-lg md:text-xl mb-8 text-gray-100 max-w-xl mx-auto lg:mx-0">
+                Aprende a usar herramientas de automatización sin necesidad de saber programar y transforma tu forma de trabajar.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
+                <a 
+                  href="#talleres" 
+                  className="bg-white text-[#2a7c60] hover:bg-gray-100 transition-colors px-6 py-3 rounded-lg font-medium text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 duration-300"
+                >
+                  Ver talleres disponibles
+                </a>
+                <a 
+                  href="#testimonios" 
+                  className="bg-transparent border-2 border-white text-white hover:bg-white/10 transition-colors px-6 py-3 rounded-lg font-medium text-lg"
+                >
+                  Testimonios
+                </a>
+              </div>
+            </div>
+            
+            {/* Ilustración */}
+            <div className="hidden lg:block">
+              <div className="relative">
+                <img 
+                  src="/images/automation-illustration.svg" 
+                  alt="Automatización de tareas" 
+                  className="w-full max-w-lg mx-auto"
+                  onError={(e) => {
+                    // Fallback si la imagen no existe
+                    e.currentTarget.src = "https://cdn.jsdelivr.net/gh/zarruk/aztec-nuevo@main/public/images/automation-illustration.svg";
+                    e.currentTarget.onerror = null;
+                  }}
+                />
+                
+                {/* Elementos flotantes alrededor de la ilustración */}
+                <div className="absolute -top-4 -right-4 bg-white/20 backdrop-blur-sm p-3 rounded-lg shadow-lg animate-float-slow">
+                  <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="absolute top-1/2 -left-6 bg-white/20 backdrop-blur-sm p-3 rounded-lg shadow-lg animate-float-medium">
+                  <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.715-5.349L11 6.477V16h2a1 1 0 110 2H7a1 1 0 110-2h2V6.477L6.237 7.582l1.715 5.349a1 1 0 01-.285 1.05A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.738-5.42-1.233-.617a1 1 0 01.894-1.788l1.599.799L9 4.323V3a1 1 0 011-1zm-5 8.274l-.818 2.552c.25.112.526.174.818.174.292 0 .569-.062.818-.174L5 10.274zm10 0l-.818 2.552c.25.112.526.174.818.174.292 0 .569-.062.818-.174L15 10.274z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="absolute bottom-4 right-1/4 bg-white/20 backdrop-blur-sm p-3 rounded-lg shadow-lg animate-float-fast">
+                  <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM14 11a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Onda decorativa en la parte inferior */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 100" className="w-full h-auto">
+            <path fill="#fffdf9" fillOpacity="1" d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,42.7C1120,32,1280,32,1360,32L1440,32L1440,100L1360,100C1280,100,1120,100,960,100C800,100,640,100,480,100C320,100,160,100,80,100L0,100Z"></path>
+          </svg>
         </div>
       </section>
 
+      {/* Añadir estilos para las animaciones */}
+      <style jsx global>{`
+        @keyframes float-slow {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-15px); }
+        }
+        @keyframes float-medium {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
+        }
+        @keyframes float-fast {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-5px); }
+        }
+        .animate-float-slow {
+          animation: float-slow 8s ease-in-out infinite;
+        }
+        .animate-float-medium {
+          animation: float-medium 6s ease-in-out infinite;
+        }
+        .animate-float-fast {
+          animation: float-fast 4s ease-in-out infinite;
+        }
+      `}</style>
+
       {/* Listado de Talleres */}
       <section id="talleres" className="py-10 md:py-16 px-4 md:px-6">
-        <div className="container mx-auto w-full md:w-[65%]">
+        <div className="container mx-auto w-full sm:w-[90%] md:w-[85%] lg:w-[75%] xl:w-[65%]">
           <div className="text-center mb-8 md:mb-12">
             <h2 className="text-xl md:text-3xl font-bold mb-2">Nuestros Talleres</h2>
             <p className="text-gray-600">Aprende habilidades prácticas en nuestros talleres</p>
@@ -362,30 +555,86 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
       </section>
 
       {/* Testimonios */}
-      <section className="py-10 md:py-16 px-4 md:px-6 bg-[#f2efe7]">
-        <div className="container mx-auto w-full md:w-[65%]">
+      <section id="testimonios" className="py-10 md:py-16 px-4 md:px-6 bg-[#f2efe7]">
+        <div className="container mx-auto w-full sm:w-[90%] md:w-[85%] lg:w-[75%] xl:w-[65%]">
           <div className="text-center mb-8 md:mb-12">
             <h2 className="text-xl md:text-3xl font-bold mb-2">Lo que dicen nuestros estudiantes</h2>
             <p className="text-gray-600">Experiencias reales de participantes de nuestros talleres</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 max-w-5xl mx-auto">
-            <div className="bg-[#5baa91] text-white p-6 rounded-lg">
-              <p className="italic mb-4">
-                "El taller estuvo muy bueno para romper la barrera de conocimiento de la interfaz del programa. Me generó muchas ideas para automatizar procesos."
-              </p>
+          <div className="relative max-w-4xl mx-auto">
+            {/* Controles del carrusel */}
+            <button 
+              onClick={prevTestimonial}
+              className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-2 md:-translate-x-8 bg-white rounded-full p-2 shadow-md z-10 focus:outline-none hover:bg-gray-100 transition-colors"
+              aria-label="Testimonio anterior"
+            >
+              <svg className="w-5 h-5 text-[#2a7c60]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            
+            {/* Contenedor del carrusel con efecto de transición */}
+            <div className="overflow-hidden">
+              <div 
+                className="transition-transform duration-500 ease-in-out" 
+                style={{ transform: `translateX(-${currentTestimonial * 100}%)`, display: 'flex' }}
+              >
+                {testimonios.map((testimonio, index) => (
+                  <div 
+                    key={index} 
+                    className="w-full flex-shrink-0 bg-white rounded-xl shadow-lg p-6 md:p-8"
+                  >
+                    {/* Icono de comillas */}
+                    <div className="text-[#5baa91] mb-4">
+                      <svg className="w-10 h-10 opacity-20" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+                      </svg>
+                    </div>
+                    
+                    {/* Texto del testimonio */}
+                    <p className="text-gray-700 italic mb-6 text-lg leading-relaxed">
+                      "{testimonio.texto}"
+                    </p>
+                    
+                    {/* Información del autor */}
+                    <div className="flex items-center mt-4">
+                      <div className="w-12 h-12 rounded-full bg-[#5baa91] text-white overflow-hidden flex items-center justify-center mr-4">
+                        <span className="text-xl font-bold">{testimonio.autor.charAt(0)}</span>
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-gray-900">{testimonio.autor}</h4>
+                        <p className="text-sm text-gray-500">{testimonio.profesion}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
             
-            <div className="bg-[#5baa91] text-white p-6 rounded-lg">
-              <p className="italic mb-4">
-                "Fue muy útil y me ayudó a expandir mis conocimientos. Ahora veo con más claridad cómo aplicar estas herramientas en diversos proyectos."
-              </p>
-            </div>
+            {/* Botón siguiente */}
+            <button 
+              onClick={nextTestimonial}
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-2 md:translate-x-8 bg-white rounded-full p-2 shadow-md z-10 focus:outline-none hover:bg-gray-100 transition-colors"
+              aria-label="Siguiente testimonio"
+            >
+              <svg className="w-5 h-5 text-[#2a7c60]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
             
-            <div className="bg-[#5baa91] text-white p-6 rounded-lg">
-              <p className="italic mb-4">
-                "Muy buen taller: práctico, sencillo y funcional. Definitivamente me hace pensar en cómo usarlo para automatizar tanto mis tareas personales como las del trabajo."
-              </p>
+            {/* Indicadores de posición */}
+            <div className="flex justify-center mt-6 space-x-2">
+              {testimonios.map((_, index) => (
+                <button 
+                  key={index}
+                  onClick={() => selectTestimonial(index)}
+                  className={`w-3 h-3 rounded-full transition-colors ${
+                    currentTestimonial === index ? 'bg-[#2a7c60]' : 'bg-gray-300 hover:bg-gray-400'
+                  }`}
+                  aria-label={`Ir al testimonio ${index + 1}`}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -393,10 +642,9 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
 
       {/* Instructores */}
       <section id="instructores" className="py-10 md:py-16 px-4 md:px-6">
-        <div className="container mx-auto w-full md:w-[65%]">
+        <div className="container mx-auto w-full sm:w-[90%] md:w-[85%] lg:w-[75%] xl:w-[65%]">
           <div className="text-center mb-8 md:mb-12">
             <h2 className="text-xl md:text-3xl font-bold mb-2">Conoce a tus instructores</h2>
-            <p className="text-gray-600">Expertos en automatización y tecnología</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 max-w-4xl mx-auto">
@@ -457,7 +705,7 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
 
       {/* Footer */}
       <footer className="bg-[#2a7c60] text-white py-6 md:py-8 px-4 md:px-6">
-        <div className="container mx-auto w-full md:w-[65%] flex flex-col md:flex-row justify-between items-center">
+        <div className="container mx-auto w-full sm:w-[90%] md:w-[85%] lg:w-[75%] xl:w-[65%] flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0">
             <img 
               src="/aztec-logo-new.png" 
