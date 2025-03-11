@@ -390,7 +390,7 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
                 Automatiza tu trabajo y <span className="text-[#8be0c9]">ahorra tiempo</span>
           </h1>
               <p className="text-lg md:text-xl mb-8 text-gray-100 max-w-xl mx-auto lg:mx-0">
-                Aprende a usar herramientas de automatización sin necesidad de saber programar y transforma tu forma de trabajar.
+                Aprende a usar herramientas de automatización e inteligencia artificial sin necesidad de saber programar y transforma tu forma de trabajar.
               </p>
               
               <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
@@ -488,7 +488,7 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
           <div className="text-gray-600">Talleres</div>
         </div>
         <div className="text-center p-6 bg-[#f0f9f6] rounded-xl transform transition-transform hover:scale-105 duration-300">
-          <div className="text-[#2a7c60] font-bold text-4xl md:text-5xl mb-2">4.65</div>
+          <div className="text-[#2a7c60] font-bold text-4xl md:text-5xl mb-2">4.7</div>
           <div className="text-gray-600">Calificación promedio</div>
         </div>
         <div className="text-center p-6 bg-[#f0f9f6] rounded-xl transform transition-transform hover:scale-105 duration-300">
