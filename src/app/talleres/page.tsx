@@ -497,59 +497,6 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
         </div>
       </div>
 
-      {/* Beneficios */}
-      <section className="py-8 md:py-12 px-4 md:px-6 bg-white">
-        <div className="container mx-auto w-full sm:w-[90%] md:w-[85%] lg:w-[75%] xl:w-[65%]">
-          <div className="text-center mb-12 md:mb-16">
-            <h2 className="text-2xl md:text-4xl font-bold mb-4 relative inline-block">
-              <span className="relative z-10">¿Por qué elegir nuestros talleres?</span>
-              <span className="absolute -bottom-2 left-0 right-0 h-3 bg-[#8be0c9] opacity-30 rounded-full transform -rotate-1"></span>
-            </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-12">
-              Aprende habilidades prácticas que transformarán tu forma de trabajar
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
-            <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100">
-              <div className="w-16 h-16 bg-[#f0f9f6] rounded-full flex items-center justify-center mb-6 mx-auto md:mx-0">
-                <svg className="w-8 h-8 text-[#2a7c60]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-center md:text-left">Aprende rápido</h3>
-              <p className="text-gray-600">
-                Nuestros talleres están diseñados para que aprendas de forma rápida y efectiva, sin necesidad de conocimientos previos.
-              </p>
-            </div>
-            
-            <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100">
-              <div className="w-16 h-16 bg-[#f0f9f6] rounded-full flex items-center justify-center mb-6 mx-auto md:mx-0">
-                <svg className="w-8 h-8 text-[#2a7c60]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-center md:text-left">Aplicación inmediata</h3>
-              <p className="text-gray-600">
-                Todo lo que aprendes lo puedes aplicar inmediatamente en tu trabajo o proyectos personales.
-              </p>
-            </div>
-            
-            <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100">
-              <div className="w-16 h-16 bg-[#f0f9f6] rounded-full flex items-center justify-center mb-6 mx-auto md:mx-0">
-                <svg className="w-8 h-8 text-[#2a7c60]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-center md:text-left">Comunidad de apoyo</h3>
-              <p className="text-gray-600">
-                Únete a una comunidad de profesionales que, como tú, buscan optimizar su trabajo con herramientas de automatización.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Talleres */}
       <section id="talleres" className="py-8 md:py-12 px-4 md:px-6 bg-[#f7f5f0]">
         <div className="container mx-auto w-full sm:w-[90%] md:w-[85%] lg:w-[75%] xl:w-[65%]">
@@ -709,6 +656,59 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
               )}
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Beneficios */}
+      <section className="py-8 md:py-12 px-4 md:px-6 bg-white">
+        <div className="container mx-auto w-full sm:w-[90%] md:w-[85%] lg:w-[75%] xl:w-[65%]">
+          <div className="text-center mb-12 md:mb-16">
+            <h2 className="text-2xl md:text-4xl font-bold mb-4 relative inline-block">
+              <span className="relative z-10">¿Por qué elegir nuestros talleres?</span>
+              <span className="absolute -bottom-2 left-0 right-0 h-3 bg-[#8be0c9] opacity-30 rounded-full transform -rotate-1"></span>
+            </h2>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-12">
+              Aprende habilidades prácticas que transformarán tu forma de trabajar
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+            <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100">
+              <div className="w-16 h-16 bg-[#f0f9f6] rounded-full flex items-center justify-center mb-6 mx-auto md:mx-0">
+                <svg className="w-8 h-8 text-[#2a7c60]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold mb-3 text-center md:text-left">Aprende rápido</h3>
+              <p className="text-gray-600">
+                Nuestros talleres están diseñados para que aprendas de forma rápida y efectiva, sin necesidad de conocimientos previos.
+              </p>
+            </div>
+            
+            <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100">
+              <div className="w-16 h-16 bg-[#f0f9f6] rounded-full flex items-center justify-center mb-6 mx-auto md:mx-0">
+                <svg className="w-8 h-8 text-[#2a7c60]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold mb-3 text-center md:text-left">Aplicación inmediata</h3>
+              <p className="text-gray-600">
+                Todo lo que aprendes lo puedes aplicar inmediatamente en tu trabajo o proyectos personales.
+              </p>
+            </div>
+            
+            <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100">
+              <div className="w-16 h-16 bg-[#f0f9f6] rounded-full flex items-center justify-center mb-6 mx-auto md:mx-0">
+                <svg className="w-8 h-8 text-[#2a7c60]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold mb-3 text-center md:text-left">Comunidad de apoyo</h3>
+              <p className="text-gray-600">
+                Únete a una comunidad de profesionales que, como tú, buscan optimizar su trabajo con herramientas de automatización.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 

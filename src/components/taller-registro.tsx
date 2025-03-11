@@ -334,10 +334,10 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Teléfono
                 </label>
-                <div className="flex">
-                  <div className="flex-shrink-0 w-24">
+                <div className="flex flex-wrap">
+                  <div className="w-[90px] flex-shrink-0 mb-2 sm:mb-0">
                     <select
-                      className="w-full p-2 border border-gray-300 rounded-l-md focus:ring-[#1b5e4f] focus:border-[#1b5e4f] bg-gray-50"
+                      className="w-full p-2 border border-gray-300 rounded-md sm:rounded-r-none focus:ring-[#1b5e4f] focus:border-[#1b5e4f] bg-gray-50"
                       defaultValue="+57"
                       onChange={(e) => {
                         console.log('Código de país cambiado a:', e.target.value);
@@ -388,7 +388,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
                   <input
                     type="tel"
                     {...vivoForm.register('telefono')}
-                    className="flex-grow p-2 border border-gray-300 rounded-r-md focus:ring-[#1b5e4f] focus:border-[#1b5e4f]"
+                    className="flex-grow w-full sm:w-auto p-2 border border-gray-300 rounded-md sm:rounded-l-none focus:ring-[#1b5e4f] focus:border-[#1b5e4f]"
                     placeholder="300 123 4567"
                     defaultValue="+57 "
                     onChange={(e) => {
@@ -499,10 +499,10 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Teléfono
                 </label>
-                <div className="flex">
-                  <div className="flex-shrink-0 w-24">
+                <div className="flex flex-wrap">
+                  <div className="w-[90px] flex-shrink-0 mb-2 sm:mb-0">
                     <select
-                      className="w-full p-2 border border-gray-300 rounded-l-md focus:ring-[#1b5e4f] focus:border-[#1b5e4f] bg-gray-50"
+                      className="w-full p-2 border border-gray-300 rounded-md sm:rounded-r-none focus:ring-[#1b5e4f] focus:border-[#1b5e4f] bg-gray-50"
                       defaultValue="+57"
                       onChange={(e) => {
                         console.log('Código de país cambiado a (pregrabado):', e.target.value);
@@ -553,7 +553,7 @@ export function TallerRegistro({ taller, referidoPor }: TallerRegistroProps) {
                   <input
                     type="tel"
                     {...pregrabadoForm.register('telefono')}
-                    className="flex-grow p-2 border border-gray-300 rounded-r-md focus:ring-[#1b5e4f] focus:border-[#1b5e4f]"
+                    className="flex-grow w-full sm:w-auto p-2 border border-gray-300 rounded-md sm:rounded-l-none focus:ring-[#1b5e4f] focus:border-[#1b5e4f]"
                     placeholder="300 123 4567"
                     defaultValue="+57 "
                     onChange={(e) => {

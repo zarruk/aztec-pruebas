@@ -7,6 +7,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale/es';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect, useState, useRef } from 'react';
 
 interface TallerPageClientProps {
   taller: TallerConHerramientas;
@@ -16,6 +17,38 @@ interface TallerPageClientProps {
 export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps) {
   // Calcular precio en USD (1 USD = 4000 COP)
   const precioUSD = taller.precio ? Math.round((taller.precio / 4000) * 10) / 10 : 0;
+  
+  // Referencia al formulario de registro
+  const registroRef = useRef<HTMLDivElement>(null);
+  
+  // Estado para controlar la visibilidad del botón flotante
+  const [mostrarBotonFlotante, setMostrarBotonFlotante] = useState(true);
+  
+  // Función para desplazarse al formulario de registro
+  const scrollToRegistro = () => {
+    registroRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+  
+  // Efecto para detectar cuando el formulario está visible
+  useEffect(() => {
+    if (!registroRef.current) return;
+    
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // Si el formulario es visible, ocultar el botón
+        setMostrarBotonFlotante(!entry.isIntersecting);
+      },
+      { threshold: 0.1 } // 10% del elemento visible
+    );
+    
+    observer.observe(registroRef.current);
+    
+    return () => {
+      if (registroRef.current) {
+        observer.unobserve(registroRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="bg-[#fffdf9] min-h-screen">
@@ -40,11 +73,6 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
         {/* Encabezado del taller */}
         <div className="bg-[#2a7c60] text-white py-10 px-6 rounded-lg mb-8 text-center">
           <h1 className="text-3xl font-bold mb-4">{taller.nombre}</h1>
-          <p className="text-lg mb-6">
-            {taller.tipo === 'pregrabado' 
-              ? 'Sube un extracto bancario y automatiza el seguimiento de tus gastos' 
-              : 'Aprende a automatizar procesos y optimizar tu flujo de trabajo'}
-          </p>
           <div className="text-center">
             <p className="text-2xl font-bold">
               COP ${taller.precio?.toLocaleString('es-CO') || 0} / USD ${precioUSD}
@@ -58,7 +86,16 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
             {/* Qué aprenderás */}
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-2xl font-bold mb-4">¿Qué aprenderás?</h2>
-              <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: taller.descripcion || '' }} />
+              <div 
+                className="prose max-w-none whitespace-pre-wrap" 
+                dangerouslySetInnerHTML={{ 
+                  __html: taller.descripcion 
+                    ? taller.descripcion
+                        .replace(/\n/g, '<br />') 
+                        .replace(/\n\n+/g, '<br /><br />') 
+                    : '' 
+                }} 
+              />
             </div>
             
             {/* Video del taller */}
@@ -107,7 +144,9 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
           {/* Sidebar - 1/3 del ancho en desktop - FIJO */}
           <div className="space-y-6 lg:sticky lg:top-24 lg:self-start">
             {/* Componente de registro */}
-            <TallerRegistro taller={taller} referidoPor={referidoPor} />
+            <div ref={registroRef}>
+              <TallerRegistro taller={taller} referidoPor={referidoPor} />
+            </div>
             
             {/* Fechas disponibles para talleres en vivo */}
             {(taller.tipo === 'vivo' || taller.tipo === 'live_build') && (
@@ -134,6 +173,16 @@ export function TallerPageClient({ taller, referidoPor }: TallerPageClientProps)
           </div>
         </div>
       </div>
+      
+      {/* Botón flotante para móvil */}
+      {mostrarBotonFlotante && (
+        <button 
+          onClick={scrollToRegistro}
+          className="fixed bottom-6 right-6 bg-[#2a7c60] text-white font-bold py-3 px-6 rounded-full shadow-lg z-50 lg:hidden flex items-center justify-center"
+        >
+          Registrarme
+        </button>
+      )}
     </div>
   );
 } 
