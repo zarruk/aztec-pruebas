@@ -510,22 +510,6 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
             </p>
           </div>
           
-          {/* Filtros de talleres */}
-          <div className="flex flex-wrap justify-center gap-3 mb-10">
-            <button className="px-5 py-2 rounded-full bg-[#2a7c60] text-white font-medium hover:bg-[#1e5a46] transition-colors">
-              Todos
-            </button>
-            <button className="px-5 py-2 rounded-full bg-white border border-[#2a7c60] text-[#2a7c60] font-medium hover:bg-[#f0f9f6] transition-colors">
-              En vivo
-            </button>
-            <button className="px-5 py-2 rounded-full bg-white border border-[#2a7c60] text-[#2a7c60] font-medium hover:bg-[#f0f9f6] transition-colors">
-              Pregrabados
-            </button>
-            <button className="px-5 py-2 rounded-full bg-white border border-[#2a7c60] text-[#2a7c60] font-medium hover:bg-[#f0f9f6] transition-colors">
-              Próximamente
-            </button>
-          </div>
-          
           {loading ? (
             <div className="flex justify-center items-center py-20">
               <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#2a7c60]"></div>
@@ -597,25 +581,6 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
                         {taller.descripcion || 'Sin descripción disponible'}
                       </p>
                       
-                      {/* Herramientas utilizadas */}
-                      {taller.herramientas && taller.herramientas.length > 0 && (
-                        <div className="mb-4">
-                          <p className="text-xs text-gray-500 mb-2">Herramientas:</p>
-                          <div className="flex flex-wrap gap-2">
-                            {taller.herramientas.map((id, index) => (
-                              <span key={id} className="inline-block bg-gray-100 rounded-full px-3 py-1 text-xs font-medium text-gray-700">
-                                Herramienta {index + 1}
-                              </span>
-                            )).slice(0, 3)}
-                            {taller.herramientas.length > 3 && (
-                              <span className="inline-block bg-gray-100 rounded-full px-3 py-1 text-xs font-medium text-gray-700">
-                                +{taller.herramientas.length - 3}
-                              </span>
-                            )}
-                          </div>
-                      </div>
-                      )}
-                      
                       {/* Espacio flexible */}
                       <div className="flex-grow"></div>
                       
@@ -659,54 +624,117 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
         </div>
       </section>
 
-      {/* Beneficios */}
-      <section className="py-8 md:py-12 px-4 md:px-6 bg-white">
+      {/* Instructores - Versión Rediseñada */}
+      <section id="instructores" className="py-8 md:py-12 px-4 md:px-6 bg-gradient-to-b from-[#f7f5f0] to-[#fffdf9]">
         <div className="container mx-auto w-full sm:w-[90%] md:w-[85%] lg:w-[75%] xl:w-[65%]">
           <div className="text-center mb-12 md:mb-16">
             <h2 className="text-2xl md:text-4xl font-bold mb-4 relative inline-block">
-              <span className="relative z-10">¿Por qué elegir nuestros talleres?</span>
+              <span className="relative z-10">Conoce a tus instructores</span>
               <span className="absolute -bottom-2 left-0 right-0 h-3 bg-[#8be0c9] opacity-30 rounded-full transform -rotate-1"></span>
             </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-12">
-              Aprende habilidades prácticas que transformarán tu forma de trabajar
-            </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
-            <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100">
-              <div className="w-16 h-16 bg-[#f0f9f6] rounded-full flex items-center justify-center mb-6 mx-auto md:mx-0">
-                <svg className="w-8 h-8 text-[#2a7c60]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 max-w-5xl mx-auto">
+            {/* Instructor 1 */}
+            <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group">
+              <div className="relative">
+                <div className="h-64 overflow-hidden">
+                <img 
+                  src="https://media.licdn.com/dms/image/v2/D4E03AQFFFCxc68h7bQ/profile-displayphoto-shrink_800_800/B4EZOKWIHqH0Ac-/0/1733192877072?e=1747267200&v=beta&t=-qDNdyZw_X2XhfUDww5bp9yYAsRUxQj-RXkcolkUc_E"
+                  alt="Martín Vásquez"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-60"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h3 className="text-2xl font-bold text-white mb-1">Martín Vásquez</h3>
+                  <p className="text-white/80 text-sm">Experto en Automatización</p>
+                </div>
               </div>
-              <h3 className="text-xl font-bold mb-3 text-center md:text-left">Aprende rápido</h3>
-              <p className="text-gray-600">
-                Nuestros talleres están diseñados para que aprendas de forma rápida y efectiva, sin necesidad de conocimientos previos.
+              
+              <div className="p-6">
+                <p className="text-gray-600 mb-6 italic">
+                "Como abogado, nunca imaginé que podría automatizar mi trabajo. Descubrí esto, cómo y transformó mi forma de trabajar. Hoy ayudo a otros profesionales a hacer lo mismo, demostrando que la tecnología está al alcance de todos."
               </p>
+                
+                <div className="flex justify-between items-center">
+                  <div className="flex space-x-4">
+                    <a href="https://www.linkedin.com/in/martin-vasquez-escobar/" target="_blank" rel="noopener noreferrer" className="text-[#2a7c60] hover:text-[#1e5a46] transition-colors">
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                  </svg>
+                </a>
+                    <a href="https://wa.me/573128511052" target="_blank" rel="noopener noreferrer" className="text-[#2a7c60] hover:text-[#1e5a46] transition-colors">
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                  </svg>
+                </a>
+                  </div>
+                  
+                  <a 
+                    href="https://wa.me/573128511052" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="inline-flex items-center text-sm font-medium text-[#2a7c60] hover:text-[#1e5a46] transition-colors"
+                  >
+                    <span>Contactar</span>
+                    <svg className="ml-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
             </div>
             
-            <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100">
-              <div className="w-16 h-16 bg-[#f0f9f6] rounded-full flex items-center justify-center mb-6 mx-auto md:mx-0">
-                <svg className="w-8 h-8 text-[#2a7c60]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
+            {/* Instructor 2 */}
+            <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group">
+              <div className="relative">
+                <div className="h-64 overflow-hidden">
+                <img 
+                  src="https://media.licdn.com/dms/image/v2/D4E03AQGEQPYp7KpT1w/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1691030717101?e=1747267200&v=beta&t=Q1XEFutRhuLi50zHkzFVcSi--_-QxxfrYBXzvaEs1vs"
+                  alt="Salomón Zarruk"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-60"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h3 className="text-2xl font-bold text-white mb-1">Salomón Zarruk</h3>
+                  <p className="text-white/80 text-sm">Especialista en Automatización</p>
+                </div>
               </div>
-              <h3 className="text-xl font-bold mb-3 text-center md:text-left">Aplicación inmediata</h3>
-              <p className="text-gray-600">
-                Todo lo que aprendes lo puedes aplicar inmediatamente en tu trabajo o proyectos personales.
+              
+              <div className="p-6">
+                <p className="text-gray-600 mb-6 italic">
+                "Al igual que Martín, yo también soy abogado de profesión. Si yo pude aprender estas herramientas sin tener background técnico, tú también puedes. Mi misión es demostrar que la tecnología no tiene barreras profesionales."
               </p>
-            </div>
-            
-            <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100">
-              <div className="w-16 h-16 bg-[#f0f9f6] rounded-full flex items-center justify-center mb-6 mx-auto md:mx-0">
-                <svg className="w-8 h-8 text-[#2a7c60]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
+                
+                <div className="flex justify-between items-center">
+                  <div className="flex space-x-4">
+                    <a href="https://www.linkedin.com/in/salomonzarruk/" target="_blank" rel="noopener noreferrer" className="text-[#2a7c60] hover:text-[#1e5a46] transition-colors">
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                  </svg>
+                </a>
+                    <a href="https://wa.me/573128511052" target="_blank" rel="noopener noreferrer" className="text-[#2a7c60] hover:text-[#1e5a46] transition-colors">
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                  </svg>
+                </a>
+                  </div>
+                  
+                  <a 
+                    href="https://wa.me/573128511052" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="inline-flex items-center text-sm font-medium text-[#2a7c60] hover:text-[#1e5a46] transition-colors"
+                  >
+                    <span>Contactar</span>
+                    <svg className="ml-1 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </a>
+                </div>
               </div>
-              <h3 className="text-xl font-bold mb-3 text-center md:text-left">Comunidad de apoyo</h3>
-              <p className="text-gray-600">
-                Únete a una comunidad de profesionales que, como tú, buscan optimizar su trabajo con herramientas de automatización.
-              </p>
             </div>
           </div>
         </div>
@@ -794,117 +822,54 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
         </div>
       </section>
 
-      {/* Instructores - Versión Rediseñada */}
-      <section id="instructores" className="py-8 md:py-12 px-4 md:px-6 bg-gradient-to-b from-[#f7f5f0] to-[#fffdf9]">
+      {/* Beneficios */}
+      <section className="py-8 md:py-12 px-4 md:px-6 bg-white">
         <div className="container mx-auto w-full sm:w-[90%] md:w-[85%] lg:w-[75%] xl:w-[65%]">
           <div className="text-center mb-12 md:mb-16">
             <h2 className="text-2xl md:text-4xl font-bold mb-4 relative inline-block">
-              <span className="relative z-10">Conoce a tus instructores</span>
+              <span className="relative z-10">¿Por qué elegir nuestros talleres?</span>
               <span className="absolute -bottom-2 left-0 right-0 h-3 bg-[#8be0c9] opacity-30 rounded-full transform -rotate-1"></span>
             </h2>
+            <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-12">
+              Aprende habilidades prácticas que transformarán tu forma de trabajar
+            </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 max-w-5xl mx-auto">
-            {/* Instructor 1 */}
-            <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group">
-              <div className="relative">
-                <div className="h-64 overflow-hidden">
-                <img 
-                  src="/images/instructores/martin.jpg"
-                  alt="Martín Vásquez"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-60"></div>
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <h3 className="text-2xl font-bold text-white mb-1">Martín Vásquez</h3>
-                  <p className="text-white/80 text-sm">Experto en Automatización</p>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+            <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100">
+              <div className="w-16 h-16 bg-[#f0f9f6] rounded-full flex items-center justify-center mb-6 mx-auto md:mx-0">
+                <svg className="w-8 h-8 text-[#2a7c60]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
               </div>
-              
-              <div className="p-6">
-                <p className="text-gray-600 mb-6 italic">
-                "Como abogado, nunca imaginé que podría automatizar mi trabajo. Descubrí esto, cómo y transformó mi forma de trabajar. Hoy ayudo a otros profesionales a hacer lo mismo, demostrando que la tecnología está al alcance de todos."
+              <h3 className="text-xl font-bold mb-3 text-center md:text-left">Aprende rápido</h3>
+              <p className="text-gray-600">
+                Nuestros talleres están diseñados para que aprendas de forma rápida y efectiva, sin necesidad de conocimientos previos.
               </p>
-                
-                <div className="flex justify-between items-center">
-                  <div className="flex space-x-4">
-                    <a href="https://www.linkedin.com/in/martin-vasquez-escobar/" target="_blank" rel="noopener noreferrer" className="text-[#2a7c60] hover:text-[#1e5a46] transition-colors">
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                  </svg>
-                </a>
-                    <a href="https://wa.me/573128511052" target="_blank" rel="noopener noreferrer" className="text-[#2a7c60] hover:text-[#1e5a46] transition-colors">
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
-                  </svg>
-                </a>
-                  </div>
-                  
-                  <a 
-                    href="https://wa.me/573128511052" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="inline-flex items-center text-sm font-medium text-[#2a7c60] hover:text-[#1e5a46] transition-colors"
-                  >
-                    <span>Contactar</span>
-                    <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </a>
-                </div>
-              </div>
             </div>
             
-            {/* Instructor 2 */}
-            <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group">
-              <div className="relative">
-                <div className="h-64 overflow-hidden">
-                <img 
-                  src="/images/instructores/salomon.jpg"
-                  alt="Salomón Zarruk"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-60"></div>
-                <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <h3 className="text-2xl font-bold text-white mb-1">Salomón Zarruk</h3>
-                  <p className="text-white/80 text-sm">Especialista en Automatización</p>
-                </div>
+            <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100">
+              <div className="w-16 h-16 bg-[#f0f9f6] rounded-full flex items-center justify-center mb-6 mx-auto md:mx-0">
+                <svg className="w-8 h-8 text-[#2a7c60]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
               </div>
-              
-              <div className="p-6">
-                <p className="text-gray-600 mb-6 italic">
-                "Al igual que Martín, yo también soy abogado de profesión. Si yo pude aprender estas herramientas sin tener background técnico, tú también puedes. Mi misión es demostrar que la tecnología no tiene barreras profesionales."
-                </p>
-                
-                <div className="flex justify-between items-center">
-                  <div className="flex space-x-4">
-                    <a href="https://www.linkedin.com/in/zarruk/" target="_blank" rel="noopener noreferrer" className="text-[#2a7c60] hover:text-[#1e5a46] transition-colors">
-                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                      </svg>
-                    </a>
-                    <a href="https://wa.me/573187033333" target="_blank" rel="noopener noreferrer" className="text-[#2a7c60] hover:text-[#1e5a46] transition-colors">
-                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
-                      </svg>
-                    </a>
-                  </div>
-                  
-                  <a 
-                    href="https://wa.me/573187033333" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="inline-flex items-center text-sm font-medium text-[#2a7c60] hover:text-[#1e5a46] transition-colors"
-                  >
-                    <span>Contactar</span>
-                    <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </a>
-                </div>
+              <h3 className="text-xl font-bold mb-3 text-center md:text-left">Aplicación inmediata</h3>
+              <p className="text-gray-600">
+                Todo lo que aprendes lo puedes aplicar inmediatamente en tu trabajo o proyectos personales.
+              </p>
+            </div>
+            
+            <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100">
+              <div className="w-16 h-16 bg-[#f0f9f6] rounded-full flex items-center justify-center mb-6 mx-auto md:mx-0">
+                <svg className="w-8 h-8 text-[#2a7c60]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
               </div>
+              <h3 className="text-xl font-bold mb-3 text-center md:text-left">Comunidad de apoyo</h3>
+              <p className="text-gray-600">
+                Únete a una comunidad de profesionales que, como tú, buscan optimizar su trabajo con herramientas de automatización.
+              </p>
             </div>
           </div>
         </div>
@@ -972,49 +937,16 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
             
             {/* Contacto */}
             <div>
-              <h3 className="text-lg font-bold mb-4">Contacto</h3>
-              <ul className="space-y-3">
-                <li className="flex items-start">
-                  <svg className="w-5 h-5 mr-3 mt-0.5 text-[#8be0c9]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                  <span className="text-white/80">contacto@azteclab.co</span>
-                </li>
-                <li className="flex items-start">
-                  <svg className="w-5 h-5 mr-3 mt-0.5 text-[#8be0c9]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l2.257 1.13a1 1 0 01.502 1.21l-1.13 2.257a1 1 0 01-1.21.502l-2.257-1.13a1 1 0 01.502-1.21l1.13-2.257a1 1 0 011.21-.502z" />
-                  </svg>
-                  <span className="text-white/80">+57 312 851 1052</span>
-                </li>
-                <li className="flex items-start">
-                  <svg className="w-5 h-5 mr-3 mt-0.5 text-[#8be0c9]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                  <span className="text-white/80">Bogotá, Colombia</span>
-                </li>
-              </ul>
-        </div>
-            
-            {/* Newsletter */}
-            <div>
-              <h3 className="text-lg font-bold mb-4">Suscríbete</h3>
+              <h3 className="text-lg font-bold mb-4">Contacto directo</h3>
               <p className="text-white/80 text-sm mb-4">
-                Recibe noticias sobre nuevos talleres y contenido exclusivo.
+                ¿Tienes alguna pregunta? Escríbenos directamente.
               </p>
-              <form className="flex flex-col space-y-2">
-                <input 
-                  type="email" 
-                  placeholder="Tu correo electrónico" 
-                  className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#8be0c9] focus:border-transparent"
-                />
-                <button 
-                  type="submit" 
-                  className="px-4 py-2 bg-[#8be0c9] text-[#2a7c60] font-medium rounded-lg hover:bg-white transition-colors"
-                >
-                  Suscribirme
-                </button>
-              </form>
+              <a 
+                href="mailto:contacto@azteclab.co" 
+                className="px-4 py-2 bg-[#8be0c9] text-[#2a7c60] font-medium rounded-lg hover:bg-white transition-colors inline-block"
+              >
+                Enviar correo
+              </a>
             </div>
           </div>
           
