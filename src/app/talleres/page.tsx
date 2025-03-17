@@ -960,7 +960,7 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
                 <a href="/terminos" className="text-white/60 text-sm hover:text-white transition-colors">
                   Términos y condiciones
                 </a>
-                <a href="/privacidad" className="text-white/60 text-sm hover:text-white transition-colors">
+                <a href="/politica-de-privacidad" className="text-white/60 text-sm hover:text-white transition-colors">
                   Política de privacidad
                 </a>
                 <a href="/cookies" className="text-white/60 text-sm hover:text-white transition-colors">

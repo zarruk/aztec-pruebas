@@ -34,9 +34,7 @@ const nextConfig = {
       allowedOrigins: ['localhost:3000', 'aztec-nuevo.onrender.com'],
     },
   },
-  // Configurar rutas que deben ser dinámicas
-  // Esto evita que Next.js intente renderizar estáticamente rutas que usan cookies o sesiones
-  serverComponentsExternalPackages: ['@supabase/auth-helpers-nextjs'],
+  // La opción serverComponentsExternalPackages ha sido eliminada porque no es compatible con Next.js 15.2.1
 };
 
 module.exports = nextConfig; 
