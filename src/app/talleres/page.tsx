@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { createSupabaseClient } from '@/lib/supabase-browser';
 import { format, parseISO, isAfter, isBefore } from 'date-fns';
 import { es } from 'date-fns/locale/es';
+import LeadMagnetModal from '@/components/lead-magnet-modal';
 
 // Componente para el aviso intermitente de Live Build
 const LiveBuildAlert = () => {
@@ -344,7 +345,16 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#fffdf9]">
+    <div className="min-h-screen bg-gray-50">
+      {/* Eliminamos el LiveBuildAlert de aquí */}
+      
+      {/* Sección de Lead Magnet */}
+      <section className="py-12 bg-gradient-to-b from-gray-50 to-white">
+        <div className="container mx-auto px-4">
+          <LeadMagnetModal />
+        </div>
+      </section>
+
       {/* Navbar */}
       <header className="bg-[#fffdf9] py-1 px-3 md:px-4 fixed top-0 left-0 right-0 z-50 shadow-sm">
         <div className="container mx-auto w-full sm:w-[90%] md:w-[85%] lg:w-[75%] xl:w-[65%] flex justify-between items-center">
@@ -533,9 +543,9 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
                       
                       {/* Badges */}
                       <div className="absolute top-4 right-4 flex flex-col gap-2">
-                      {taller.tipo === 'pregrabado' && (
+                        {taller.tipo === 'pregrabado' && (
                           <span className="bg-[#5baa91] text-white font-bold py-1 px-3 rounded-md text-sm shadow-lg">
-                          PREGRABADO
+                            PREGRABADO
                           </span>
                         )}
                         {taller.tipo === 'vivo' && esFechaFutura(taller.fecha) && (
@@ -567,6 +577,7 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
                         </div>
                       </div>
                       
+                      {/* Solo mostrar LiveBuildAlert en talleres pregrabados con fecha futura */}
                       {taller.tipo === 'pregrabado' && esFechaFutura(taller.fecha) && (
                         <LiveBuildAlert />
                       )}
