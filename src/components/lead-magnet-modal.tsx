@@ -10,6 +10,10 @@ interface FormData {
   registro: string;
 }
 
+interface LeadMagnetModalProps {
+  onClose?: () => void;
+}
+
 const COUNTRY_CODES = [
   { code: '+57', isoCode: 'CO', name: 'Colombia' },
   { code: '+1', isoCode: 'US', name: 'Estados Unidos' },
@@ -23,7 +27,7 @@ const COUNTRY_CODES = [
   { code: '+507', isoCode: 'PA', name: 'Panamá' },
 ];
 
-export default function LeadMagnetModal() {
+export default function LeadMagnetModal({ onClose }: LeadMagnetModalProps) {
   const [formData, setFormData] = useState<FormData>({
     nombre: '',
     telefono: '',
@@ -38,6 +42,8 @@ export default function LeadMagnetModal() {
 
   const handleClose = () => {
     setIsOpen(false);
+    localStorage.setItem('leadMagnetModalClosed', 'true');
+    onClose?.();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -63,6 +69,7 @@ export default function LeadMagnetModal() {
       }
 
       setIsSubmitted(true);
+      localStorage.setItem('leadMagnetFormSubmitted', 'true');
     } catch (err) {
       setError('Hubo un error al procesar tu solicitud. Por favor, intenta nuevamente.');
     } finally {

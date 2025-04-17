@@ -48,6 +48,7 @@ export default function TalleresPage() {
   const [talleres, setTalleres] = useState<Taller[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const [showModal, setShowModal] = useState(false);
   const testimonialInterval = useRef<NodeJS.Timeout | null>(null);
   
   // Testimonios
@@ -344,8 +345,23 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
     }
   };
 
+  // Efecto para mostrar el modal después de un tiempo
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const modalClosed = localStorage.getItem('leadMagnetModalClosed');
+      const formSubmitted = localStorage.getItem('leadMagnetFormSubmitted');
+      
+      if (!modalClosed && !formSubmitted) {
+        setShowModal(true);
+      }
+    }, 3000); // Mostrar después de 3 segundos
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#fffdf9]">
+      {showModal && <LeadMagnetModal onClose={() => setShowModal(false)} />}
       {/* Eliminamos el LiveBuildAlert de aquí */}
       
       {/* Sección de Lead Magnet */}
