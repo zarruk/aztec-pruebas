@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { createSupabaseClient } from '@/lib/supabase-browser';
 import { format, parseISO, isAfter, isBefore } from 'date-fns';
 import { es } from 'date-fns/locale/es';
-import LeadMagnetModal from '@/components/lead-magnet-modal';
+import LeadMagnetForm from '@/components/lead-magnet-form';
 
 // Componente para el aviso intermitente de Live Build
 const LiveBuildAlert = () => {
@@ -48,7 +48,6 @@ export default function TalleresPage() {
   const [talleres, setTalleres] = useState<Taller[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
-  const [showModal, setShowModal] = useState(false);
   const testimonialInterval = useRef<NodeJS.Timeout | null>(null);
   
   // Testimonios
@@ -345,29 +344,14 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
     }
   };
 
-  // Efecto para mostrar el modal después de un tiempo
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      const modalClosed = localStorage.getItem('leadMagnetModalClosed');
-      const formSubmitted = localStorage.getItem('leadMagnetFormSubmitted');
-      
-      if (!modalClosed && !formSubmitted) {
-        setShowModal(true);
-      }
-    }, 3000); // Mostrar después de 3 segundos
-
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <div className="min-h-screen bg-[#fffdf9]">
-      {showModal && <LeadMagnetModal onClose={() => setShowModal(false)} />}
-      {/* Eliminamos el LiveBuildAlert de aquí */}
+      {/* Eliminar el modal de aquí */}
       
       {/* Sección de Lead Magnet */}
       <section className="py-12 bg-gradient-to-b from-gray-50 to-white">
         <div className="container mx-auto px-4">
-          <LeadMagnetModal />
+          {/* Eliminar el modal de aquí también */}
         </div>
       </section>
 
@@ -385,13 +369,18 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
             <ul className="flex space-x-4 md:space-x-6">
               <li>
                 <a href="#talleres" className="text-[#2a7c60] font-medium hover:text-[#1e5a46]">
-              Talleres
-            </a>
+                  Talleres
+                </a>
               </li>
               <li>
                 <a href="#instructores" className="text-[#2a7c60] font-medium hover:text-[#1e5a46]">
-              Instructores
-            </a>
+                  Instructores
+                </a>
+              </li>
+              <li>
+                <a href="#herramienta-gratis" className="text-[#2a7c60] font-medium hover:text-[#1e5a46]">
+                  Herramienta gratis
+                </a>
               </li>
             </ul>
           </nav>
@@ -897,6 +886,43 @@ const formatearFecha = (fechaISO?: string, tipo?: string) => {
               <p className="text-gray-600">
                 Únete a una comunidad de profesionales que, como tú, buscan optimizar su trabajo con herramientas de automatización.
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Lead Magnet Section */}
+      <section id="herramienta-gratis" className="py-16 md:py-20 px-4 md:px-6 bg-[#fffdf9]">
+        <div className="container mx-auto w-full sm:w-[90%] md:w-[85%] lg:w-[75%] xl:w-[65%]">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Contenido */}
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6 leading-tight text-gray-900">
+                Descarga Gratis: Guía de Automatización con IA
+              </h2>
+              <p className="text-lg md:text-xl mb-8 text-gray-600">
+                Descubre cómo identificar y priorizar los procesos que puedes automatizar en tu negocio. Esta guía práctica te ayudará a crear un mapa de automatización personalizado, con ejemplos concretos y herramientas recomendadas para cada caso de uso.
+              </p>
+              <ul className="space-y-4 mb-8">
+                {[
+                  'Mapeo de procesos automatizables',
+                  'Priorización de tareas por impacto',
+                  'Herramientas recomendadas por caso de uso',
+                  'Plantilla para tu plan de automatización'
+                ].map((item, index) => (
+                  <li key={index} className="flex items-center space-x-3">
+                    <svg className="w-6 h-6 text-[#2a7c60]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-gray-700">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Formulario */}
+            <div className="bg-white rounded-2xl p-8 shadow-xl">
+              <LeadMagnetForm />
             </div>
           </div>
         </div>
