@@ -57,6 +57,14 @@ export default function LeadMagnetForm() {
         throw new Error('Error al enviar los datos');
       }
 
+      // Iniciar la descarga automáticamente
+      const link = document.createElement('a');
+      link.href = '/guia-automatizacion-ia.pdf';
+      link.download = 'guia-automatizacion-ia.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
       setIsSubmitted(true);
       localStorage.setItem('leadMagnetFormSubmitted', 'true');
     } catch (err) {
@@ -66,13 +74,39 @@ export default function LeadMagnetForm() {
     }
   };
 
-  const handleDownload = () => {
-    const link = document.createElement('a');
-    link.href = '/guia-automatizacion-ia.pdf';
-    link.download = 'guia-automatizacion-ia.pdf';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleDownload = async () => {
+    try {
+      // Primero intentamos obtener el archivo para verificar que existe
+      const response = await fetch('/guia-automatizacion-ia.pdf');
+      if (!response.ok) {
+        throw new Error('No se pudo descargar el archivo');
+      }
+
+      // Obtenemos el blob del archivo
+      const blob = await response.blob();
+      
+      // Creamos una URL para el blob
+      const url = window.URL.createObjectURL(blob);
+      
+      // Creamos el enlace de descarga
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'guia-automatizacion-ia.pdf';
+      
+      // Añadimos el enlace al documento
+      document.body.appendChild(link);
+      
+      // Simulamos el clic
+      link.click();
+      
+      // Limpiamos
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error al descargar el archivo:', error);
+      // Intentamos abrir el PDF directamente en una nueva pestaña como fallback
+      window.open('/guia-automatizacion-ia.pdf', '_blank');
+    }
   };
 
   const selectedCountry = COUNTRY_CODES.find(country => country.code === countryCode) || COUNTRY_CODES[0];
@@ -91,14 +125,14 @@ export default function LeadMagnetForm() {
           ¡Gracias por tu interés!
         </h3>
         <p className="text-gray-600 mb-8">
-          Tu guía está lista para descargar. Haz clic en el botón para obtenerla.
+          Tu guía se está descargando automáticamente. Si la descarga no inicia, 
+          <button
+            onClick={handleDownload}
+            className="text-[#2a7c60] hover:text-[#1e5a46] font-medium ml-1"
+          >
+            haz clic aquí
+          </button>.
         </p>
-        <button
-          onClick={handleDownload}
-          className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl text-base font-medium text-white bg-[#2a7c60] hover:bg-[#1e5a46] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#2a7c60] transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5"
-        >
-          Descargar Guía
-        </button>
       </div>
     );
   }
