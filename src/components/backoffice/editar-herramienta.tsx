@@ -6,13 +6,11 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { HerramientaForm } from '@/components/backoffice/herramienta-form';
 import { Herramienta } from '@/lib/types';
 
-export default function HerramientaLayout({
-  children,
-  params
-}: {
-  children: React.ReactNode;
-  params: { id: string };
-}) {
+interface EditarHerramientaProps {
+  id: string;
+}
+
+export default function EditarHerramienta({ id }: EditarHerramientaProps) {
   const router = useRouter();
   const supabase = createClientComponentClient();
   const [herramienta, setHerramienta] = useState<Herramienta | null>(null);
@@ -26,7 +24,7 @@ export default function HerramientaLayout({
         const { data, error } = await supabase
           .from('herramientas')
           .select('*')
-          .eq('id', params.id)
+          .eq('id', id)
           .single();
 
         if (error) {
@@ -43,7 +41,7 @@ export default function HerramientaLayout({
     };
 
     fetchHerramienta();
-  }, [supabase, params.id]);
+  }, [supabase, id]);
 
   if (loading) {
     return (
@@ -86,7 +84,6 @@ export default function HerramientaLayout({
       </div>
       
       <HerramientaForm herramienta={herramienta} isEditing={true} />
-      {children}
     </div>
   );
 } 
