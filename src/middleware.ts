@@ -17,15 +17,30 @@ export const config = {
 // Middleware simplificado para pruebas
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { cookies } from 'next/headers';
+import { jwtVerify, SignJWT } from 'jose';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
 
-// Contraseña para acceder al backoffice
-const BACKOFFICE_PASSWORD = process.env.BACKOFFICE_PASSWORD || 'fact0rdiner0';
+// Configuración de rate limiting
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL || '',
+  token: process.env.UPSTASH_REDIS_REST_TOKEN || '',
+});
+
+const ratelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, '1 m'), // 5 intentos por minuto
+});
+
+// Clave secreta para JWT (debe estar en variables de entorno)
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET || 'your-secret-key-min-32-chars-long'
+);
 
 // Rutas protegidas que requieren autenticación
 const PROTECTED_ROUTES = ['/backoffice'];
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
   // Verificar si la ruta actual requiere autenticación
@@ -38,8 +53,22 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
   
-  // Si es la página de login del backoffice, permitir el acceso
+  // Si es la página de login del backoffice, aplicar rate limiting
   if (pathname === '/backoffice/login') {
+    const ip = request.ip ?? '127.0.0.1';
+    const { success, limit, reset, remaining } = await ratelimit.limit(ip);
+    
+    if (!success) {
+      return new NextResponse('Too Many Requests', {
+        status: 429,
+        headers: {
+          'X-RateLimit-Limit': limit.toString(),
+          'X-RateLimit-Remaining': remaining.toString(),
+          'X-RateLimit-Reset': reset.toString(),
+        },
+      });
+    }
+    
     return NextResponse.next();
   }
   
@@ -54,15 +83,18 @@ export function middleware(request: NextRequest) {
   }
   
   try {
-    // Verificar el token (en este caso, simplemente comparamos con la contraseña)
-    if (token !== BACKOFFICE_PASSWORD) {
-      throw new Error('Token inválido');
+    // Verificar el token JWT
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+    
+    // Verificar que el token no haya expirado
+    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
+      throw new Error('Token expired');
     }
     
     // Token válido, permitir el acceso
     return NextResponse.next();
   } catch (error) {
-    // Token inválido, redirigir al login
+    // Token inválido o expirado, redirigir al login
     const url = new URL('/backoffice/login', request.url);
     url.searchParams.set('redirect', pathname);
     return NextResponse.redirect(url);
