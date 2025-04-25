@@ -1,3 +1,6 @@
+# Workflow for deploying to Render
+# This workflow will build and deploy a Node.js application to Render
+
 name: Deploy to Render
 
 on:
