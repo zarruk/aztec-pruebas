@@ -5,12 +5,6 @@ import { useRouter } from 'next/navigation';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { HerramientaForm } from '@/components/backoffice/herramienta-form';
 import { Herramienta } from '@/lib/types';
-import { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Editar Herramienta - Backoffice',
-  description: 'Editar herramienta en el backoffice'
-};
 
 interface PageProps {
   params: {
