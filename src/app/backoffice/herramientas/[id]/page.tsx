@@ -6,7 +6,13 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { HerramientaForm } from '@/components/backoffice/herramienta-form';
 import { Herramienta } from '@/lib/types';
 
-export default function EditarHerramientaPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: {
+    id: string;
+  };
+}
+
+export default function EditarHerramientaPage({ params }: PageProps) {
   const router = useRouter();
   const supabase = createClientComponentClient();
   const [herramienta, setHerramienta] = useState<Herramienta | null>(null);
