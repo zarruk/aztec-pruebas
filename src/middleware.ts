@@ -22,14 +22,10 @@ import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 
 // Configuración de rate limiting
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL || '',
-  token: process.env.UPSTASH_REDIS_REST_TOKEN || '',
-});
-
 const ratelimit = new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(5, '1 m'), // 5 intentos por minuto
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(5, '5 m'), // 5 intentos por 5 minutos
+  analytics: true,
 });
 
 // Clave secreta para JWT (debe estar en variables de entorno)
@@ -86,9 +82,9 @@ export async function middleware(request: NextRequest) {
     // Verificar el token JWT
     const { payload } = await jwtVerify(token, JWT_SECRET);
     
-    // Verificar que el token no haya expirado
-    if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
-      throw new Error('Token expired');
+    // Verificar si el token ha expirado
+    if (payload.exp && payload.exp < Date.now() / 1000) {
+      throw new Error('Token expirado');
     }
     
     // Token válido, permitir el acceso

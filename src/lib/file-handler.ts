@@ -8,107 +8,124 @@ const supabase = createClient(
 
 // Tipos de archivo permitidos
 const ALLOWED_FILE_TYPES = {
-  'image/jpeg': true,
-  'image/png': true,
-  'image/gif': true,
-  'image/webp': true,
-  'application/pdf': true,
+  'image/jpeg': ['.jpg', '.jpeg'],
+  'image/png': ['.png'],
+  'image/gif': ['.gif'],
+  'application/pdf': ['.pdf'],
+  'application/msword': ['.doc'],
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
 };
 
 // Tamaño máximo de archivo (5MB)
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-export interface FileUploadResult {
-  success: boolean;
-  url?: string;
+export interface FileValidationResult {
+  isValid: boolean;
   error?: string;
+}
+
+export async function validateFile(
+  file: File,
+  allowedTypes: string[] = Object.keys(ALLOWED_FILE_TYPES)
+): Promise<FileValidationResult> {
+  // Verificar tipo de archivo
+  if (!allowedTypes.includes(file.type)) {
+    return {
+      isValid: false,
+      error: 'Tipo de archivo no permitido'
+    };
+  }
+
+  // Verificar extensión
+  const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+  const allowedExtensions = allowedTypes.flatMap(type => ALLOWED_FILE_TYPES[type as keyof typeof ALLOWED_FILE_TYPES]);
+  
+  if (!allowedExtensions.includes(fileExtension)) {
+    return {
+      isValid: false,
+      error: 'Extensión de archivo no permitida'
+    };
+  }
+
+  // Verificar tamaño
+  if (file.size > MAX_FILE_SIZE) {
+    return {
+      isValid: false,
+      error: 'El archivo excede el tamaño máximo permitido (5MB)'
+    };
+  }
+
+  return { isValid: true };
 }
 
 export async function uploadFile(
   file: File,
-  bucket: string = 'public'
-): Promise<FileUploadResult> {
+  bucket: string = 'public',
+  folder: string = 'uploads'
+): Promise<{ url: string; error: string | null }> {
   try {
-    // Validar tipo de archivo
-    if (!ALLOWED_FILE_TYPES[file.type as keyof typeof ALLOWED_FILE_TYPES]) {
-      return {
-        success: false,
-        error: 'Tipo de archivo no permitido',
-      };
-    }
-
-    // Validar tamaño de archivo
-    if (file.size > MAX_FILE_SIZE) {
-      return {
-        success: false,
-        error: 'El archivo excede el tamaño máximo permitido (5MB)',
-      };
+    // Validar archivo
+    const validation = await validateFile(file);
+    if (!validation.isValid) {
+      return { url: '', error: validation.error };
     }
 
     // Generar nombre único para el archivo
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${uuidv4()}.${fileExt}`;
+    const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+    const fileName = `${folder}/${uuidv4()}${fileExtension}`;
 
     // Subir archivo a Supabase Storage
     const { data, error } = await supabase.storage
       .from(bucket)
       .upload(fileName, file, {
         cacheControl: '3600',
-        upsert: false,
+        upsert: false
       });
 
     if (error) {
-      return {
-        success: false,
-        error: error.message,
-      };
+      return { url: '', error: error.message };
     }
 
-    // Obtener URL pública del archivo
+    // Obtener URL pública
     const { data: { publicUrl } } = supabase.storage
       .from(bucket)
       .getPublicUrl(fileName);
 
-    return {
-      success: true,
-      url: publicUrl,
-    };
+    return { url: publicUrl, error: null };
   } catch (error) {
-    return {
-      success: false,
-      error: 'Error al subir el archivo',
-    };
+    return { url: '', error: 'Error al subir el archivo' };
   }
 }
 
 export async function deleteFile(
-  fileName: string,
+  url: string,
   bucket: string = 'public'
-): Promise<boolean> {
+): Promise<{ success: boolean; error: string | null }> {
   try {
+    // Extraer nombre del archivo de la URL
+    const fileName = url.split('/').pop();
+    if (!fileName) {
+      return { success: false, error: 'URL de archivo inválida' };
+    }
+
+    // Eliminar archivo de Supabase Storage
     const { error } = await supabase.storage
       .from(bucket)
       .remove([fileName]);
 
-    return !error;
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return { success: true, error: null };
   } catch (error) {
-    return false;
+    return { success: false, error: 'Error al eliminar el archivo' };
   }
 }
 
-export function validateFileType(file: File): boolean {
-  return ALLOWED_FILE_TYPES[file.type as keyof typeof ALLOWED_FILE_TYPES] || false;
-}
-
-export function validateFileSize(file: File): boolean {
-  return file.size <= MAX_FILE_SIZE;
-}
-
-// Función para sanitizar nombres de archivo
-export function sanitizeFileName(fileName: string): string {
-  return fileName
-    .toLowerCase()
-    .replace(/[^a-z0-9.]/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
+// Función para escanear archivos por malware (ejemplo)
+export async function scanFile(file: File): Promise<boolean> {
+  // Aquí se implementaría la lógica de escaneo de malware
+  // Por ahora, retornamos true como ejemplo
+  return true;
 } 

@@ -77,10 +77,6 @@ const nextConfig = {
               block-all-mixed-content;
               upgrade-insecure-requests;
             `.replace(/\s+/g, ' ').trim()
-          },
-          {
-            key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
           }
         ]
       }
