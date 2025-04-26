@@ -1,17 +1,19 @@
-import { Metadata } from 'next';
-import { EditarHerramientaClient } from './client';
+import { Suspense } from 'react';
+import { EditarHerramientaClient } from './client-component';
 
-export const metadata: Metadata = {
+export const metadata = {
   title: 'Editar Herramienta - Backoffice Aztec',
   description: 'Editar herramienta en el backoffice de Aztec',
 };
 
-interface Props {
-  params: {
-    id: string;
-  };
-}
-
-export default function EditarHerramientaPage({ params }: Props) {
-  return <EditarHerramientaClient id={params.id} />;
+export default async function EditarHerramientaPage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <EditarHerramientaClient id={params.id} />
+    </Suspense>
+  );
 } 
